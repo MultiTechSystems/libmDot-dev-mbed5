@@ -1,0 +1,89 @@
+IMPORTANT – READ BEFORE OPERATING OR INSTALLING THE MULTI-TECH PRODUCT OR SOFTWARE
+
+MULTI-TECH SYSTEMS, INC.
+END USER LICENSE AGREEMENT
+PLEASE READ THIS END USER LICENSE AGREEMENT (“AGREEMENT”) CAREFULLY BEFORE USING THE MULTI-TECH PRODUCT, INSTALLING OR ACCESSING THE SOFTWARE, OR DOWNLOADING ANY SOFTWARE UPDATES FOR USE WITH THE MULTI-TECH PRODUCT. BY USING THE MULTI-TECH PRODUCT, INSTALLING OR ACCESSING THE SOFTWARE OR DOWNLOADING SOFTWARE UPDATES FOR THE MULTI-TECH PRODUCT, YOU AGREE TO BE BOUND BY THE TERMS OF THIS LICENSE. IF YOU DO NOT AGREE TO THE TERMS OF THIS AGREEMENT, DO NOT USE THE MULTI-TECH PRODUCT, INSTALL OR ACCESS THE SOFTWARE, OR DOWNLOAD THE SOFTWARE UPDATES. INSTEAD, PLEASE CONTACT MULTI-TECH’S CUSTOMER SERVICE DEPARTMENT AT customerservice@multitech.com. 
+
+MULTITECH SOFTWARE LICENSE AGREEMENT
+This Software License Agreement ("Agreement") is entered into by and between Multi-Tech Systems, Inc. ("MultiTech") and the business
+entity identified as the customer below ("Customer"). For purposes of this Agreement, “Software” means the software modules provided
+by MultiTech to Customer as more specifically identified below. Software may be provided in binary, object code, or source code formats,
+and includes any updates or upgrades to or new version of the original software, if and when made available to Customer by MultiTech.
+
+1. LICENSE GRANT. Subject to the terms of this Agreement, MultiTech grants to Customer, during the Term, a worldwide, revocable,
+non-exclusive, non-transferable, non-sublicensable, royalty-free limited license to: (a) use and reproduce the Software, and modify the
+Software modules for which source code is provided, solely in conjunction with MultiTech’s products; (b) reproduce, have reproduced,
+display, perform, transmit, license and distribute the Software in binary or executable form, solely as incorporated or embedded into
+MultiTech’s products.
+Use of the Software in conjunction with any product other than MultiTech’s products is strictly prohibited. In no event may Customer (i)
+distribute, license or sell the Software or any modifications thereof as a standalone product; (ii) decrypt, disassemble, reverse assemble
+or reverse compile the Software, except to the extent such restrictions are prohibited by applicable law; and/or (iii) distribute the source
+code of the Software and/or modifications thereof.
+
+2. RESTRICTIONS ON USE. Customer acknowledges that the Software and the structure, organization, and source code thereof
+constitute valuable trade secrets of MultiTech. Accordingly, except as expressly permitted in Section 1 or as otherwise authorized by
+MultiTech in writing, Customer will not, directly or indirectly: (a) modify, adapt, alter, translate, or create derivative works from the
+Software; (b) sublicense, lease, rent, loan, sell, distribute, make available or otherwise transfer the Software to any third party; (c) reverse
+engineer, decompile, disassemble, or otherwise attempt to derive the source code for the Software; or (d) otherwise use or copy the
+Software except as expressly allowed under Section 1 above. Customer may not disclose to third parties or through publication the
+results of performance/benchmark tests run on the Software without the prior written consent of MultiTech.
+
+3. OWNERSHIP. As between the parties, the Software and all modifications and improvements to the Software, and all worldwide
+intellectual property rights and proprietary rights relating thereto or embodied therein, are the exclusive property of MultiTech and its
+suppliers. MultiTech and its suppliers reserve all rights in and to the Software not expressly granted to Customer in Section 1, and no
+other licenses or rights are granted by implication, estoppel or otherwise.
+
+4. TERM AND TERMINATION. This Agreement is effective upon acceptance by Customer and shall continue until terminated by
+MultiTech for any reason whatsoever upon thirty (30) days’ notice. Customer may terminate this Agreement at any time by destroying
+the Software and notifying MultiTech at: sales@multitech.com. If Customer breaches any provision of this Agreement, this Agreement
+will automatically terminate. Upon the termination of this Agreement, the license granted to Customer will terminate. The provisions of
+Sections 2, 3, 4, 5, 6, 7, 8, and 9 shall survive termination or expiration of this Agreement for any reason.
+
+5. CONFIDENTIALITY. MultiTech may disclose certain information regarding the business of MultiTech and its suppliers, including the
+Software and technical, marketing, financial, employee, planning, and other confidential or proprietary information of MultiTech or its
+suppliers ("Confidential Information"). Any information that Customer knew or should have known, under the circumstances, was
+considered confidential or proprietary by MultiTech will be considered Confidential Information. Customer agrees (a) not to disclose
+Confidential information to any persons outside its organization, except to its consultants or agents who agree in writing to protect such
+Confidential information as required herein; and (b) to use the Confidential information only for the purpose of evaluating the Software.
+
+6. DISCLAIMER. CUSTOMER ACKNOWLEDGES AND AGREES THAT CUSTOMER'S USE OF THE SOFTWARE IS ENTIRELY AT
+ITS OWN RISK AND THE SOFTWARE PROVIDED BY MULTITECH TO CUSTOMER IS PROVIDED "AS IS" WITHOUT ANY
+WARRANTY OF ANY KIND WHATSOEVER. MULTITECH, ON BEHALF OF ITSELF AND ITS SUPPLIERS, HEREBY EXPRESSLY
+DISCLAIMS ALL WARRANTIES WITH REGARD TO THE SOFTWARE, WHETHER EXPRESS, IMPLIED, STATUTORY OR
+OTHERWISE, INCLUDING, WITHOUT LIMITATION, ANY IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
+PARTICULAR PURPOSE, TITLE, NON-INFRINGEMENT AND ANY WARRANTIES ARISING FROM COURSE OF DEALING OR
+COURSE OF PERFORMANCE. TO THE EXTENT THAT, AS A MATTER OF APPLICABLE LAW, ANY IMPLIED OR STATUTORY 
+WARRANTY MAY NOT BE DISCLAIMED, THE DURATION AND SCOPE OF SUCH WARRANTY SHALL BE THE MINIMUM
+PERMISSIBLE UNDER SUCH APPLICABLE LAW.
+
+7. LIMITATION OF LIABILITY. IN NO EVENT WILL MULTITECH BE LIABLE FOR ANY CONSEQUENTIAL, INDIRECT, EXEMPLARY,
+PUNITIVE, SPECIAL OR INCIDENTAL DAMAGES, INCLUDING ANY LOST DATA AND LOST PROFITS, ARISING FROM OR
+RELATING TO THE SOFTWARE OR THIS AGREEMENT, EVEN IF MULTITECH HAS BEEN ADVISED OF THE POSSIBILITY OF
+SUCH DAMAGES. MULTITECH’S TOTAL CUMULATIVE LIABILITY IN CONNECTION WITH THIS AGREEMENT AND THE
+SOFTWARE, WHETHER IN CONTRACT OR TORT OR OTHERWISE, WILL NOT EXCEED $50. CUSTOMER ACKNOWLEDGES
+THAT THIS PROVISION REFLECTS THE AGREED UPON ALLOCATION OF RISK FOR THIS AGREEMENT AND THAT MULTITECH
+WOULD NOT ENTER INTO THIS AGREEMENT WITHOUT THESE LIMITATIONS ON ITS LIABILITY.
+
+8. COMPLIANCE WITH LAWS. Customer shall comply with all laws, regulations, rules, ordinances and orders applicable to its use of
+the Software. Without limiting the foregoing, Customer shall comply with the relevant export administration and control laws and
+regulations, as may be amended from time to time, including, without limitation, the United States Export Administration Act, to ensure
+that the Software is not shipped, transferred or exported (directly or indirectly) in violation of U.S. law.
+
+9. MISCELLANEOUS. Customer may not assign or delegate, directly or indirectly, by operation of law or otherwise, this Agreement or
+any of its rights or obligations under this Agreement (including the license rights granted to Customer to the Software) to any third party.
+Any attempted assignment or transfer in violation of the foregoing will be null and void and of no effect. This Agreement will be subject
+to and governed by the laws of the State of Minnesota and the United States of America without regard for its conflicts of law principles
+that would require application of the laws of a different state or country. The federal and state courts for Minneapolis, MN shall have
+jurisdiction over any disputes, claims or controversies arising out of or relating to this Agreement, and Customer hereby consents the
+jurisdiction of such courts over any such dispute, claim or controversy. All modifications, waivers and amendments must be in writing
+and signed by both parties. Any waiver or failure to enforce any provision of this Agreement on one occasion will not be deemed a waiver
+of any other provision or of such provision on any other occasion. If any provision of this Agreement is held by a court of competent
+jurisdiction to be unenforceable for any reason, the remaining provisions hereof shall be unaffected and continue in full force and effect.
+This Agreement constitutes the entire agreement between the parties regarding the subject hereof and supersedes all prior or
+contemporaneous agreements, understandings and communications, whether written or oral.
+
+   Multi-Tech Systems, Inc. 
+   2205 Woodale Drive
+   Mounds View, Minnesota 55112
+   customerservice@multitech.com 
+   20130910
