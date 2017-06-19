@@ -1,5 +1,23 @@
 The Dot library provides a LoRaWan certified stack for LoRa communication using MultiTech mDot and xDot devices. The stack is compatible with mbed 5.
 
+Dot Library versions 3.x.x require a channel plan to be injected into the stack. Channel plans are included with the 3.x.x Dot Library releases. The following code snippet demonstrates how to create a channel plan and inject it into the stack.
+
+```c++
+#include "mDot.h"
+#include "channel_plans.h"
+ 
+int main() {
+    ChannelPlan* plan = new lora::ChannelPlan_US915();
+    assert(plan);
+    mDot* dot = mDot::getInstance(plan);
+    assert(dot);
+                   
+    // ...
+}
+```
+
+**Dot devices must not be deployed with software using a different channel plan than the Dot's default plan! This functionality is for development and testing only!**
+
 The name of the repository can be used to determine which device the stack was compiled for and if it's a development or production-ready build:
   * [libmDot-mbed5](http://github.com/MultiTechSystems/libmDot-mbed5/) -> production-ready build for mDot
   * [libmDot-dev-mbed5](http://github.com/MultiTechSystems/libmDot-dev-mbed5/) -> development build for mDot
