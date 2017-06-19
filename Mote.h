@@ -128,8 +128,14 @@ namespace lora {
 
     class Mote {
         public:
-            Mote(Settings* settings);
+            Mote(Settings* settings, ChannelPlan* plan);
             virtual ~Mote();
+
+            /**
+             * MTS LoRa version
+             * @return string containing version information
+             */
+            const char* getId();
 
             /**
              * Indicator for network session join status
@@ -159,10 +165,12 @@ namespace lora {
 
             /**
              * Configure the channel plan
-             * @param freqBand EU868, US915, AU915
+             * @param plan pointer to ChannelPlan object
              * @return LORA_OK
              */
-            uint8_t SetChannelPlan(uint8_t freqBand);
+            uint8_t SetChannelPlan(ChannelPlan* plan);
+
+            Settings* GetSettings();
 
             /**
              * Get the channel mask of currently enabled channels
@@ -179,20 +187,20 @@ namespace lora {
             virtual uint8_t SetChannelMask(uint8_t index, uint16_t mask);
 
             /**
-             * Set the current channel group for hybrid operation 1-8 else 0 for 64 channel operation
-             * @param group 0-8
+             * Set the current frequency sub band for hybrid operation 1-8 else 0 for 64 channel operation
+             * @param sub_band 0-8
              */
-            uint8_t SetChannelGroup(uint8_t group);
+            uint8_t SetFrequencySubBand(uint8_t sub_band);
 
             /**
-             * Get the current channel group
-             * @return group 0-8
+             * Get the current frequency sub band
+             * @return sub band 0-8
              */
-            uint8_t GetChannelGroup();
+            uint8_t GetFrequencySubBand();
 
             /**
              * Add a channel to the channel plan
-             * EU868 allows additional channels to be added
+             * EU868, AS923 and KR920 allows additional channels to be added
              * Channels 0-2 are fixed default channels
              *
              * @param index of the channel
@@ -203,12 +211,22 @@ namespace lora {
             uint8_t AddChannel(uint8_t index, uint32_t frequency, lora::DatarateRange range);
 
             /**
+             * Add a downlink channel to the channel plan
+             * EU868, AS923 and KR920 allows downlink channels to be added
+             *
+             * @param index of the channel
+             * @param frequency of the channel or 0 to remove channel
+             * @return LORA_OK if channel was added
+             */
+            uint8_t AddDownlinkChannel(uint8_t index, uint32_t frequency);
+
+            /**
              * Set network mode
              * Choose Public LoRaWAN mode or Private Multitech mode
              *
              * Public mode uses 0x34 sync word with 5/6 second join windows
              * Private mode uses 0x12 sync word with 1/2 second join windows
-             *  US915/AU915 Rx1 and Rx2 are fixed per Channel Group setting
+             *  US915/AU915 Rx1 and Rx2 are fixed per frequency sub band setting
              *
              * @param mode public or private
              * @return LORA_OK
@@ -236,12 +254,23 @@ namespace lora {
             Statistics& GetStats();
 
             /**
+             * Reset the current statistics for the device
+             */
+            void ResetStats();
+
+            /**
              * Get time on air with current settings for provided payload bytes
              * 13 overhead bytes will be added to payload
              * @param bytes of payload data
              * @return time-on-air in ms
              */
             uint32_t GetTimeOnAir(uint8_t bytes);
+
+            /**
+             * Get time off air required to adhere to duty-cycle limitations
+             * @return time-off-air in ms
+             */
+            uint32_t GetTimeOffAir();
 
             /**
              * Call before setting device in sleep mode to place radio in sleep

@@ -209,18 +209,6 @@ namespace lora {
     const uint8_t FRAME_OVERHEAD = 13;                          //!< Bytes of network info overhead in a frame
 
     /**
-     * Settings to choose ChannelPlan
-     */
-    enum FrequencyBand {
-        EU868,      //!< EU 863-870 16 channel uplink
-        US915,      //!< US 902-928 64-125k/8-500k uplink and 8-500k downlink channels
-        AU915,      //!< US 915-928 64-125k/8-500k uplink and 8-500k downlink channels
-        CN779,      //!<
-        CN470,      //!<
-        EU433,      //!<
-    };
-
-    /**
      * Settings for type of network
      * PUBLIC - defaults to 5/6 second join windows and 0x34 sync word
      * PRIVATE - defaults to 1/2 second join windows and 0x12 sync word
@@ -261,7 +249,8 @@ namespace lora {
         LORA_NO_FREE_CHAN = 15,
         LORA_AGGREGATED_DUTY_CYCLE = 16,
         LORA_MAC_COMMAND_ERROR = 17,
-        LORA_MAX_PAYLOAD_EXCEEDED = 18
+        LORA_MAX_PAYLOAD_EXCEEDED = 18,
+        LORA_LBT_CHANNEL_BUSY = 19
     };
 
     /**
@@ -396,7 +385,7 @@ namespace lora {
             uint8_t Key[16];            //!< Network Key or AppKey
             uint8_t JoinDelay;          //!< Number of seconds to wait before 1st RX Window
             uint8_t RxDelay;            //!< Number of seconds to wait before 1st RX Window
-            uint8_t ChannelGroup;       //!< ChannelGroup used for US915 hybrid operation 0:72 channels, 1:1-8 channels ...
+            uint8_t FrequencySubBand;   //!< FrequencySubBand used for US915 hybrid operation 0:72 channels, 1:1-8 channels ...
             uint8_t AckAttempts;        //!< Number of attempts to send packet and receive an ACK from server
             uint8_t Retries;            //!< Number of times to resend a packet without receiving an ACK, redundancy
             uint8_t ADREnabled;         //!< Enable adaptive datarate
@@ -451,6 +440,10 @@ namespace lora {
             bool DataPending;                   //!< Indicator of data pending at server
             uint8_t RxTimingSetupReqReceived;   //!< Indicator that RxTimingSetupAns should be included in uplink
             uint8_t RxParamSetupReqAnswer;      //!< Indicator that RxParamSetupAns should be included in uplink
+            uint8_t DlChannelReqAnswer;         //!< Indicator that DlChannelAns should be included in uplink
+            uint8_t DownlinkDwelltime;          //!< On air dwell time for downlink packets 0:NONE,1:400ms
+            uint8_t UplinkDwelltime;            //!< On air dwell time for uplink packets 0:NONE,1:400ms
+            uint8_t Max_EIRP;                   //!< Maximum allowed EIRP for uplink
     } NetworkSession;
 
     /**
@@ -608,13 +601,15 @@ namespace lora {
         MOTE_MAC_DEV_STATUS_ANS = 0x06,
         MOTE_MAC_NEW_CHANNEL_ANS = 0x07,
         MOTE_MAC_RX_TIMING_SETUP_ANS = 0x08,
+        MOTE_MAC_TX_PARAM_SETUP_ANS = 0x09,
+        MOTE_MAC_DL_CHANNEL_ANS = 0x0A,
 
         /* Class B */
-        MOTE_MAC_PING_SLOT_INFO_REQ = 0x09,
-        MOTE_MAC_PING_SLOT_FREQ_ANS = 0x0a,
-        MOTE_MAC_PING_SLOT_CHANNEL_ANS = 0x0a,
-        MOTE_MAC_BEACON_TIMING_REQ = 0x0b,
-        MOTE_MAC_BEACON_FREQ_ANS = 0x0c,
+        MOTE_MAC_PING_SLOT_INFO_REQ = 0x0B,
+        MOTE_MAC_PING_SLOT_FREQ_ANS = 0x0C,
+        MOTE_MAC_PING_SLOT_CHANNEL_ANS = 0x0D,
+        MOTE_MAC_BEACON_TIMING_REQ = 0x0E,
+        MOTE_MAC_BEACON_FREQ_ANS = 0x0F,
 
         /* Multitech */
         MOTE_MAC_PING_REQ = 0x80,
@@ -638,13 +633,15 @@ namespace lora {
         SRV_MAC_DEV_STATUS_REQ = 0x06,
         SRV_MAC_NEW_CHANNEL_REQ = 0x07,
         SRV_MAC_RX_TIMING_SETUP_REQ = 0x08,
+        SRV_MAC_TX_PARAM_SETUP_REQ = 0x09,
+        SRV_MAC_DL_CHANNEL_REQ = 0x0A,
 
         /* Class B */
-        SRV_MAC_PING_SLOT_INFO_ANS = 0x09,
-        SRV_MAC_PING_SLOT_FREQ_REQ = 0x0a,
-        SRV_MAC_PING_SLOT_CHANNEL_REQ = 0x0a,
-        SRV_MAC_BEACON_TIMING_ANS = 0x0b,
-        SRV_MAC_BEACON_FREQ_REQ = 0x0c,
+        SRV_MAC_PING_SLOT_INFO_ANS = 0x0B,
+        SRV_MAC_PING_SLOT_FREQ_REQ = 0x0C,
+        SRV_MAC_PING_SLOT_CHANNEL_REQ = 0x0D,
+        SRV_MAC_BEACON_TIMING_ANS = 0x0E,
+        SRV_MAC_BEACON_FREQ_REQ = 0x0F,
 
         /* Multitech */
         SRV_MAC_PING_ANS = 0x80,

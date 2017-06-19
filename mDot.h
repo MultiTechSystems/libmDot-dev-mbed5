@@ -13,12 +13,13 @@
 class mDotEvent;
 class LoRaConfig;
 
+
 class mDot {
         friend class mDotEvent;
 
     private:
 
-        mDot();
+        mDot(lora::ChannelPlan* plan);
         ~mDot();
 
         void initLora();
@@ -57,7 +58,7 @@ class mDot {
 
         static mDot* _instance;
 
-        lora::Mote _mote;
+        lora::Mote* _mote;
         LoRaConfig* _config;
         lora::Settings _settings;
         mDotEvent* _events;
@@ -109,6 +110,7 @@ class mDot {
             MDOT_NO_ENABLED_CHAN = -10,
             MDOT_AGGREGATED_DUTY_CYCLE = -11,
             MDOT_MAX_PAYLOAD_EXCEEDED = -12,
+            MDOT_LBT_CHANNEL_BUSY = -13,
             MDOT_ERROR = -1024,
         } mdot_ret_code;
 
@@ -154,14 +156,6 @@ class mDot {
             SF_7,
             SF_7H,
             SF_FSK
-        };
-
-        enum FrequencyBands {
-            FB_868 = 0,
-            FB_915 = 1,
-            FB_EU868 = 0, // EU868
-            FB_US915 = 1,  // US915
-            FB_AU915 = 2
         };
 
         enum FrequencySubBands {
@@ -274,32 +268,46 @@ class mDot {
         uint32_t UserRegisters[22];
 #endif /* TARGET_MTS_MDOT_F411RE */
 
-        /** Get a handle to the singleton object
+        /**
+         *  Get a handle to the singleton object
+         * @param plan the channel plan to use
          * @returns pointer to mDot object
          */
-        static mDot* getInstance();
+        static mDot* getInstance(lora::ChannelPlan* plan);
 
         void setEvents(mDotEvent* events);
 
-        /** Get library version information
+        /**
+         *
+         * Get library version information
          * @returns string containing library version information
          */
         std::string getId();
 
-        /** Perform a soft reset of the system
+        /**
+         * Get MTS LoRa version information
+         * @returns string containing MTS LoRa version information
+         */
+        std::string getMtsLoraId();
+
+        /**
+         * Perform a soft reset of the system
          */
         void resetCpu();
 
-        /** Reset config to factory default
+        /**
+         * Reset config to factory default
          */
         void resetConfig();
 
-        /** Save config data to non volatile memory
+        /**
+         * Save config data to non volatile memory
          * @returns true if success, false if failure
          */
         bool saveConfig();
 
-        /** Set the log level for the library
+        /**
+         * Set the log level for the library
          * options are:
          *  NONE_LEVEL - logging is off at this level
          *  FATAL_LEVEL - only critical errors will be reported
@@ -313,44 +321,57 @@ class mDot {
          */
         int32_t setLogLevel(const uint8_t& level);
 
-        /** Get the current log level for the library
+        /**
+         * Get the current log level for the library
          * @returns current log level
          */
         uint8_t getLogLevel();
 
-        /** Seed pseudo RNG in LoRaMac layer, uses random value from radio RSSI reading by default
+        /**
+         * Seed pseudo RNG in LoRaMac layer, uses random value from radio RSSI reading by default
          * @param seed for RNG
          */
         void seedRandom(uint32_t seed);
 
-        /** Enable or disable the activity LED.
+
+        uint8_t setChannelPlan(lora::ChannelPlan* plan);
+
+        lora::Settings* getSettings();
+
+        /**
+         * Enable or disable the activity LED.
          * @param enable true to enable the LED, false to disable
          */
         void setActivityLedEnable(const bool& enable);
 
-        /** Find out if the activity LED is enabled
+        /**
+         * Find out if the activity LED is enabled
          * @returns true if activity LED is enabled, false if disabled
          */
         bool getActivityLedEnable();
 
-        /** Use a different pin for the activity LED.
+        /**
+         * Use a different pin for the activity LED.
          * The default is XBEE_RSSI.
          * @param pin the new pin to use
          */
         void setActivityLedPin(const PinName& pin);
 
-        /** Use an external DigitalOut object for the activity LED.
+        /**
+         * Use an external DigitalOut object for the activity LED.
          * The pointer must stay valid!
          * @param pin the DigitalOut object to use
          */
         void setActivityLedPin(DigitalOut* pin);
 
-        /** Find out what pin the activity LED is on
+        /**
+         * Find out what pin the activity LED is on
          * @returns the pin the activity LED is using
          */
         PinName getActivityLedPin();
 
-        /** Returns boolean indicative of start-up from standby mode
+        /**
+         * Returns boolean indicative of start-up from standby mode
          * @returns true if dot woke from standby
          */
         bool getStandbyFlag();
@@ -359,37 +380,56 @@ class mDot {
 
         int32_t setChannelMask(uint8_t offset, uint16_t mask);
 
-        /** Add a channel frequencies currently in use
+        /**
+         * Add a channel
          * @returns MDOT_OK
          */
         int32_t addChannel(uint8_t index, uint32_t frequency, uint8_t datarateRange);
 
-        /** Get list of channel frequencies currently in use
+        /**
+         * Add a downlink channel
+         * @returns MDOT_OK
+         */
+        int32_t addDownlinkChannel(uint8_t index, uint32_t frequency);
+
+        /**
+         * Get list of channel frequencies currently in use
          * @returns vector of channels currently in use
          */
         std::vector<uint32_t> getChannels();
 
-        /** Get list of channel datarate ranges currently in use
+        /**
+         * Get list of downlink channel frequencies currently in use
+         * @returns vector of channels currently in use
+         */
+        std::vector<uint32_t> getDownlinkChannels();
+
+        /**
+         * Get list of channel datarate ranges currently in use
          * @returns vector of datarate ranges currently in use
          */
         std::vector<uint8_t> getChannelRanges();
 
-        /** Get list of channel frequencies in config file to be used as session defaults
+        /**
+         * Get list of channel frequencies in config file to be used as session defaults
          * @returns vector of channels in config file
          */
         std::vector<uint32_t> getConfigChannels();
 
-        /** Get list of channel datarate ranges in config file to be used as session defaults
+        /**
+         * Get list of channel datarate ranges in config file to be used as session defaults
          * @returns vector of datarate ranges in config file
          */
         std::vector<uint8_t> getConfigChannelRanges();
 
-        /** Get frequency band
-         * @returns FB_915 if configured for United States, FB_868 if configured for Europe
+        /**
+         * Get default frequency band
+         * @returns frequency band the device was manufactured for
          */
-        uint8_t getFrequencyBand();
+        uint8_t getDefaultFrequencyBand();
 
-        /** Set frequency sub band
+        /**
+         * Set frequency sub band
          * only applicable if frequency band is set for United States (FB_915)
          * sub band 0 will allow the radio to use all 64 channels
          * sub band 1 - 8 will allow the radio to use the 8 channels in that sub band
@@ -399,17 +439,89 @@ class mDot {
          */
         int32_t setFrequencySubBand(const uint8_t& band);
 
-        /** Get frequency sub band
+        /**
+         * Get frequency sub band
          * @returns frequency sub band currently in use
          */
         uint8_t getFrequencySubBand();
 
-        /** Get the datarate currently in use within the MAC layer
+        /**
+         * Get frequency band
+         * @returns frequency band (channel plan) currently in use
+         */
+        uint8_t getFrequencyBand();
+
+        /**
+         * Get channel plan name
+         * @returns name of channel plan currently in use
+         */
+        std::string getChannelPlanName();
+
+        /**
+         * Get the datarate currently in use within the MAC layer
          * returns 0-15
          */
         uint8_t getSessionDataRate();
 
-        /** Enable/disable public network mode
+
+        /**
+         * Get the current max EIRP used in the channel plan
+         * May be changed by the network server
+         * returns 0-36
+         */
+        uint8_t getSessionMaxEIRP();
+
+        /**
+         * Set the current max EIRP used in the channel plan
+         * May be changed by the network server
+         * accepts 0-36
+         */
+        void setSessionMaxEIRP(uint8_t max);
+
+        /**
+         * Get the current downlink dwell time used in the channel plan
+         * May be changed by the network server
+         * returns 0-1
+         */
+        uint8_t getSessionDownlinkDwelltime();
+
+        /**
+         * Set the current downlink dwell time used in the channel plan
+         * May be changed by the network server
+         * accepts 0-1
+         */
+        void setSessionDownlinkDwelltime(uint8_t dwell);
+
+        /**
+         * Get the current uplink dwell time used in the channel plan
+         * May be changed by the network server
+         * returns 0-1
+         */
+        uint8_t getSessionUplinkDwelltime();
+
+        /**
+         * Set the current uplink dwell time used in the channel plan
+         * May be changed by the network server
+         * accepts 0-1
+         */
+        void setSessionUplinkDwelltime(uint8_t dwell);
+
+        /**
+         * Set the current downlink dwell time used in the channel plan
+         * May be changed by the network server
+         * accepts 0-1
+         */
+        uint32_t getListenBeforeTalkTime(uint8_t ms);
+
+        /**
+         * Set the current downlink dwell time used in the channel plan
+         * May be changed by the network server
+         * accepts 0-1
+         */
+        void setListenBeforeTalkTime(uint32_t ms);
+
+        /**
+         * Enable/disable public network mode
          * JoinDelay will be set to (public: 5s, private: 1s) and
          * RxDelay will be set to 1s both can be adjusted afterwards
          * @param on should be true to enable public network mode
@@ -417,78 +529,92 @@ class mDot {
          */
         int32_t setPublicNetwork(const bool& on);
 
-        /** Get public network mode
+        /**
+         * Get public network mode
          * @returns true if public network mode is enabled
          */
         bool getPublicNetwork();
 
-        /** Get the device ID
+        /**
+         * Get the device ID
          * @returns vector containing the device ID (size 8)
          */
         std::vector<uint8_t> getDeviceId();
 
-        /** Get the device port to be used for lora application data (1-223)
+        /**
+         * Get the device port to be used for lora application data (1-223)
          *  @returns port
          */
         uint8_t getAppPort();
 
-        /** Set the device port to be used for lora application data (1-223)
+        /**
+         * Set the device port to be used for lora application data (1-223)
          *  @returns MDOT_OK if success
          */
         int32_t setAppPort(uint8_t port);
 
-        /** Set the device class A, B or C
+        /**
+         * Set the device class A, B or C
          *  @returns MDOT_OK if success
          */
         int32_t setClass(std::string newClass);
 
-        /** Get the device class A, B or C
+        /**
+         * Get the device class A, B or C
          *  @returns MDOT_OK if success
          */
         std::string getClass();
 
-        /** Get the max packet length with current settings
+        /**
+         * Get the max packet length with current settings
          * @returns max packet length
          */
         uint8_t getMaxPacketLength();
 
-        /** Set network address
+        /**
+         * Set network address
          * for use with MANUAL network join mode, will be assigned in OTA & AUTO_OTA modes
          * @param addr a vector of 4 bytes
          * @returns MDOT_OK if success
          */
         int32_t setNetworkAddress(const std::vector<uint8_t>& addr);
 
-        /** Get network address
+        /**
+         * Get network address
          * @returns vector containing network address (size 4)
          */
         std::vector<uint8_t> getNetworkAddress();
 
-        /** Set network session key
+        /**
+         * Set network session key
          * for use with MANUAL network join mode, will be assigned in OTA & AUTO_OTA modes
          * @param key a vector of 16 bytes
          * @returns MDOT_OK if success
          */
         int32_t setNetworkSessionKey(const std::vector<uint8_t>& key);
 
-        /** Get network session key
+        /**
+         * Get network session key
          * @returns vector containing network session key (size 16)
          */
         std::vector<uint8_t> getNetworkSessionKey();
 
-        /** Set data session key
+        /**
+         * Set data session key
          * for use with MANUAL network join mode, will be assigned in OTA & AUTO_OTA modes
          * @param key a vector of 16 bytes
          * @returns MDOT_OK if success
          */
         int32_t setDataSessionKey(const std::vector<uint8_t>& key);
 
-        /** Get data session key
+        /**
+         * Get data session key
          * @returns vector containing data session key (size 16)
          */
         std::vector<uint8_t> getDataSessionKey();
 
-        /** Set network name
+        /**
+         * Set network name
          * for use with OTA & AUTO_OTA network join modes
          * generates network ID (crc64 of name) automatically
          * @param name a string of of at least 8 bytes and no more than 128 bytes
@@ -496,12 +622,14 @@ class mDot {
          */
         int32_t setNetworkName(const std::string& name);
 
-        /** Get network name
+        /**
+         * Get network name
          * @return string containing network name (size 8 to 128)
          */
         std::string getNetworkName();
 
-        /** Set network ID
+        /**
+         * Set network ID
          * for use with OTA & AUTO_OTA network join modes
          * setting network ID via this function sets network name to empty
          * @param id a vector of 8 bytes
@@ -509,12 +637,14 @@ class mDot {
          */
         int32_t setNetworkId(const std::vector<uint8_t>& id);
 
-        /** Get network ID
+        /**
+         * Get network ID
          * @returns vector containing network ID (size 8)
          */
         std::vector<uint8_t> getNetworkId();
 
-        /** Set network passphrase
+        /**
+         * Set network passphrase
          * for use with OTA & AUTO_OTA network join modes
          * generates network key (cmac of passphrase) automatically
          * @param name a string of of at least 8 bytes and no more than 128 bytes
@@ -522,12 +652,14 @@ class mDot {
          */
         int32_t setNetworkPassphrase(const std::string& passphrase);
 
-        /** Get network passphrase
+        /**
+         * Get network passphrase
          * @return string containing network passphrase (size 8 to 128)
          */
         std::string getNetworkPassphrase();
 
-        /** Set network key
+        /**
+         * Set network key
          * for use with OTA & AUTO_OTA network join modes
          * setting network key via this function sets network passphrase to empty
          * @param id a vector of 16 bytes
@@ -535,22 +667,54 @@ class mDot {
          */
         int32_t setNetworkKey(const std::vector<uint8_t>& id);
 
-        /** Get network key
+        /**
+         * Get network key
          * @returns a vector containing network key (size 16)
          */
         std::vector<uint8_t> getNetworkKey();
 
-        /** Set join byte order
+        /**
+         * Set lorawan application EUI
+         * equivalent to setNetworkId
+         * @param eui application EUI (size 8)
+         */
+        int32_t setAppEUI(const uint8_t* eui);
+
+        /**
+         * Get lorawan application EUI
+         * equivalent to getNetworkId
+         * @returns vector containing application EUI (size 8)
+         */
+        const uint8_t* getAppEUI();
+
+        /**
+         * Set lorawan application key
+         * equivalent to setNetworkKey
+         * @param eui application key (size 16)
+         */
+        int32_t setAppKey(const uint8_t* key);
+
+        /**
+         * Set lorawan application key
+         * equivalent to getNetworkKey
+         * @returns eui application key (size 16)
+         */
+        const uint8_t* getAppKey();
+
+        /**
+         * Set join byte order
          * @param order 0:LSB 1:MSB
          */
         uint32_t setJoinByteOrder(uint8_t order);
 
-        /** Get join byte order
+        /**
+         * Get join byte order
          * @returns byte order to use in joins 0:LSB 1:MSB
          */
         uint8_t getJoinByteOrder();
 
-        /** Attempt to join network
+        /**
+         * Attempt to join network
          * each attempt will be made with a random datarate up to the configured datarate
          * JoinRequest backoff between tries is enforced to 1% for 1st hour, 0.1% for 1-10 hours and 0.01% after 10 hours
          * Check getNextTxMs() for time until next join attempt can be made
@@ -558,39 +722,46 @@ class mDot {
          */
         int32_t joinNetwork();
 
-        /** Attempts to join network once
+        /**
+         * Attempts to join network once
          * @returns MDOT_OK if success
          */
         int32_t joinNetworkOnce();
 
-        /** Resets current network session, essentially disconnecting from the network
+        /**
+         * Resets current network session, essentially disconnecting from the network
          * has no effect for MANUAL network join mode
          */
         void resetNetworkSession();
 
-        /** Restore saved network session from flash
+        /**
+         * Restore saved network session from flash
          * has no effect for MANUAL network join mode
          */
         void restoreNetworkSession();
 
-        /** Save current network session to flash
+        /**
+         * Save current network session to flash
          * has no effect for MANUAL network join mode
          */
         void saveNetworkSession();
 
-        /** Set number of times joining will retry each sub-band before changing
+        /**
+         * Set number of times joining will retry each sub-band before changing
          * to the next subband in US915 and AU915
          * @param retries must be between 0 - 255
          * @returns MDOT_OK if success
          */
         int32_t setJoinRetries(const uint8_t& retries);
 
-        /** Get number of times joining will retry each sub-band
+        /**
+         * Get number of times joining will retry each sub-band
          * @returns join retries (0 - 255)
          */
         uint8_t getJoinRetries();
 
-        /** Set network join mode
+        /**
+         * Set network join mode
          * MANUAL: set network address and session keys manually
          * OTA: User sets network name and passphrase, then attempts to join
          * AUTO_OTA: same as OTA, but network sessions can be saved and restored
@@ -599,108 +770,127 @@ class mDot {
          */
         int32_t setJoinMode(const uint8_t& mode);
 
-        /** Get network join mode
+        /**
+         * Get network join mode
          * @returns MANUAL, OTA, or AUTO_OTA
          */
         uint8_t getJoinMode();
 
-        /** Get network join status
+        /**
+         * Get network join status
          * @returns true if currently joined to network
          */
         bool getNetworkJoinStatus();
 
-        /** Do a network link check
+        /**
+         * Do a network link check
          * application data may be returned in response to a network link check command
          * @returns link_check structure containing success, dBm above noise floor, gateways in range, and packet payload
          */
         link_check networkLinkCheck();
 
-        /** Set network link check count to perform automatic link checks every count packets
+        /**
+         * Set network link check count to perform automatic link checks every count packets
          * only applicable if ACKs are disabled
          * @param count must be between 0 - 255
          * @returns MDOT_OK if success
          */
         int32_t setLinkCheckCount(const uint8_t& count);
 
-        /** Get network link check count
+        /**
+         * Get network link check count
          * @returns count (0 - 255)
          */
         uint8_t getLinkCheckCount();
 
-        /** Set network link check threshold, number of link check failures or missed acks to tolerate
+        /**
+         * Set network link check threshold, number of link check failures or missed acks to tolerate
          * before considering network connection lost
          * @pararm count must be between 0 - 255
          * @returns MDOT_OK if success
          */
         int32_t setLinkCheckThreshold(const uint8_t& count);
 
-        /** Get network link check threshold
+        /**
+         * Get network link check threshold
          * @returns threshold (0 - 255)
          */
         uint8_t getLinkCheckThreshold();
 
-        /** Get/set number of failed link checks in the current session
+        /**
+         * Get/set number of failed link checks in the current session
          * @returns count (0 - 255)
          */
         uint8_t getLinkFailCount();
         int32_t setLinkFailCount(uint8_t count);
 
-        /** Set UpLinkCounter number of packets sent to the gateway during this network session (sequence number)
+        /**
+         * Set UpLinkCounter number of packets sent to the gateway during this network session (sequence number)
          * @returns MDOT_OK
          */
         int32_t setUpLinkCounter(uint32_t count);
 
-        /** Get UpLinkCounter
+        /**
+         * Get UpLinkCounter
          * @returns number of packets sent to the gateway during this network session (sequence number)
          */
         uint32_t getUpLinkCounter();
 
-        /** Set UpLinkCounter number of packets sent by the gateway during this network session (sequence number)
+        /**
+         * Set UpLinkCounter number of packets sent by the gateway during this network session (sequence number)
          * @returns MDOT_OK
          */
         int32_t setDownLinkCounter(uint32_t count);
 
-        /** Get DownLinkCounter
+        /**
+         * Get DownLinkCounter
          * @returns number of packets sent by the gateway during this network session (sequence number)
          */
         uint32_t getDownLinkCounter();
 
-        /** Enable/disable AES encryption
+        /**
+         * Enable/disable AES encryption
          * AES encryption must be enabled for use with Conduit gateway and MTAC_LORA card
          * @param on true for AES encryption to be enabled
          * @returns MDOT_OK if success
          */
         int32_t setAesEncryption(const bool& on);
 
-        /** Get AES encryption
+        /**
+         * Get AES encryption
          * @returns true if AES encryption is enabled
          */
         bool getAesEncryption();
 
-        /** Get RSSI stats
+        /**
+         * Get RSSI stats
          * @returns rssi_stats struct containing last, min, max, and avg RSSI in dB
          */
         rssi_stats getRssiStats();
 
-        /** Get SNR stats
+        /**
+         * Get SNR stats
          * @returns snr_stats struct containing last, min, max, and avg SNR in cB
          */
         snr_stats getSnrStats();
 
-        /** Get ms until next free channel
+        /**
+         * Get ms until next free channel
          * only applicable for European models, US models return 0
          * @returns time (ms) until a channel is free to use for transmitting
          */
         uint32_t getNextTxMs();
 
-        /** Get join delay in seconds
+        /**
+         * Get join delay in seconds
          *  Public network defaults to 5 seconds
          *  Private network defaults to 1 second
          *  @returns number of seconds before join accept message is expected
          */
         uint8_t getJoinDelay();
 
-        /** Set join delay in seconds
+        /**
+         * Set join delay in seconds
          *  Public network defaults to 5 seconds
          *  Private network defaults to 1 second
          *  @param delay number of seconds before join accept message is expected
@@ -708,108 +898,126 @@ class mDot {
          */
         uint32_t setJoinDelay(uint8_t delay);
 
-        /** Get join Rx1 datarate offset
+        /**
+         * Get join Rx1 datarate offset
          *  defaults to 0
          *  @returns offset
          */
         uint8_t getJoinRx1DataRateOffset();
 
-        /** Set join Rx1 datarate offset
+        /**
+         * Set join Rx1 datarate offset
          *  @param offset for datarate
          *  @return MDOT_OK if success
          */
         uint32_t setJoinRx1DataRateOffset(uint8_t offset);
 
-        /** Get join Rx2 datarate
+        /**
+         * Get join Rx2 datarate
          *  defaults to US:DR8, AU:DR8, EU:DR0
          *  @returns datarate
          */
         uint8_t getJoinRx2DataRate();
 
-        /** Set join Rx2 datarate
+        /**
+         * Set join Rx2 datarate
          *  @param datarate
          *  @return MDOT_OK if success
          */
         uint32_t setJoinRx2DataRate(uint8_t datarate);
 
-        /** Get join Rx2 frequency
+        /**
+         * Get join Rx2 frequency
          *  defaults US:923.3, AU:923.3, EU:869.525
          *  @returns frequency
          */
         uint32_t getJoinRx2Frequency();
 
-        /** Set join Rx2 frequency
+        /**
+         * Set join Rx2 frequency
          *  @param frequency
          *  @return MDOT_OK if success
          */
         uint32_t setJoinRx2Frequency(uint32_t frequency);
 
-        /** Get rx delay in seconds
+        /**
+         * Get rx delay in seconds
          *  Defaults to 1 second
          *  @returns number of seconds before response message is expected
          */
         uint8_t getRxDelay();
 
-        /** Set rx delay in seconds
+        /**
+         * Set rx delay in seconds
          *  Defaults to 1 second
          *  @param delay number of seconds before response message is expected
          *  @return MDOT_OK if success
          */
         uint32_t setRxDelay(uint8_t delay);
 
-        /** Get  preserve session to save network session info through reset or power down in AUTO_OTA mode
+        /**
+         * Get  preserve session to save network session info through reset or power down in AUTO_OTA mode
          *  Defaults to off
          *  @returns true if enabled
          */
         bool getPreserveSession();
 
-        /** Set preserve session to save network session info through reset or power down in AUTO_OTA mode
+        /**
+         * Set preserve session to save network session info through reset or power down in AUTO_OTA mode
          *  Defaults to off
          *  @param enable
          *  @return MDOT_OK if success
          */
         uint32_t setPreserveSession(bool enable);
 
-        /** Get data pending
+        /**
+         * Get data pending
          * only valid after sending data to the gateway
          * @returns true if server has available packet(s)
          */
         bool getDataPending();
 
-        /** Get ack requested
+        /**
+         * Get ack requested
          * only valid after sending data to the gateway
          * @returns true if server has requested ack
          */
         bool getAckRequested();
 
-        /** Get is transmitting indicator
+        /**
+         * Get is transmitting indicator
          * @returns true if currently transmitting
          */
         bool getIsTransmitting();
 
-        /** Get is idle indicator
+        /**
+         * Get is idle indicator
          * @returns true if not currently transmitting, waiting or receiving
          */
         bool getIsIdle();
 
-        /** Set TX data rate
+        /**
+         * Set TX data rate
          * data rates affect maximum payload size
          * @param dr SF_7 - SF_12|DR0-DR7 for Europe, SF_7 - SF_10 | DR0-DR4 for United States
          * @returns MDOT_OK if success
          */
         int32_t setTxDataRate(const uint8_t& dr);
 
-        /** Get TX data rate
+        /**
+         * Get TX data rate
          * @returns current TX data rate (DR0-DR15)
          */
         uint8_t getTxDataRate();
 
-        /** Get a random value from the radio based on RSSI
+        /**
+         * Get a random value from the radio based on RSSI
          *  @returns randome value
          */
         uint32_t getRadioRandom();
 
-        /** Get data rate spreading factor and bandwidth
+        /**
+         * Get data rate spreading factor and bandwidth
          * EU868 Datarates
          * ---------------
          * DR0 - SF12BW125
@@ -839,9 +1047,12 @@ class mDot {
          *
          * @returns spreading factor and bandwidth
          */
+        std::string getDataRateDetails(uint8_t rate);
         std::string getDateRateDetails(uint8_t rate);
 
-        /** Set TX power output of radio before antenna gain, default: 14 dBm
+
+        /**
+         * Set TX power output of radio before antenna gain, default: 14 dBm
          * actual output power may be limited by local regulations for the chosen frequency
          * power affects maximum range
          * @param power 2 dBm - 20 dBm
@@ -849,113 +1060,183 @@ class mDot {
          */
         int32_t setTxPower(const uint32_t& power);
 
-        /** Get TX power
+        /**
+         * Get TX power
          * @returns TX power (2 dBm - 20 dBm)
          */
         uint32_t getTxPower();
 
-        /** Get configured gain of installed antenna, default: +3 dBi
+        /**
+         * Get configured gain of installed antenna, default: +3 dBi
          * @returns gain of antenna in dBi
          */
         int8_t getAntennaGain();
 
-        /** Set configured gain of installed antenna, default: +3 dBi
+        /**
+         * Set configured gain of installed antenna, default: +3 dBi
          * @param gain -127 dBi - 128 dBi
          * @returns MDOT_OK if success
          */
         int32_t setAntennaGain(int8_t gain);
 
-        /** Enable/disable TX waiting for rx windows
+        /**
+         * Enable/disable TX waiting for rx windows
          * when enabled, send calls will block until a packet is received or RX timeout
          * @param enable set to true if expecting responses to transmitted packets
          * @returns MDOT_OK if success
          */
         int32_t setTxWait(const bool& enable);
 
-        /** Get TX wait
+        /**
+         * Get TX wait
          * @returns true if TX wait is enabled
          */
         bool getTxWait();
 
-        /** Cancel pending rx windows
+        /**
+         * Cancel pending rx windows
          */
         void cancelRxWindow();
 
-        /** Get time on air
+        /**
+         * Get time on air
          * @returns the amount of time (in ms) it would take to send bytes bytes based on current configuration
          */
         uint32_t getTimeOnAir(uint8_t bytes);
 
-        /** Get min frequency
-         * @returns minimum frequency based on current configuration
+        /**
+         * Get min frequency
+         * @returns minimum frequency based on current channel plan
          */
         uint32_t getMinFrequency();
 
-        /** Get max frequency
-         * @returns maximum frequency based on current configuration
+        /**
+         * Get max frequency
+         * @returns maximum frequency based on current channel plan
          */
         uint32_t getMaxFrequency();
 
-        // get/set adaptive data rate
-        // configure data rates and power levels based on signal to noise of packets received at gateway
-        // true == adaptive data rate is on
-        // set function returns MDOT_OK if success
+        /**
+         * Get min datarate
+         * @returns minimum datarate based on current channel plan
+         */
+        uint8_t getMinDatarate();
+
+        /**
+         * Get max datarate
+         * @returns maximum datarate based on current channel plan
+         */
+        uint8_t getMaxDatarate();
+
+        /**
+         * Get min datarate offset
+         * @returns minimum datarate offset based on current channel plan
+         */
+        uint8_t getMinDatarateOffset();
+
+        /**
+         * Get max datarate offset
+         * @returns maximum datarate based on current channel plan
+         */
+        uint8_t getMaxDatarateOffset();
+
+        /**
+         * Get min datarate
+         * @returns minimum datarate based on current channel plan
+         */
+        uint8_t getMinRx2Datarate();
+
+        /**
+         * Get max rx2 datarate
+         * @returns maximum rx2 datarate based on current channel plan
+         */
+        uint8_t getMaxRx2Datarate();
+
+        /**
+         * Get max tx power
+         * @returns maximum tx power based on current channel plan
+         */
+        uint8_t getMaxTxPower();
+
+        /**
+         * Get min tx power
+         * @returns minimum tx power based on current channel plan
+         */
+        uint8_t getMinTxPower();
+
+        /**
+         *
+         * get/set adaptive data rate
+         * configure data rates and power levels based on signal to noise of packets received at gateway
+         * true == adaptive data rate is on
+         * set function returns MDOT_OK if success
+         */
         int32_t setAdr(const bool& on);
         bool getAdr();
 
-        /** Set forward error correction bytes
+        /**
+         * Set forward error correction bytes
          * @param bytes 1 - 4 bytes
          * @returns MDOT_OK if success
          */
         int32_t setFec(const uint8_t& bytes);
 
-        /** Get forward error correction bytes
+        /**
+         * Get forward error correction bytes
          * @returns bytes (1 - 4)
          */
         uint8_t getFec();
 
-        /** Enable/disable CRC checking of packets
+        /**
+         * Enable/disable CRC checking of packets
          * CRC checking must be enabled for use with Conduit gateway and MTAC_LORA card
          * @param on set to true to enable CRC checking
          * @returns MDOT_OK if success
          */
         int32_t setCrc(const bool& on);
 
-        /** Get CRC checking
+        /**
+         * Get CRC checking
          * @returns true if CRC checking is enabled
          */
         bool getCrc();
 
-        /** Set ack
+        /**
+         * Set ack
          * @param retries 0 to disable acks, otherwise 1 - 8
          * @returns MDOT_OK if success
          */
         int32_t setAck(const uint8_t& retries);
 
-        /** Get ack
+        /**
+         * Get ack
          * @returns 0 if acks are disabled, otherwise retries (1 - 8)
          */
         uint8_t getAck();
 
-        /** Set number of packet repeats for unconfirmed frames
+        /**
+         * Set number of packet repeats for unconfirmed frames
          * @param repeat 0 or 1 for no repeats, otherwise 2-15
          * @returns MDOT_OK if success
          */
         int32_t setRepeat(const uint8_t& repeat);
 
-        /** Get number of packet repeats for unconfirmed frames
+        /**
+         * Get number of packet repeats for unconfirmed frames
          * @returns 0 or 1 if no repeats, otherwise 2-15
          */
         uint8_t getRepeat();
 
-        /** Send data to the gateway
+        /**
+         * Send data to the gateway
          * validates data size (based on spreading factor)
          * @param data a vector of up to 242 bytes (may be less based on spreading factor)
          * @returns MDOT_OK if packet was sent successfully (ACKs disabled), or if an ACK was received (ACKs enabled)
          */
         int32_t send(const std::vector<uint8_t>& data, const bool& blocking = true, const bool& highBw = false);
 
-        /** Inject mac command
+        /**
+         * Inject mac command
          * @param data a vector containing mac commands
          * @returns MDOT_OK
          */
@@ -973,7 +1254,8 @@ class mDot {
          */
         std::vector<uint8_t> getMacCommands();
 
-        /** Fetch data received from the gateway
+        /**
+         * Fetch data received from the gateway
          * this function only checks to see if a packet has been received - it does not open a receive window
          * send() must be called before recv()
          * @param data a vector to put the received data into
@@ -981,23 +1263,27 @@ class mDot {
          */
         int32_t recv(std::vector<uint8_t>& data);
 
-        /** Ping
+        /**
+         * Ping
          * status will be MDOT_OK if ping succeeded
          * @returns ping_response struct containing status, RSSI, and SNR
          */
         ping_response ping();
 
-        /** Get return code string
+        /**
+         * Get return code string
          * @returns string containing a description of the given error code
          */
         static std::string getReturnCodeString(const int32_t& code);
 
-        /** Get last error
+        /**
+         * Get last error
          * @returns string explaining the last error that occured
          */
         std::string getLastError();
 
-        /** Go to sleep
+        /**
+         * Go to sleep
          * @param interval the number of seconds to sleep before waking up if wakeup_mode == RTC_ALARM or RTC_ALARM_OR_INTERRUPT, else ignored
          * @param wakeup_mode RTC_ALARM, INTERRUPT, RTC_ALARM_OR_INTERRUPT
          *      if RTC_ALARM the real time clock is configured to wake the device up after the specified interval
@@ -1015,33 +1301,63 @@ class mDot {
          */
         void sleep(const uint32_t& interval, const uint8_t& wakeup_mode = RTC_ALARM, const bool& deepsleep = true);
 
-        /** Set wake pin
+        /**
+         * Set wake pin
          * @param pin the pin to use to wake the device from sleep mode
          *      For MDOT, XBEE_DI (2-8)
          *      For XDOT, GPIO (0-3), UART1_RX, or WAKE
          */
         void setWakePin(const PinName& pin);
 
-        /** Get wake pin
+        /**
+         * Get wake pin
          * @returns the pin to use to wake the device from sleep mode
          *      For MDOT, XBEE_DI (2-8)
          *      For XDOT, GPIO (0-3), UART1_RX, or WAKE
          */
         PinName getWakePin();
 
-        /** Write data in a user backup register
+        /**
+         * Write data in a user backup register
          * @param register one of UBR0 through UBR9 for MDOT, one of UBR0 through UBR21 for XDOT
          * @param data user data to back up
          * @returns true if success
          */
         bool writeUserBackupRegister(uint32_t reg, uint32_t data);
 
-        /** Read data in a user backup register
+        /**
+         * Read data in a user backup register
          * @param register one of UBR0 through UBR9 for MDOT, one of UBR0 through UBR21 for XDOT
          * @param data gets set to content of register
          * @returns true if success
          */
         bool readUserBackupRegister(uint32_t reg, uint32_t& data);
+
+        /**
+         * Set LBT time in us
+         * @param ms time in us
+         * @returns true if success
+         */
+        bool setLbtTimeUs(uint16_t us);
+
+        /**
+         * Get LBT time in us
+         * @returns LBT time in us
+         */
+        uint16_t getLbtTimeUs();
+
+        /**
+         * Set LBT threshold in dBm
+         * @param rssi threshold in dBm
+         * @returns true if success
+         */
+        bool setLbtThreshold(int8_t rssi);
+
+        /**
+         * Get LBT threshold in dBm
+         * @returns LBT threshold in dBm
+         */
+        int8_t getLbtThreshold();
 
 #if defined(TARGET_MTS_MDOT_F411RE)
         ///////////////////////////////////////////////////////////////////
@@ -1256,7 +1572,8 @@ class mDot {
 
         // MTS_RADIO_DEBUG_COMMANDS
 
-        /** Disable Duty cycle
+        /**
+         * Disable Duty cycle
          * enables or disables the duty cycle limitations
          * **** ONLY TO BE USED FOR TESTINGS PURPOSES ****
          * **** ALL DEPLOYABLE CODE MUST ADHERE TO LOCAL REGULATIONS ****
@@ -1265,7 +1582,8 @@ class mDot {
          */
         int32_t setDisableDutyCycle(bool val);
 
-        /** Disable Duty cycle
+        /**
+         * Disable Duty cycle
          * **** ONLY TO BE USED FOR TESTINGS PURPOSES ****
          * **** ALL DEPLOYABLE CODE MUST ADHERE TO LOCAL REGULATIONS ****
          * **** THIS SETTING WILL NOT BE SAVED TO CONFIGURATION *****
@@ -1273,11 +1591,17 @@ class mDot {
          */
         uint8_t getDisableDutyCycle();
 
+        /**
+         * LBT RSSI
+         * @return the current RSSI on the configured frequency (SetTxFrequency) using configured LBT Time
+         */
+        int16_t lbtRssi();
+
         void openRxWindow(uint32_t timeout, uint8_t bandwidth = 0);
         void closeRxWindow();
         void sendContinuous(bool enable=true);
         int32_t setDeviceId(const std::vector<uint8_t>& id);
-        int32_t setFrequencyBand(const uint8_t& band);
+        int32_t setDefaultFrequencyBand(const uint8_t& band);
         bool saveProtectedConfig();
         void resetRadio();
         int32_t setRadioMode(const uint8_t& mode);
@@ -1315,7 +1639,7 @@ class mDot {
         bool _testMode;
         uint8_t _savedPort;
         void handleTestModePacket();
-
+        lora::ChannelPlan* _plan;
 };
 
 #endif
