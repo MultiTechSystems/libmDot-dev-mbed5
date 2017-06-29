@@ -647,13 +647,14 @@ uint8_t ChannelPlan_AU915::ValidateAdrConfiguration() {
         status &= 0xFB; // TxPower KO
     }
     
-    // at least 6 125kHz channels must be enabled
+    // at least 2 125kHz channels must be enabled
     chans_enabled += CountBits(_channelMask[0]);
     chans_enabled += CountBits(_channelMask[1]);
     chans_enabled += CountBits(_channelMask[2]);
     chans_enabled += CountBits(_channelMask[3]);
-    if (chans_enabled < 6) {
-        logWarning("ADR Channel Mask KO - at least 6 125kHz channels must be enabled");
+    // Semtech reference (LoRaMac-node) enforces at least 2 channels
+    if (chans_enabled < 2) {
+        logWarning("ADR Channel Mask KO - at least 2 125kHz channels must be enabled");
         status &= 0xFE; // ChannelMask KO
     }
     

@@ -44,6 +44,13 @@ namespace lora {
                 US915_OLD = 0x01,
                 AU915_OLD = 0x02,
 
+                FB_EU868 = 0x00,
+                FB_US915 = 0x01,
+                FB_AU915 = 0x02,
+
+                FB_868 = 0x00,
+                FB_915 = 0x01,
+
                 US915 = FIXED | 0x00,
                 AU915 = FIXED | 0x01,
 
