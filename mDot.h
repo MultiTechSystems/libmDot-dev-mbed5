@@ -702,6 +702,19 @@ class mDot {
         const uint8_t* getAppKey();
 
         /**
+         * Add a multicast session address and keys
+         * Downlink counter is set to 0
+         * Up to 3 MULTICAST_SESSIONS can be set
+         */
+        int32_t setMulticastSession(uint8_t index, uint32_t addr, const uint8_t* nsk, const uint8_t* dsk);
+
+        /**
+         * Set a multicast session counter
+         * Up to 3 MULTICAST_SESSIONS can be set
+         */
+        int32_t setMulticastDownlinkCounter(uint8_t index, uint32_t count);
+
+        /**
          * Set join byte order
          * @param order 0:LSB 1:MSB
          */

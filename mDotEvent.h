@@ -1,6 +1,7 @@
 #ifndef MDOT_EVENT_H
 #define MDOT_EVENT_H
 
+#include "mbed.h"
 #include "mDot.h"
 #include "MacEvents.h"
 #include "MTSLog.h"
@@ -169,8 +170,8 @@ class mDotEvent: public lora::MacEvents {
             _info.TxNbRetries = retries;
         }
 
-        virtual void PacketRx(uint8_t port, uint8_t *payload, uint16_t size, int16_t rssi, int8_t snr, lora::DownlinkControl ctrl, uint8_t slot, uint8_t retries = 0) {
-            logDebug("mDotEvent - PacketRx");
+        virtual void PacketRx(uint8_t port, uint8_t *payload, uint16_t size, int16_t rssi, int8_t snr, lora::DownlinkControl ctrl, uint8_t slot, uint8_t retries, uint32_t address) {
+            logDebug("mDotEvent - PacketRx ADDR: %08x", address);
             RxPort = port;
             PacketReceived = true;
 

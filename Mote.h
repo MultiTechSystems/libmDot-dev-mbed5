@@ -70,7 +70,7 @@ namespace lora {
              * @param slot rx window packet was received
              * @param retries number of attempts before ack was received
              */
-            virtual void PacketRx(uint8_t port, uint8_t *payload, uint16_t size, int16_t rssi, int8_t snr, lora::DownlinkControl ctrl, uint8_t slot, uint8_t retries = 0);
+            virtual void PacketRx(uint8_t port, uint8_t *payload, uint16_t size, int16_t rssi, int8_t snr, lora::DownlinkControl ctrl, uint8_t slot, uint8_t retries = 0, uint32_t address = 0);
 
             /**
              * Fired when radio has received a packet, packet is not validated

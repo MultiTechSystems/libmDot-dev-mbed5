@@ -30,7 +30,7 @@ namespace lora {
 
             virtual void JoinAccept(uint8_t *payload, uint16_t size, int16_t rssi, int8_t snr) = 0;
             virtual void JoinFailed(uint8_t *payload, uint16_t size, int16_t rssi, int8_t snr) = 0;
-            virtual void PacketRx(uint8_t port, uint8_t *payload, uint16_t size, int16_t rssi, int8_t snr, lora::DownlinkControl ctrl, uint8_t slot, uint8_t retries=0) = 0;
+            virtual void PacketRx(uint8_t port, uint8_t *payload, uint16_t size, int16_t rssi, int8_t snr, lora::DownlinkControl ctrl, uint8_t slot, uint8_t retries=0, uint32_t address=0) = 0;
             virtual void RxDone(uint8_t *payload, uint16_t size, int16_t rssi, int8_t snr, lora::DownlinkControl ctrl, uint8_t slot) = 0;
 
             virtual void Pong(int16_t m_rssi, int8_t m_snr, int16_t s_rssi, int8_t s_snr) = 0;
