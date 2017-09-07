@@ -275,6 +275,13 @@ class mDot {
          */
         static mDot* getInstance(lora::ChannelPlan* plan);
 
+        /**
+	 * Can only be used after a dot has 
+         * configured with a plan
+         * @returns pointer to mDot object
+         */
+        static mDot* getInstance();
+
         void setEvents(mDotEvent* events);
 
         /**
