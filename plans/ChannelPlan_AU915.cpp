@@ -22,8 +22,8 @@ using namespace lora;
 
 const uint8_t ChannelPlan_AU915::AU915_TX_POWERS[] = { 30, 28, 26, 24, 22, 20, 18, 16, 14, 12, 10 };
 const uint8_t ChannelPlan_AU915::AU915_RADIO_POWERS[] = { 3, 3, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 18, 19, 19 };
-const uint8_t ChannelPlan_AU915::AU915_MAX_PAYLOAD_SIZE[] = { 11, 53, 126, 242, 242, 0, 0, 0, 53, 129, 242, 242, 242, 242, 0, 0 };
-const uint8_t ChannelPlan_AU915::AU915_MAX_PAYLOAD_SIZE_REPEATER[] = { 11, 53, 126, 222, 222, 0, 0, 33, 109, 222, 222, 222, 0, 0 };
+const uint8_t ChannelPlan_AU915::AU915_MAX_PAYLOAD_SIZE[] = { 51, 51, 51, 115, 242, 242, 242, 0, 53, 129, 242, 242, 242, 242, 0, 0 };
+const uint8_t ChannelPlan_AU915::AU915_MAX_PAYLOAD_SIZE_REPEATER[] = { 51, 51, 51, 115, 222, 222, 222, 0, 33, 109, 222, 222, 222, 222, 0, 0 };
 
 ChannelPlan_AU915::ChannelPlan_AU915()
 :
@@ -101,27 +101,25 @@ void ChannelPlan_AU915::Init() {
 
     SetNumberOfChannels(AU915_125K_NUM_CHANS + AU915_500K_NUM_CHANS, false);
 
-    dr.SpreadingFactor = SF_10;
+    dr.SpreadingFactor = SF_12;
 
     logInfo("Initialize datarates...");
 
-    // Add DR0-3
+    // Add DR0-5
     while (dr.SpreadingFactor >= SF_7) {
         AddDatarate(-1, dr);
         dr.SpreadingFactor--;
         dr.Index++;
     }
 
-    // Add DR4
+    // Add DR6
     dr.SpreadingFactor = SF_8;
     dr.Bandwidth = BW_500;
     AddDatarate(-1, dr);
     dr.Index++;
 
-    // Skip DR5-7 RFU
+    // Skip DR7 RFU
     dr.SpreadingFactor = SF_INVALID;
-    AddDatarate(-1, dr), dr.Index++;
-    AddDatarate(-1, dr), dr.Index++;
     AddDatarate(-1, dr), dr.Index++;
 
     if (GetSettings()->Network.FrequencySubBand == 0) {
@@ -414,7 +412,7 @@ RxWindow ChannelPlan_AU915::GetRxWindow(uint8_t window) {
                 rxw.Frequency = _freqDBase500k + (_txChannel - _numChans125k) * _freqDStep500k;
 
             if (GetSettings()->Session.TxDatarate <= DR_6) {
-                index = GetSettings()->Session.TxDatarate + 10 - GetSettings()->Session.Rx1DatarateOffset;
+                index = GetSettings()->Session.TxDatarate + 8 - GetSettings()->Session.Rx1DatarateOffset;
 
                 if (index < DR_8)
                     index = DR_8;

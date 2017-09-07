@@ -140,10 +140,10 @@ namespace lora {
     const uint32_t AU915_FREQ_MAX = 928000000;
 
     const uint8_t AU915_MIN_DATARATE = (uint8_t) DR_0;       //!< Minimum transmit datarate for AU915
-    const uint8_t AU915_MAX_DATARATE = (uint8_t) DR_4;       //!< Maximum transmit datarate for AU915
+    const uint8_t AU915_MAX_DATARATE = (uint8_t) DR_6;       //!< Maximum transmit datarate for AU915
 
     const uint8_t AU915_MIN_DATARATE_OFFSET = (uint8_t) 0;       //!< Minimum transmit datarate for AU915
-    const uint8_t AU915_MAX_DATARATE_OFFSET = (uint8_t) 3;       //!< Maximum transmit datarate for AU915
+    const uint8_t AU915_MAX_DATARATE_OFFSET = (uint8_t) 5;       //!< Maximum transmit datarate for AU915
 
     const uint8_t EU868_125K_NUM_CHANS = 16;                    //!< Number of 125k channels in EU868 channel plan
     const uint8_t EU868_DEFAULT_NUM_CHANS = 3;                  //!< Number of defualt channels in EU868 channel plan

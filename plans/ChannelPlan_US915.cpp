@@ -22,8 +22,8 @@ using namespace lora;
 
 const uint8_t ChannelPlan_US915::US915_TX_POWERS[] = { 30, 28, 26, 24, 22, 20, 18, 16, 14, 12, 10 };
 const uint8_t ChannelPlan_US915::US915_RADIO_POWERS[] = { 3, 3, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 18, 19, 19 };
-const uint8_t ChannelPlan_US915::US915_MAX_PAYLOAD_SIZE[] = { 11, 53, 126, 242, 242, 0, 0, 0, 53, 129, 242, 242, 242, 242, 0, 0 };
-const uint8_t ChannelPlan_US915::US915_MAX_PAYLOAD_SIZE_REPEATER[] = { 11, 53, 126, 222, 222, 0, 0, 33, 109, 222, 222, 222, 0, 0 };
+const uint8_t ChannelPlan_US915::US915_MAX_PAYLOAD_SIZE[] =          { 11, 53, 126, 242, 242, 0, 0, 0, 53, 129, 242, 242, 242, 242, 0, 0 };
+const uint8_t ChannelPlan_US915::US915_MAX_PAYLOAD_SIZE_REPEATER[] = { 11, 53, 126, 222, 222, 0, 0, 0, 33, 109, 222, 222, 222, 222, 0, 0 };
 
 ChannelPlan_US915::ChannelPlan_US915()
 :
