@@ -270,6 +270,8 @@ public:
 
     virtual void SignalMacEvent(void) {};
 
+    virtual void ResetRadio(void) {};
+
     void GrabMutex(void) { mutex.lock(); }
     void ReleaseMutex(void) { mutex.unlock(); }
 
