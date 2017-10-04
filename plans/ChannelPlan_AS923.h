@@ -225,6 +225,11 @@ namespace lora {
              */
             virtual uint8_t GetMaxPayloadSize();
 
+            /**
+             * Decrements the datarate based on TxDwellTime
+             */
+            virtual void DecrementDatarate();
+
         protected:
 
             static const uint8_t AS923_TX_POWERS[8];                    //!< List of available tx powers

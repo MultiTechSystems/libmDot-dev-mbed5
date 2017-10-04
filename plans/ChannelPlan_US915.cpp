@@ -420,7 +420,7 @@ RxWindow ChannelPlan_US915::GetRxWindow(uint8_t window) {
             } else
                 rxw.Frequency = _freqDBase500k + (_txChannel - _numChans125k) * _freqDStep500k;
 
-            if (GetSettings()->Session.TxDatarate <= DR_6) {
+            if (GetSettings()->Session.TxDatarate <= DR_4) {
                 index = GetSettings()->Session.TxDatarate + 10 - GetSettings()->Session.Rx1DatarateOffset;
 
                 if (index < DR_8)

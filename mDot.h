@@ -1623,6 +1623,7 @@ class mDot {
         int32_t setDeviceId(const std::vector<uint8_t>& id);
         int32_t setDefaultFrequencyBand(const uint8_t& band);
         bool saveProtectedConfig();
+        // resets the radio/mac/link 
         void resetRadio();
         int32_t setRadioMode(const uint8_t& mode);
         std::map<uint8_t, uint8_t> dumpRegisters();

@@ -620,6 +620,12 @@ uint8_t ChannelPlan_AS923::ValidateAdrConfiguration() {
         logWarning("ADR Datarate KO - outside allowed range");
         status &= 0xFD; // Datarate KO
     }
+
+    if (GetSettings()->Session.UplinkDwelltime != 0 && datarate < DR_2) {
+        logWarning("ADR Datarate KO - TxDwelltime != 0 and DR < 2");
+        status &= 0xFD; // Datarate KO
+    }
+
     if (power < _minTxPower || power > _maxTxPower) {
         logWarning("ADR TX Power KO - outside allowed range");
         status &= 0xFB; // TxPower KO
@@ -1044,5 +1050,17 @@ uint8_t ChannelPlan_AS923::HandleMacCommand(uint8_t* payload, uint8_t& index) {
     }
 
     return LORA_OK;
+}
+
+void ChannelPlan_AS923::DecrementDatarate() {
+    if(GetSettings()->Session.UplinkDwelltime == 0) {
+        _minDatarate = lora::DR_0; 
+    } else {
+        _minDatarate = lora::DR_2; 
+    }
+
+    if (GetSettings()->Session.TxDatarate > _minDatarate) {
+        GetSettings()->Session.TxDatarate--;
+    }
 }
 
