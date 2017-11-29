@@ -1621,6 +1621,8 @@ class mDot {
         void closeRxWindow();
         void sendContinuous(bool enable=true);
         int32_t setDeviceId(const std::vector<uint8_t>& id);
+        int32_t setProtectedAppEUI(const std::vector<uint8_t>& appEUI);
+        int32_t setProtectedAppKey(const std::vector<uint8_t>& appKey);
         int32_t setDefaultFrequencyBand(const uint8_t& band);
         bool saveProtectedConfig();
         // resets the radio/mac/link 
