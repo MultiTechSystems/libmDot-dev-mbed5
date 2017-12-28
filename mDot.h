@@ -1656,6 +1656,8 @@ class mDot {
         void setWakeupCallback(T *object, void (T::*member)(void)) {
             _wakeup_callback.attach(object, member);
         }
+        
+        lora::ChannelPlan* getChannelPlan();
 
     private:
         typedef enum {
