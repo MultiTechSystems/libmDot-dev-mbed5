@@ -31,6 +31,11 @@ namespace lora {
     class MoteEvents: public MacEvents {
 
             /**
+             * Fired at start of TX
+             */
+            virtual void TxStart(void);
+
+            /**
              * Fired at end of TX
              * @param dr datarate used for TX
              */

@@ -22,6 +22,10 @@ class SxRadioEvents
 {
 public:
     /*!
+     * \brief  Tx Start callback prototype.
+     */
+    virtual void TxStart( void ) {}
+    /*!
      * \brief  Tx Done callback prototype.
      */
     virtual void TxDone( void ) {}

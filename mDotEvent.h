@@ -66,7 +66,8 @@ class mDotEvent: public lora::MacEvents {
           PongRssi(0),
           PongSnr(0),
           AckReceived(false),
-          TxNbRetries(0)
+          TxNbRetries(0),
+          _sleep_cb(NULL)
         {
             memset(&_flags, 0, sizeof(LoRaMacEventFlags));
             memset(&_info, 0, sizeof(LoRaMacEventInfo));
@@ -116,6 +117,14 @@ class mDotEvent: public lora::MacEvents {
             }
         }
 
+        virtual void TxStart() {
+            logDebug("mDotEvent - TxStart");
+
+            // Fire auto sleep cfg event if enabled
+            if (_sleep_cb)
+                _sleep_cb(mDot::AUTO_SLEEP_EVT_CFG);
+        }
+
         virtual void TxDone(uint8_t dr) {
             RxPayloadSize = 0;
             LinkCheckAnsReceived = false;
@@ -132,6 +141,10 @@ class mDotEvent: public lora::MacEvents {
             _info.TxDatarate = dr;
             _info.Status = LORAMAC_EVENT_INFO_STATUS_OK;
             Notify();
+
+            // If configured, we can sleep until the rx window opens
+            if (_sleep_cb)
+                _sleep_cb(mDot::AUTO_SLEEP_EVT_TXDONE);
         }
 
         void Notify() {
@@ -230,12 +243,16 @@ class mDotEvent: public lora::MacEvents {
         }
 
         virtual void RxTimeout(uint8_t slot) {
-            // logDebug("mDotEvent - RxTimeout");
+            logDebug("mDotEvent - RxTimeout on Slot %d", slot);
 
             _flags.Bits.Tx = 0;
             _flags.Bits.RxSlot = slot;
             _info.Status = LORAMAC_EVENT_INFO_STATUS_RX_TIMEOUT;
             Notify();
+
+            // If this is the first rx window we can sleep until the next one
+            if (_sleep_cb && slot == 1)
+                _sleep_cb(mDot::AUTO_SLEEP_EVT_RX1_TIMEOUT);
         }
 
         virtual void RxError(uint8_t slot) {
@@ -251,6 +268,14 @@ class mDotEvent: public lora::MacEvents {
 
         virtual uint8_t MeasureBattery(void) {
             return 255;
+        }
+
+        void AttachSleepCallback(Callback<void(mDot::AutoSleepEvent_t)> cb) {
+            _sleep_cb = cb;
+        }
+
+        void DetachSleepCallback() {
+            _sleep_cb = NULL;
         }
 
         bool LinkCheckAnsReceived;
@@ -277,6 +302,8 @@ class mDotEvent: public lora::MacEvents {
         }
 
     private:
+        /* Hook to inject a sleep method in between receive windows */
+        Callback<void(mDot::AutoSleepEvent_t)> _sleep_cb;
 
         LoRaMacEventFlags _flags;
         LoRaMacEventInfo _info;

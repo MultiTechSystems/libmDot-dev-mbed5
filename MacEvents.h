@@ -25,6 +25,7 @@ namespace lora {
         public:
             virtual ~MacEvents() {};
 
+            virtual void TxStart(void) = 0;
             virtual void TxDone(uint8_t dr) = 0;
             virtual void TxTimeout(void) = 0;
 
