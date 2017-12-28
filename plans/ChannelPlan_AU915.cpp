@@ -403,11 +403,7 @@ RxWindow ChannelPlan_AU915::GetRxWindow(uint8_t window) {
     } else {
         if (window == 1) {
             if (_txChannel < _numChans125k) {
-                if (GetSettings()->Network.Mode == PUBLIC) {
-                    rxw.Frequency = _freqDBase500k + (_txChannel % 8) * _freqDStep500k;
-                } else {
-                    rxw.Frequency = _freqDBase500k + (_txChannel / 8) * _freqDStep500k;
-                }
+                rxw.Frequency = _freqDBase500k + (_txChannel % 8) * _freqDStep500k;
             } else
                 rxw.Frequency = _freqDBase500k + (_txChannel - _numChans125k) * _freqDStep500k;
 
@@ -424,14 +420,7 @@ RxWindow ChannelPlan_AU915::GetRxWindow(uint8_t window) {
                     index = DR_8;
             }
         } else {
-            if (GetSettings()->Network.Mode == PUBLIC) {
-                rxw.Frequency = GetSettings()->Session.Rx2Frequency;
-            } else {
-                if (_txChannel < 64)
-                    rxw.Frequency = _freqDBase500k + (_txChannel / 8) * _freqDStep500k;
-                else
-                    rxw.Frequency = _freqDBase500k + (_txChannel % 8) * _freqDStep500k;
-            }
+            rxw.Frequency = GetSettings()->Session.Rx2Frequency;
             index = GetSettings()->Session.Rx2DatarateIndex;
         }
     }

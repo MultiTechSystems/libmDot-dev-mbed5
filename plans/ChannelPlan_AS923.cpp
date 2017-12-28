@@ -1029,10 +1029,15 @@ uint8_t ChannelPlan_AS923::HandleMacCommand(uint8_t* payload, uint8_t& index) {
 
             if (channelIndex > 15) {
                 status = 0x00;
-            } else if (_channels[channelIndex].Frequency == 0) {
-                status &= 0x02;
-            } else if (chParam.Frequency != 0 && (chParam.Frequency < _minFrequency || chParam.Frequency > _maxFrequency)) {
-                status &= 0x01;
+            } else {
+
+                if (_channels[channelIndex].Frequency == 0) {
+                    status &= 0xFE;
+                }
+
+                if (chParam.Frequency != 0 && (chParam.Frequency < _minFrequency || chParam.Frequency > _maxFrequency)) {
+                    status &= 0xFD;
+                }
             }
 
             if (status == 0x03 && GetSettings()->Session.CommandBufferIndex+1 < COMMANDS_BUFFER_SIZE) {

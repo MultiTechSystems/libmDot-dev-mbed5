@@ -147,15 +147,7 @@ class mDot {
             DR12,
             DR13,
             DR14,
-            DR15,
-            SF_12 = 16,
-            SF_11,
-            SF_10,
-            SF_9,
-            SF_8,
-            SF_7,
-            SF_7H,
-            SF_FSK
+            DR15
         };
 
         enum FrequencySubBands {
@@ -251,9 +243,6 @@ class mDot {
                 int16_t rssi;
                 int16_t snr;
         } ping_response;
-
-        static const uint8_t MaxLengths_915[];
-        static const uint8_t MaxLengths_868[];
 
         static std::string JoinModeStr(uint8_t mode);
         static std::string ModeStr(uint8_t mode);
@@ -1019,7 +1008,7 @@ class mDot {
         /**
          * Set TX data rate
          * data rates affect maximum payload size
-         * @param dr SF_7 - SF_12|DR0-DR7 for Europe, SF_7 - SF_10 | DR0-DR4 for United States
+         * @param dr DR0-DR7 for Europe, DR0-DR4 for United States
          * @returns MDOT_OK if success
          */
         int32_t setTxDataRate(const uint8_t& dr);
