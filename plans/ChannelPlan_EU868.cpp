@@ -121,7 +121,7 @@ void ChannelPlan_EU868::Init() {
 
     // Skip DR8-15 RFU
     dr.SpreadingFactor = SF_INVALID;
-    while (dr.Index++ < DR_15) {
+    while (dr.Index++ <= DR_15) {
         AddDatarate(-1, dr);
     }
 
