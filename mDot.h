@@ -1657,8 +1657,7 @@ class mDot {
             _wakeup_callback.attach(object, member);
         }
         
-        lora::ChannelPlan* getChannelPlan();
-
+        lora::ChannelPlan* getChannelPlan(void);  
     private:
         typedef enum {
             AUTO_SLEEP_EVT_CFG,
