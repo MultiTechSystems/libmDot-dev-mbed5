@@ -361,7 +361,10 @@ RxWindow ChannelPlan_IN865::GetRxWindow(uint8_t window) {
             // Use same frequency as TX
             rxw.Frequency = _channels[_txChannel].Frequency;
 
-            if (GetSettings()->Session.TxDatarate > GetSettings()->Session.Rx1DatarateOffset) {
+            if (GetSettings()->Session.Rx1DatarateOffset >= 6) {
+                index =  GetSettings()->Session.TxDatarate + (GetSettings()->Session.Rx1DatarateOffset == 6 ? 1 : 2);
+                index = std::min<int>(index, _maxDatarate);
+            } else if (GetSettings()->Session.TxDatarate > GetSettings()->Session.Rx1DatarateOffset) {
                 index = GetSettings()->Session.TxDatarate - GetSettings()->Session.Rx1DatarateOffset;
             } else {
                 index = 0;
