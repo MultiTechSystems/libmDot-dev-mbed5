@@ -92,7 +92,7 @@ void ChannelPlan_AS923::Init() {
 
     GetSettings()->Session.Rx2Frequency = 923200000;
     GetSettings()->Session.Rx2DatarateIndex = DR_2;
-    GetSettings()->Session.Max_EIRP  = 20;
+    GetSettings()->Session.Max_EIRP  = 16;
 
     logInfo("Initialize datarates...");
 
@@ -1026,7 +1026,6 @@ uint8_t ChannelPlan_AS923::HandleMacCommand(uint8_t* payload, uint8_t& index) {
 
             chParam.Index = channelIndex;
             chParam.DrRange.Value = 0;
-
             if (channelIndex > 15) {
                 status = 0x00;
             } else {

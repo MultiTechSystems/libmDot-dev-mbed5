@@ -49,12 +49,25 @@ void ChannelPlan_AS923_Japan::Init() {
 
     _plan = AS923_JAPAN;
     _planName = "AS923-JAPAN";
+    _minFrequency = 920600000;
+   
+    _minDatarate = 2;
+    _maxDatarate = 5;
+
+    _minRx2Datarate = DR_2;
+    _maxRx2Datarate = DR_5;
+
+    _minDatarateOffset = 2;
+    _maxDatarateOffset = 5;
+
+    GetSettings()->Session.UplinkDwelltime = 1;
+    GetSettings()->Session.Max_EIRP  = 16; 
 
     DefaultLBT();
 }
 
 void ChannelPlan_AS923_Japan::DefaultLBT() {
     _LBT_TimeUs = 5000;
-    _LBT_Threshold = -65;
+    _LBT_Threshold = -80;
 }
 
