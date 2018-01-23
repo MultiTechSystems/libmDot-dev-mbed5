@@ -111,6 +111,7 @@ class mDot {
             MDOT_AGGREGATED_DUTY_CYCLE = -11,
             MDOT_MAX_PAYLOAD_EXCEEDED = -12,
             MDOT_LBT_CHANNEL_BUSY = -13,
+            MDOT_NOT_IDLE = -14,
             MDOT_ERROR = -1024,
         } mdot_ret_code;
 
@@ -1307,8 +1308,9 @@ class mDot {
          * For the XDOT
          *      in sleep mode, the device can be woken up on GPIO (0-3), UART1_RX, WAKE or by the RTC alarm
          *      in deepsleep mode, the device can only be woken up using the WKUP pin (PA0, WAKE) or by the RTC alarm
+         * @returns MDOT_OK on success
          */
-        void sleep(const uint32_t& interval, const uint8_t& wakeup_mode = RTC_ALARM, const bool& deepsleep = true);
+        int32_t sleep(const uint32_t& interval, const uint8_t& wakeup_mode = RTC_ALARM, const bool& deepsleep = true);
 
         /**
          * Set auto sleep mode
