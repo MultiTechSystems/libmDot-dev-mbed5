@@ -519,7 +519,7 @@ class mDot {
 
         /**
          * Enable/disable public network mode
-         * JoinDelay will be set to (public: 5s, private: 1s) and
+         * JoinDelay will be set to (public: 5s, private: 5s) and
          * RxDelay will be set to 1s both can be adjusted afterwards
          * @param on should be true to enable public network mode
          * @returns MDOT_OK if success
@@ -894,7 +894,7 @@ class mDot {
         /**
          * Get join delay in seconds
          *  Public network defaults to 5 seconds
-         *  Private network defaults to 1 second
+         *  Private network defaults to 5 seconds
          *  @returns number of seconds before join accept message is expected
          */
         uint8_t getJoinDelay();
@@ -902,7 +902,7 @@ class mDot {
         /**
          * Set join delay in seconds
          *  Public network defaults to 5 seconds
-         *  Private network defaults to 1 second
+         *  Private network defaults to 5 seconds
          *  @param delay number of seconds before join accept message is expected
          *  @return MDOT_OK if success
          */
@@ -1314,7 +1314,7 @@ class mDot {
 
         /**
          * Set auto sleep mode
-         * Auto sleep mode will automatically put the MCU to sleep in between receive windows
+         * Auto sleep mode will automatically put the MCU to sleep after tx and in between receive windows
          * Note: The MCU will go into a stop mode sleep in between rx windows.  This means that
          *       peripherals such as timers will not function during the sleep intervals.
          * @param enable - Flag to enable auto sleep mode
