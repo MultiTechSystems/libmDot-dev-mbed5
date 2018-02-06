@@ -1,6 +1,8 @@
 #ifndef MTSCIRCULARBUFFER_H
 #define MTSCIRCULARBUFFER_H
 
+#include <Callback.h>
+
 #include "Utils.h"
 
 namespace mts
@@ -99,7 +101,7 @@ public:
     void attach(void(*fptr)(void), int threshold, RelationalOperator op) {
         _threshold = threshold;
         _op = op;
-        notify.attach(fptr);
+        notify = fptr;
     }
 
     /** This method returns the size of the storage space currently allocated for
@@ -147,7 +149,7 @@ private:
     int readIndex; // read index for circular buffer
     int writeIndex; // write index for circular buffer
     int bytes; // available data
-    FunctionPointer notify; // function pointer used for the internal callback notification
+    Callback<void()> notify; // Internal callback notification
     int _threshold; // threshold for the notification
     RelationalOperator _op; // operator that determines the direction of the threshold
     void checkThreshold(); // private function that checks thresholds and processes notifications
