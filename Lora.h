@@ -214,8 +214,9 @@ namespace lora {
      * PRIVATE - defaults to 1/2 second join windows and 0x12 sync word
      */
     enum NetworkType {
-        PRIVATE = 0,
-        PUBLIC = 1,
+        PRIVATE_MTS = 0,
+        PUBLIC_LORAWAN = 1,
+        PRIVATE_LORAWAN = 2,
         PEER_TO_PEER = 4
     };
 

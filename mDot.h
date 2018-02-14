@@ -518,19 +518,22 @@ class mDot {
         void setListenBeforeTalkTime(uint32_t ms);
 
         /**
-         * Enable/disable public network mode
-         * JoinDelay will be set to (public: 5s, private: 5s) and
-         * RxDelay will be set to 1s both can be adjusted afterwards
-         * @param on should be true to enable public network mode
+         * Set public network mode
+         * 0:PRIVATE_MTS, 1:PUBLIC_LORAWAN, 2:PRIVATE_LORAWAN
+         * PRIVATE_MTS - Sync Word 0x12, US/AU Downlink frequencies per Frequency Sub Band
+         * PUBLIC_LORAWAN - Sync Word 0x34
+         * PRIVATE_LORAWAN - Sync Word 0x12
+         * @see lora::NetworkType
          * @returns MDOT_OK if success
          */
-        int32_t setPublicNetwork(const bool& on);
+        int32_t setPublicNetwork(const uint8_t& val);
 
         /**
          * Get public network mode
-         * @returns true if public network mode is enabled
+         * @see lora:NetworkType
+         * @returns 0:PRIVATE_MTS, 1:PUBLIC_LORAWAN, 2:PRIVATE_LORAWAN
          */
-        bool getPublicNetwork();
+        uint8_t getPublicNetwork();
 
         /**
          * Get the device ID
