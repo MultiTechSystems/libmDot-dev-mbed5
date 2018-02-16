@@ -54,8 +54,6 @@ class mDot {
         uint32_t RTC_ReadBackupRegister(uint32_t RTC_BKP_DR);
         void RTC_WriteBackupRegister(uint32_t RTC_BKP_DR, uint32_t Data);
 
-        void wakeup();
-
         void enterStopMode(const uint32_t& interval, const uint8_t& wakeup_mode = RTC_ALARM);
         void enterStandbyMode(const uint32_t& interval, const uint8_t& wakeup_mode = RTC_ALARM);
 
@@ -1693,6 +1691,7 @@ class mDot {
             AUTO_SLEEP_EVT_CFG,
             AUTO_SLEEP_EVT_TXDONE,
             AUTO_SLEEP_EVT_RX1_TIMEOUT,
+            AUTO_SLEEP_EVT_CLEANUP
         } AutoSleepEvent_t;
 
         typedef enum {
@@ -1706,6 +1705,8 @@ class mDot {
                       SleepClient_t sleep_client = USER_SLEEP);
 
         void auto_sleep(AutoSleepEvent_t evt);
+
+        void wakeup(SleepClient_t sleep_client);
 
         mdot_stats _stats;
 

@@ -166,6 +166,9 @@ class mDotEvent: public lora::MacEvents {
             _flags.Bits.JoinAccept = 1;
             _info.Status = LORAMAC_EVENT_INFO_STATUS_OK;
             Notify();
+
+            if (_sleep_cb)
+                _sleep_cb(mDot::AUTO_SLEEP_EVT_CLEANUP);
         }
 
         virtual void JoinFailed(uint8_t *payload, uint16_t size, int16_t rssi, int8_t snr) {
@@ -175,6 +178,9 @@ class mDotEvent: public lora::MacEvents {
             _flags.Bits.JoinAccept = 1;
             _info.Status = LORAMAC_EVENT_INFO_STATUS_JOIN_FAIL;
             Notify();
+
+            if (_sleep_cb)
+                _sleep_cb(mDot::AUTO_SLEEP_EVT_CLEANUP);
         }
 
         virtual void MissedAck(uint8_t retries) {
@@ -217,6 +223,9 @@ class mDotEvent: public lora::MacEvents {
 
         virtual void RxDone(uint8_t *payload, uint16_t size, int16_t rssi, int8_t snr, lora::DownlinkControl ctrl, uint8_t slot) {
             logDebug("mDotEvent - RxDone");
+
+            if (_sleep_cb)
+                _sleep_cb(mDot::AUTO_SLEEP_EVT_CLEANUP);
         }
 
         virtual void Pong(int16_t m_rssi, int8_t m_snr, int16_t s_rssi, int8_t s_snr) {
@@ -250,9 +259,13 @@ class mDotEvent: public lora::MacEvents {
             _info.Status = LORAMAC_EVENT_INFO_STATUS_RX_TIMEOUT;
             Notify();
 
-            // If this is the first rx window we can sleep until the next one
-            if (_sleep_cb && slot == 1)
-                _sleep_cb(mDot::AUTO_SLEEP_EVT_RX1_TIMEOUT);
+            if (_sleep_cb) {
+                // If this is the first rx window we can sleep until the next one
+                if (slot == 1)
+                    _sleep_cb(mDot::AUTO_SLEEP_EVT_RX1_TIMEOUT);
+                else
+                    _sleep_cb(mDot::AUTO_SLEEP_EVT_CLEANUP);
+            }
         }
 
         virtual void RxError(uint8_t slot) {
@@ -264,6 +277,9 @@ class mDotEvent: public lora::MacEvents {
             _flags.Bits.RxSlot = slot;
             _info.Status = LORAMAC_EVENT_INFO_STATUS_RX_ERROR;
             Notify();
+
+            if (_sleep_cb)
+                _sleep_cb(mDot::AUTO_SLEEP_EVT_CLEANUP);
         }
 
         virtual uint8_t MeasureBattery(void) {
