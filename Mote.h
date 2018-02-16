@@ -175,6 +175,7 @@ namespace lora {
              */
             uint8_t SetChannelPlan(ChannelPlan* plan);
 
+
             Settings* GetSettings();
 
             /**

@@ -382,6 +382,9 @@ namespace lora {
     typedef struct {
             uint8_t Mode;               //!< PUBLIC, PRIVATE or PEER_TO_PEER network mode
             uint8_t Class;              //!< Operating class of device
+#if defined(TARGET_XDOT_L151CC) && defined(GEMALTO_SE)            
+            bool SeEnabled;             //!< Secure Element enabled or disabled.
+#endif            
             uint8_t EUI[8];             //!< Network ID or AppEUI
             uint8_t Key[16];            //!< Network Key or AppKey
             uint8_t JoinDelay;          //!< Number of seconds to wait before 1st RX Window
