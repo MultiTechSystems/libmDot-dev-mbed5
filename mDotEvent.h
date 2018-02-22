@@ -39,6 +39,7 @@ typedef struct {
         LoRaMacEventInfoStatus Status;
         lora::DownlinkControl Ctrl;
         bool TxAckReceived;
+        bool DuplicateRx;
         uint8_t TxNbRetries;
         uint8_t TxDatarate;
         uint8_t RxPort;
@@ -66,6 +67,7 @@ class mDotEvent: public lora::MacEvents {
           PongRssi(0),
           PongSnr(0),
           AckReceived(false),
+          DuplicateRx(false),
           TxNbRetries(0),
           _sleep_cb(NULL)
         {
@@ -130,6 +132,7 @@ class mDotEvent: public lora::MacEvents {
             LinkCheckAnsReceived = false;
             PacketReceived = false;
             AckReceived = false;
+            DuplicateRx = false;
             PongReceived = false;
             TxNbRetries = 0;
 
@@ -189,7 +192,7 @@ class mDotEvent: public lora::MacEvents {
             _info.TxNbRetries = retries;
         }
 
-        virtual void PacketRx(uint8_t port, uint8_t *payload, uint16_t size, int16_t rssi, int8_t snr, lora::DownlinkControl ctrl, uint8_t slot, uint8_t retries, uint32_t address) {
+        virtual void PacketRx(uint8_t port, uint8_t *payload, uint16_t size, int16_t rssi, int8_t snr, lora::DownlinkControl ctrl, uint8_t slot, uint8_t retries, uint32_t address, bool dupRx) {
             logDebug("mDotEvent - PacketRx ADDR: %08x", address);
             RxPort = port;
             PacketReceived = true;
@@ -200,6 +203,8 @@ class mDotEvent: public lora::MacEvents {
             if (ctrl.Bits.Ack) {
                 AckReceived = true;
             }
+
+            DuplicateRx = dupRx;
 
             if (mts::MTSLog::getLogLevel() == mts::MTSLog::TRACE_LEVEL) {
                 std::string packet = mts::Text::bin2hexString(RxPayload, size);
@@ -216,6 +221,7 @@ class mDotEvent: public lora::MacEvents {
             _info.RxRssi = rssi;
             _info.RxSnr = snr;
             _info.TxAckReceived = AckReceived;
+            _info.DuplicateRx = DuplicateRx;
             _info.TxNbRetries = retries;
             _info.Status = LORAMAC_EVENT_INFO_STATUS_OK;
             Notify();
@@ -308,6 +314,7 @@ class mDotEvent: public lora::MacEvents {
         int16_t PongSnr;
 
         bool AckReceived;
+        bool DuplicateRx;
         uint8_t TxNbRetries;
 
         LoRaMacEventFlags& Flags() {
