@@ -208,6 +208,7 @@ namespace lora {
 
     const uint8_t FRAME_OVERHEAD = 13;                          //!< Bytes of network info overhead in a frame
 
+    const uint16_t MAX_OFF_AIR_WAIT = 5000U;                    //!< Max time in ms to block for a duty cycle restriction to expire before erroring out
     /**
      * Settings for type of network
      * PUBLIC - defaults to 5/6 second join windows and 0x34 sync word
