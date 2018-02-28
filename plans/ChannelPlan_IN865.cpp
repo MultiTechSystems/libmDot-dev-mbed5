@@ -605,12 +605,6 @@ uint8_t ChannelPlan_IN865::ValidateAdrConfiguration() {
         status &= 0xFB; // TxPower KO
     }
 
-    // default channels must be enabled
-    if ((_channelMask[0] & 0x0007) != 0x0007) {
-        logWarning("ADR Channel Mask KO - default channels must be enabled");
-        status &= 0xFE; // ChannelMask KO
-    }
-
     // mask must not contain any undefined channels
     for (int i = 3; i < 16; i++) {
         if ((_channelMask[0] & (1 << i)) && (_channels[i].Frequency == 0)) {

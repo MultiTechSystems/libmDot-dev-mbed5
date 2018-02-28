@@ -167,6 +167,16 @@ namespace lora {
             virtual uint8_t HandleNewChannel(const uint8_t* payload, uint8_t index, uint8_t size, uint8_t& status);
 
             /**
+             * Callback to for downlink channel request ServerCommand
+             * @param payload packet data
+             * @param index of start of command buffer
+             * @param size number of bytes in command buffer
+             * @param[out] status to be returned in MoteCommand answer
+             * @return LORA_OK
+             */
+            virtual uint8_t HandleDownlinkChannelReq(const uint8_t* payload, uint8_t index, uint8_t size, uint8_t& status);
+
+            /**
              * Callback to for ping slot channel request ServerCommand
              * @param payload packet data
              * @param index of start of command buffer

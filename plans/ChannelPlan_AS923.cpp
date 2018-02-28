@@ -631,12 +631,6 @@ uint8_t ChannelPlan_AS923::ValidateAdrConfiguration() {
         status &= 0xFB; // TxPower KO
     }
 
-    // default channels must be enabled
-    if ((_channelMask[0] & 0x0003) != 0x0003) {
-        logWarning("ADR Channel Mask KO - default channels must be enabled");
-        status &= 0xFE; // ChannelMask KO
-    }
-
     // mask must not contain any undefined channels
     for (int i = 2; i < 16; i++) {
         if ((_channelMask[0] & (1 << i)) && (_channels[i].Frequency == 0)) {
@@ -1013,39 +1007,6 @@ uint8_t ChannelPlan_AS923::HandleMacCommand(uint8_t* payload, uint8_t& index) {
             }
 
             logDebug("TX PARAM DWELL UL: %d DL: %d Max EIRP: %d", GetSettings()->Session.UplinkDwelltime, GetSettings()->Session.DownlinkDwelltime, GetSettings()->Session.Max_EIRP);
-            break;
-        }
-        case SRV_MAC_DL_CHANNEL_REQ: {
-            uint8_t status = 0x03;
-            uint8_t channelIndex = 0;
-            Channel chParam;
-
-            channelIndex = payload[index++];
-            lora::CopyFreqtoInt(payload + index, chParam.Frequency);
-            index += 3;
-
-            chParam.Index = channelIndex;
-            chParam.DrRange.Value = 0;
-            if (channelIndex > 15) {
-                status = 0x00;
-            } else {
-
-                if (_channels[channelIndex].Frequency == 0) {
-                    status &= 0xFE;
-                }
-
-                if (chParam.Frequency != 0 && (chParam.Frequency < _minFrequency || chParam.Frequency > _maxFrequency)) {
-                    status &= 0xFD;
-                }
-            }
-
-            if (status == 0x03 && GetSettings()->Session.CommandBufferIndex+1 < COMMANDS_BUFFER_SIZE) {
-                AddDownlinkChannel(channelIndex, chParam);
-            }
-
-            GetSettings()->Session.DlChannelReqAnswer = status;
-
-            logDebug("DL Channel: index: %d freq: %d status: %d", channelIndex, chParam.Frequency, status);
             break;
         }
         default: {

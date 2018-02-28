@@ -490,6 +490,13 @@ uint8_t ChannelPlan_AU915::HandleNewChannel(const uint8_t* payload, uint8_t inde
     return LORA_OK;
 }
 
+uint8_t ChannelPlan_AU915::HandleDownlinkChannelReq(const uint8_t* payload, uint8_t index, uint8_t size, uint8_t& status) {
+
+    // Not Supported in AU915
+    status = 0;
+    return LORA_OK;
+}
+
 uint8_t ChannelPlan_AU915::HandlePingSlotChannelReq(const uint8_t* payload, uint8_t index, uint8_t size, uint8_t& status) {
 
     lora::CopyFreqtoInt(payload + index, _beaconRxChannel.Frequency);
