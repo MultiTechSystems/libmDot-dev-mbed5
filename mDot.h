@@ -546,6 +546,11 @@ class mDot {
          * PRIVATE_MTS - Sync Word 0x12, US/AU Downlink frequencies per Frequency Sub Band
          * PUBLIC_LORAWAN - Sync Word 0x34
          * PRIVATE_LORAWAN - Sync Word 0x12
+         *
+         * The default Join Delay is 5 seconds
+         * The default Join Delay for PRIVATE_MTS was 1 second in the previous release
+         * The Join Delay must be changed independently of Public Network setting
+         *
          * @see lora::NetworkType
          * @returns MDOT_OK if success
          */
@@ -553,6 +558,11 @@ class mDot {
 
         /**
          * Get public network mode
+         *
+         * The default Join Delay is 5 seconds
+         * The default Join Delay for PRIVATE_MTS was 1 second in the previous release
+         * The Join Delay must be changed independently of Public Network setting
+         *
          * @see lora:NetworkType
          * @returns 0:PRIVATE_MTS, 1:PUBLIC_LORAWAN, 2:PRIVATE_LORAWAN
          */
@@ -919,16 +929,24 @@ class mDot {
 
         /**
          * Get join delay in seconds
-         *  Public network defaults to 5 seconds
-         *  Private network defaults to 5 seconds
+         *  Defaults to 5 seconds
+         *  Must match join delay setting of the network server
+         *
+         * The default Join Delay is 5 seconds
+         * The default Join Delay for PRIVATE_MTS was 1 second in the previous release
+         *
          *  @returns number of seconds before join accept message is expected
          */
         uint8_t getJoinDelay();
 
         /**
          * Set join delay in seconds
-         *  Public network defaults to 5 seconds
-         *  Private network defaults to 5 seconds
+         *  Defaults to 5 seconds
+         *  Must match join delay setting of the network server
+         *
+         * The default Join Delay is 5 seconds
+         * The default Join Delay for PRIVATE_MTS was 1 second in the previous release
+         *
          *  @param delay number of seconds before join accept message is expected
          *  @return MDOT_OK if success
          */

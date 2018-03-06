@@ -211,8 +211,13 @@ namespace lora {
     const uint16_t MAX_OFF_AIR_WAIT = 5000U;                    //!< Max time in ms to block for a duty cycle restriction to expire before erroring out
     /**
      * Settings for type of network
-     * PUBLIC - defaults to 5/6 second join windows and 0x34 sync word
-     * PRIVATE - defaults to 1/2 second join windows and 0x12 sync word
+     *
+     * PRIVATE_MTS - Sync Word 0x12, US/AU Downlink frequencies per Frequency Sub Band
+     * PUBLIC_LORAWAN - Sync Word 0x34
+     * PRIVATE_LORAWAN - Sync Word 0x12
+     * PEER_TO_PEER - Sync Word 0x56 used for Dot to Dot communication
+     *
+     * Join Delay window settings are independent of Network Type setting
      */
     enum NetworkType {
         PRIVATE_MTS = 0,
