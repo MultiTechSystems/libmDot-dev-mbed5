@@ -1704,6 +1704,10 @@ class mDot {
         }
         
         lora::ChannelPlan* getChannelPlan(void);  
+
+        uint32_t setRx2DataRate(uint8_t dr);
+    
+        void mcGroupKeys(uint8_t *mcKeyEncrypt, uint32_t addr, uint8_t groupId);  
     private:
         typedef enum {
             AUTO_SLEEP_EVT_CFG,
