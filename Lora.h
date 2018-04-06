@@ -313,7 +313,8 @@ namespace lora {
         RX_1 = 1,           //!< First receive window
         RX_2,               //!< Second receive window
         RX_BEACON,          //!< Beacon receive window
-        RX_SLOT,             //!< Beacon Slot receive window
+        RX_SLOT,            //!< Ping Slot receive window
+        RXC,                //!< Class C continuous window
         RX_TEST
     };
 
