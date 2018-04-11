@@ -137,10 +137,7 @@ void ChannelPlan_EU868::Init() {
     SetNumberOfChannels(EU868_125K_NUM_CHANS);
 
     for (uint8_t i = 0; i < EU868_DEFAULT_NUM_CHANS; i++) {
-        if (i == 1)
-            chan.DrRange.Fields.Max = DR_6;
-        else
-            chan.DrRange.Fields.Max = DR_5;
+        chan.DrRange.Fields.Max = DR_5;
 
         AddChannel(i, chan);
         chan.Index++;
