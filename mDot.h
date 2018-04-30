@@ -1708,7 +1708,7 @@ class mDot {
         uint32_t setRx2DataRate(uint8_t dr);
         uint8_t getRx2DataRate();
 
-        void mcGroupKeys(uint8_t *mcKeyEncrypt, uint32_t addr, uint8_t groupId);  
+        void mcGroupKeys(uint8_t *mcKeyEncrypt, uint32_t addr, uint8_t groupId, uint32_t frame_count);  
     private:
         typedef enum {
             AUTO_SLEEP_EVT_CFG,
