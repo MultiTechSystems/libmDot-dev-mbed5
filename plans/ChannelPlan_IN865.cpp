@@ -278,7 +278,11 @@ uint8_t ChannelPlan_IN865::SetTxConfig() {
 uint8_t ChannelPlan_IN865::SetRxConfig(uint8_t window, bool continuous) {
 
     RxWindow rxw = GetRxWindow(window);
-    GetRadio()->SetChannel(rxw.Frequency);
+
+    if (_dlChannels[_txChannel].Frequency != 0)
+        GetRadio()->SetChannel(_dlChannels[_txChannel].Frequency);
+    else
+        GetRadio()->SetChannel(rxw.Frequency);
 
     Datarate rxDr = GetDatarate(rxw.DatarateIndex);
     uint32_t bw = rxDr.Bandwidth;
@@ -344,8 +348,12 @@ void ChannelPlan_IN865::LogRxWindow(uint8_t wnd) {
     uint16_t sto = rxDr.SymbolTimeout();
     bool crc = false; // downlink does not use CRC according to LORAWAN
     bool iq = GetTxDatarate().RxIQ;
+    uint32_t freq = rxw.Frequency;
 
-    logTrace("RX%d on freq: %lu", wnd, rxw.Frequency);
+    if (wnd == 1 && _dlChannels[_txChannel].Frequency != 0)
+        freq = _dlChannels[_txChannel].Frequency;
+
+    logTrace("RX%d on freq: %lu", wnd, freq);
     logTrace("RX DR: %u SF: %u BW: %u CR: %u PL: %u STO: %u CRC: %d IQ: %d", rxDr.Index, sf, bw, cr, pl, sto, crc, iq);
 }
 
@@ -440,18 +448,22 @@ uint8_t ChannelPlan_IN865::HandleNewChannel(const uint8_t* payload, uint8_t inde
         status &= 0xFE; // Channel index KO
     }
 
-    if (!GetRadio()->CheckRfFrequency(chParam.Frequency)) {
+    if (chParam.Frequency == 0) {
+        chParam.DrRange.Value = 0;
+    } else if (chParam.Frequency < _minFrequency || chParam.Frequency > _maxFrequency) {
         logError("New Channel frequency KO");
         status &= 0xFE; // Channel frequency KO
     }
 
-    if (chParam.DrRange.Fields.Min > chParam.DrRange.Fields.Max) {
+    if (chParam.DrRange.Fields.Min > chParam.DrRange.Fields.Max && chParam.Frequency != 0) {
         logError("New Channel datarate min/max KO");
         status &= 0xFD; // Datarate range KO
-    } else if (chParam.DrRange.Fields.Min < _minDatarate || chParam.DrRange.Fields.Min > _maxDatarate) {
+    } else if ((chParam.DrRange.Fields.Min < _minDatarate || chParam.DrRange.Fields.Min > _maxDatarate) &&
+               chParam.Frequency != 0) {
         logError("New Channel datarate min KO");
         status &= 0xFD; // Datarate range KO
-    } else if (chParam.DrRange.Fields.Max < _minDatarate || chParam.DrRange.Fields.Max > _maxDatarate) {
+    } else if ((chParam.DrRange.Fields.Max < _minDatarate || chParam.DrRange.Fields.Max > _maxDatarate) &&
+               chParam.Frequency != 0) {
         logError("New Channel datarate max KO");
         status &= 0xFD; // Datarate range KO
     }
@@ -549,7 +561,7 @@ uint8_t ChannelPlan_IN865::HandleAdrCommand(const uint8_t* payload, uint8_t inde
     //
     // Remark MaxTxPower = 0 and MinTxPower = 10
     //
-    if (power < 0 || power > 10) {
+    if (power > 10) {
         status &= 0xFB; // TxPower KO
     }
 

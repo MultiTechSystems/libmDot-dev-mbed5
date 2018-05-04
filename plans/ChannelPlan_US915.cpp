@@ -588,7 +588,7 @@ uint8_t ChannelPlan_US915::HandleAdrCommand(const uint8_t* payload, uint8_t inde
     //
     // Remark MaxTxPower = 0 and MinTxPower = 10
     //
-    if (power < 0 || power > 10) {
+    if (power > 10) {
         status &= 0xFB; // TxPower KO
     }
 
