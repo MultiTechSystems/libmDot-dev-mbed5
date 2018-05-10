@@ -23,8 +23,8 @@ using namespace lora;
 const uint8_t ChannelPlan_AS923::AS923_RADIO_POWERS[] = { 3, 3, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 18, 19, 20 };
 const uint8_t ChannelPlan_AS923::AS923_MAX_PAYLOAD_SIZE[] = { 51, 51, 51, 115, 242, 242, 242, 242, 0, 0, 0, 0, 0, 0, 0, 0 };
 const uint8_t ChannelPlan_AS923::AS923_MAX_PAYLOAD_SIZE_REPEATER[] = { 51, 51, 51, 115, 222, 222, 222, 222, 0, 0, 0, 0, 0, 0, 0, 0 };
-const uint8_t ChannelPlan_AS923::AS923_MAX_PAYLOAD_SIZE_400[] = { 0, 0, 19, 61, 133, 242, 242, 242, 0, 0, 0, 0, 0, 0, 0, 0 };
-const uint8_t ChannelPlan_AS923::AS923_MAX_PAYLOAD_SIZE_REPEATER_400[] = { 0, 0, 19, 61, 133, 222, 222, 222, 0, 0, 0, 0, 0, 0, 0, 0 };
+const uint8_t ChannelPlan_AS923::AS923_MAX_PAYLOAD_SIZE_400[] = { 0, 0, 11, 53, 125, 242, 242, 242, 0, 0, 0, 0, 0, 0, 0, 0 };
+const uint8_t ChannelPlan_AS923::AS923_MAX_PAYLOAD_SIZE_REPEATER_400[] = { 0, 0, 11, 53, 128, 242, 242, 242, 0, 0, 0, 0, 0, 0, 0, 0 };
 
 const uint8_t MAX_ERP_VALUES[] = { 8, 10, 12, 13, 14, 16, 18, 20, 21, 24, 26, 27, 29, 30, 33, 36 };
 
