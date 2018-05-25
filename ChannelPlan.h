@@ -546,7 +546,12 @@ namespace lora {
             virtual void DefaultLBT();
 
             virtual bool ListenBeforeTalk();
-
+        
+            /**
+             * use to clear downlink channels on join
+             */
+            virtual void ClearChannels();
+    
         protected:
 
             SxRadio* GetRadio();                //!< Get pointer to the SxRadio object or assert if it is null

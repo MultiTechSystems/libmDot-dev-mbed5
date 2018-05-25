@@ -88,7 +88,7 @@ void ChannelPlan_IN865::Init() {
     _numChans125k = 16;
     _numChans500k = 0;
 
-    GetSettings()->Session.Rx2Frequency = 865550000;
+    GetSettings()->Session.Rx2Frequency = 866550000;
     GetSettings()->Session.Rx2DatarateIndex = DR_2;
 
     logInfo("Initialize datarates...");

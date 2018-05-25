@@ -24,7 +24,7 @@ const uint8_t ChannelPlan_AS923::AS923_RADIO_POWERS[] = { 3, 3, 3, 4, 5, 6, 7, 8
 const uint8_t ChannelPlan_AS923::AS923_MAX_PAYLOAD_SIZE[] = { 51, 51, 51, 115, 242, 242, 242, 242, 0, 0, 0, 0, 0, 0, 0, 0 };
 const uint8_t ChannelPlan_AS923::AS923_MAX_PAYLOAD_SIZE_REPEATER[] = { 51, 51, 51, 115, 222, 222, 222, 222, 0, 0, 0, 0, 0, 0, 0, 0 };
 const uint8_t ChannelPlan_AS923::AS923_MAX_PAYLOAD_SIZE_400[] = { 0, 0, 11, 53, 125, 242, 242, 242, 0, 0, 0, 0, 0, 0, 0, 0 };
-const uint8_t ChannelPlan_AS923::AS923_MAX_PAYLOAD_SIZE_REPEATER_400[] = { 0, 0, 11, 53, 128, 242, 242, 242, 0, 0, 0, 0, 0, 0, 0, 0 };
+const uint8_t ChannelPlan_AS923::AS923_MAX_PAYLOAD_SIZE_REPEATER_400[] = { 0, 0, 11, 53, 128, 222, 222, 222, 0, 0, 0, 0, 0, 0, 0, 0 };
 
 const uint8_t MAX_ERP_VALUES[] = { 8, 10, 12, 13, 14, 16, 18, 20, 21, 24, 26, 27, 29, 30, 33, 36 };
 
@@ -1003,6 +1003,17 @@ uint8_t ChannelPlan_AS923::HandleMacCommand(uint8_t* payload, uint8_t& index) {
 
             GetSettings()->Session.DownlinkDwelltime = eirp_dwell >> 5 & 0x01;
             GetSettings()->Session.UplinkDwelltime = eirp_dwell >> 4 & 0x01;
+            //change data rate with if dwell time changes
+            if(GetSettings()->Session.UplinkDwelltime == 0) {
+                _minDatarate = lora::DR_0;
+            } else {
+                _minDatarate = lora::DR_2;
+                if(GetSettings()->Session.TxDatarate < lora::DR_2) {
+                    GetSettings()->Session.TxDatarate = lora::DR_2;
+                    logDebug("Datarate is now DR%d",GetSettings()->Session.TxDatarate);
+                }
+            }
+
             GetSettings()->Session.Max_EIRP = MAX_ERP_VALUES[(eirp_dwell & 0x0F)];
             logDebug("buffer index %d", GetSettings()->Session.CommandBufferIndex);
             if (GetSettings()->Session.CommandBufferIndex < COMMANDS_BUFFER_SIZE) {
