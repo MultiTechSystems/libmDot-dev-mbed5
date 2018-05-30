@@ -235,7 +235,7 @@ class mDot {
 
         typedef struct {
                 bool status;
-                int32_t dBm;
+                uint8_t dBm;
                 uint32_t gateways;
                 std::vector<uint8_t> payload;
         } link_check;
