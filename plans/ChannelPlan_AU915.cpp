@@ -884,7 +884,7 @@ uint8_t lora::ChannelPlan_AU915::GetJoinDatarate() {
         }
 
         if (altDatarate && CountBits(_channelMask[4] > 0)) {
-            dr = lora::DR_6;
+            dr = lora::DR_4;
         } else {
             dr = lora::DR_0;
         }

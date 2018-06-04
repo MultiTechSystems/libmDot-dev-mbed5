@@ -274,7 +274,7 @@ uint8_t ChannelPlan_AS923::SetRxConfig(uint8_t window, bool continuous) {
 
     RxWindow rxw = GetRxWindow(window);
 
-    if (_dlChannels[_txChannel].Frequency != 0  && window == 1)
+    if (_dlChannels[_txChannel].Frequency != 0)
         GetRadio()->SetChannel(_dlChannels[_txChannel].Frequency);
     else
         GetRadio()->SetChannel(rxw.Frequency);
