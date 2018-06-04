@@ -272,7 +272,7 @@ public:
 
     virtual void ResetRadio(void) {};
 
-    virtual uint32_t GetTimeOnAir(void) {};
+    virtual uint32_t GetTimeOnAir(void) = 0;
 
     void GrabMutex(void) { mutex.lock(); }
     void ReleaseMutex(void) { mutex.unlock(); }

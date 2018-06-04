@@ -279,7 +279,7 @@ uint8_t ChannelPlan_IN865::SetRxConfig(uint8_t window, bool continuous) {
 
     RxWindow rxw = GetRxWindow(window);
 
-    if (_dlChannels[_txChannel].Frequency != 0)
+    if (_dlChannels[_txChannel].Frequency != 0  && window == 1)
         GetRadio()->SetChannel(_dlChannels[_txChannel].Frequency);
     else
         GetRadio()->SetChannel(rxw.Frequency);
@@ -878,10 +878,24 @@ uint8_t ChannelPlan_IN865::GetNextChannel()
 
 uint8_t lora::ChannelPlan_IN865::GetJoinDatarate() {
     uint8_t dr = GetSettings()->Session.TxDatarate;
-    
-    // Default join datarate is DR2:SF10BW125
-    dr = lora::DR_2;
-    
+    static uint8_t cnt = 0;
+
+    if (GetSettings()->Test.DisableRandomJoinDatarate == lora::OFF) {
+        if ((cnt++ % 20) == 0) {
+            dr = lora::DR_0;
+        } else if ((cnt % 16) == 0) {
+            dr = lora::DR_1;
+        } else if ((cnt % 12) == 0) {
+            dr = lora::DR_2;
+        } else if ((cnt % 8) == 0) {
+            dr = lora::DR_3;
+        } else if ((cnt % 4) == 0) {
+            dr = lora::DR_4;
+        } else {
+            dr = lora::DR_5;
+        }
+    }
+
     return dr;
 }
 

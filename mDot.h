@@ -9,9 +9,6 @@
 #include <vector>
 #include <map>
 #include <string>
-#if defined(TARGET_XDOT_L151CC) && defined(GEMALTO_SE)
-#include "SE_LoRaWan.h"
-#endif
 
 class mDotEvent;
 class LoRaConfig;
@@ -334,28 +331,6 @@ class mDot {
 
         uint8_t setChannelPlan(lora::ChannelPlan* plan);
 
-#if defined(TARGET_XDOT_L151CC) && defined(GEMALTO_SE)
-        /**
-         * Pass in an SE_LoRaWan object to the library. If not passed in, object code is omitted from build
-         * @param SE_LoRaWan object
-         */
-		int32_t setGemaltoSE(SE_LoRaWan* se);
-        /**
-         * Enable or disable the secure element. With secure element in place, AppKey is secured in Gemalto secure element
-         * @param enable/disable
-         */
-		int32_t setSecureElement(const bool enable);
-        /**
-         * Query secure element enable/disable setting
-         * @returns true if secure element is enabled even if setGemaltoSE has not been called
-         */		
-		bool getSecureElement();
-        /**
-         * Query for both enable and that the secure element has been successfully instantiated
-         * @returns true if enabled and instantiated
-         */		
-		bool isSecureElement();		
-#endif
         lora::Settings* getSettings();
 
         /**
