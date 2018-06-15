@@ -71,7 +71,7 @@ void ChannelPlan_AS923::Init() {
     _maxTxPower = 36;
     _minTxPower = 0;
 
-    _minFrequency = 920000000;
+    _minFrequency = 915000000;
     _maxFrequency = 928000000;
 
     RADIO_POWERS = AS923_RADIO_POWERS;
