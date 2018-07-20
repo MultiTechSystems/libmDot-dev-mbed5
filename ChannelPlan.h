@@ -451,7 +451,7 @@ namespace lora {
             /**
              * Update duty cycle with current settings
              */
-            virtual void UpdateDutyCycle(uint8_t bytes);
+            void UpdateDutyCycle(uint8_t bytes);
 
             /**
              * Update duty cycle with at given frequency and time on air

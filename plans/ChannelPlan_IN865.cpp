@@ -102,9 +102,7 @@ void ChannelPlan_IN865::Init() {
         dr.Index++;
     }
 
-    // Add DR6
-    dr.SpreadingFactor = SF_7;
-    dr.Bandwidth = BW_250;
+    // Skip DR6
     AddDatarate(-1, dr);
     dr.Index++;
 
@@ -232,7 +230,8 @@ uint8_t ChannelPlan_IN865::SetTxConfig() {
 
     int8_t pwr = 0;
 
-    pwr = std::min < int8_t > (GetSettings()->Session.TxPower, (max_pwr - GetSettings()->Network.AntennaGain));
+    pwr = std::min < int8_t > (GetSettings()->Session.TxPower, max_pwr);
+    pwr -= GetSettings()->Network.AntennaGain;
 
     for (int i = 20; i >= 0; i--) {
         if (RADIO_POWERS[i] <= pwr) {
@@ -608,7 +607,7 @@ uint8_t ChannelPlan_IN865::ValidateAdrConfiguration() {
         return status;
     }
 
-    if (datarate > _maxDatarate) {
+    if (datarate > _maxDatarate || datarate == DR_6) {
         logWarning("ADR Datarate KO - outside allowed range");
         status &= 0xFD; // Datarate KO
     }
@@ -990,5 +989,26 @@ uint8_t ChannelPlan_IN865::CalculateJoinBackoff(uint8_t size) {
 
 uint8_t ChannelPlan_IN865::HandleMacCommand(uint8_t* payload, uint8_t& index) {
     return LORA_ERROR;
+}
+
+//in865 skips dr6 rfu
+
+void ChannelPlan_IN865::IncrementDatarate() {
+    uint8_t dr = GetSettings()->Session.TxDatarate;
+    if (dr < _maxDatarate)
+        dr++;
+    if(dr == DR_6)
+        dr= DR_7;
+    GetSettings()->Session.TxDatarate = dr;
+
+}
+
+void ChannelPlan_IN865::DecrementDatarate() {
+    uint8_t dr = GetSettings()->Session.TxDatarate;
+    if (dr > _minDatarate)
+        dr--;
+    if(dr == DR_6)
+        dr= DR_5;
+    GetSettings()->Session.TxDatarate = dr;
 }
 

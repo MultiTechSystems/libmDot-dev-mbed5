@@ -219,6 +219,16 @@ namespace lora {
              */
             virtual uint8_t HandleMacCommand(uint8_t* payload, uint8_t& index);
 
+            /**
+             *Decrements the datarate based on TxDwellTime
+             */
+            virtual void DecrementDatarate();
+
+            /**
+             *Decrements the datarate based on TxDwellTime
+             */
+            virtual void IncrementDatarate();
+
         protected:
 
             static const uint8_t IN865_TX_POWERS[11];                    //!< List of available tx powers
