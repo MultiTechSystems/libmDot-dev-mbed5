@@ -74,6 +74,11 @@ namespace lora {
              * ChannelPlan destructor
              */
             virtual ~ChannelPlan();
+            
+            /**
+             * Checks that at least one channel exist for the data rate
+             */
+            virtual uint8_t ValidateAdrDatarate(uint8_t status);
 
             /**
              * Initialize channels, datarates and duty cycle bands according to current channel plan in settings
