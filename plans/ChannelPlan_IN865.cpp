@@ -384,6 +384,9 @@ RxWindow ChannelPlan_IN865::GetRxWindow(uint8_t window) {
         }
     }
 
+    if (index == DR_6)
+        index = DR_5;
+
     rxw.DatarateIndex = index;
 
     return rxw;
@@ -409,7 +412,7 @@ uint8_t ChannelPlan_IN865::HandleRxParamSetup(const uint8_t* payload, uint8_t in
         status &= 0xFE; // Channel frequency KO
     }
 
-    if (datarate < _minRx2Datarate || datarate > _maxRx2Datarate) {
+    if (datarate < _minRx2Datarate || datarate > _maxRx2Datarate || datarate == DR_6) {
         logInfo("DR KO");
         status &= 0xFD; // Datarate KO
     }
@@ -554,9 +557,10 @@ uint8_t ChannelPlan_IN865::HandleAdrCommand(const uint8_t* payload, uint8_t inde
         nbRep = 1;
     }
 
-    if (datarate > _maxDatarate) {
+    if (datarate > _maxDatarate || datarate == DR_6) {
         status &= 0xFD; // Datarate KO
     }
+
     //
     // Remark MaxTxPower = 0 and MinTxPower = 10
     //
@@ -640,7 +644,7 @@ uint8_t ChannelPlan_IN865::HandleAckTimeout() {
             GetSettings()->Session.TxPower = GetSettings()->Network.TxPowerMax;
         } else if (GetSettings()->Session.TxDatarate > 0) {
             logTrace("ADR Lowering datarate");
-            (GetSettings()->Session.TxDatarate)--;
+            DecrementDatarate();
         }
     }
 

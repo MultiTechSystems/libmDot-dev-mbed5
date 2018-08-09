@@ -146,12 +146,37 @@ namespace lora {
     const uint8_t AU915_MAX_DATARATE_OFFSET = (uint8_t) 5;       //!< Maximum transmit datarate for AU915
 
     const uint8_t EU868_125K_NUM_CHANS = 16;                    //!< Number of 125k channels in EU868 channel plan
-    const uint8_t EU868_DEFAULT_NUM_CHANS = 3;                  //!< Number of defualt channels in EU868 channel plan
+    const uint8_t EU868_DEFAULT_NUM_CHANS = 3;                  //!< Number of default channels in EU868 channel plan
     const uint32_t EU868_125K_FREQ_BASE = 868100000;            //!< Frequency base for 125k EU868 uplink channels
     const uint32_t EU868_125K_FREQ_STEP = 200000;               //!< Frequency step for 125k EU868 uplink channels
     const uint32_t EU868_RX2_FREQ = 869525000;                  //!< Frequency default for second rx window in EU868
 
     const uint8_t EU868_TX_POWER_MAX = 14;                      //!< Max power for EU868 channel plan
+
+    const uint8_t KR920_125K_NUM_CHANS = 16;                    //!< Number of 125k channels in KR920 channel plan
+    const uint8_t KR920_DEFAULT_NUM_CHANS = 3;                  //!< Number of default channels in KR920 channel plan
+    const uint32_t KR920_125K_FREQ_BASE = 868100000;            //!< Frequency base for 125k KR920 uplink channels
+    const uint32_t KR920_125K_FREQ_STEP = 200000;               //!< Frequency step for 125k KR920 uplink channels
+    const uint32_t KR920_RX2_FREQ = 869525000;                  //!< Frequency default for second rx window in KR920
+
+    const uint8_t KR920_TX_POWER_MAX = 14;                      //!< Max power for KR920 channel plan
+
+    const uint8_t AS923_125K_NUM_CHANS = 16;                    //!< Number of 125k channels in AS923 channel plan
+    const uint8_t AS923_DEFAULT_NUM_CHANS = 2;                  //!< Number of default channels in AS923 channel plan
+    const uint32_t AS923_125K_FREQ_BASE = 868100000;            //!< Frequency base for 125k AS923 uplink channels
+    const uint32_t AS923_125K_FREQ_STEP = 200000;               //!< Frequency step for 125k AS923 uplink channels
+    const uint32_t AS923_RX2_FREQ = 869525000;                  //!< Frequency default for second rx window in AS923
+
+    const uint8_t AS923_TX_POWER_MAX = 14;                      //!< Max power for AS923 channel plan
+
+    const uint8_t IN865_125K_NUM_CHANS = 16;                    //!< Number of 125k channels in IN865 channel plan
+    const uint8_t IN865_DEFAULT_NUM_CHANS = 3;                  //!< Number of default channels in IN865 channel plan
+    const uint32_t IN865_125K_DEF_FREQ_1 = 865062500;
+    const uint32_t IN865_125K_DEF_FREQ_2 = 865402500;
+    const uint32_t IN865_125K_DEF_FREQ_3 = 865985000;
+    const uint32_t IN865_RX2_FREQ = 866550000;                  //!< Frequency default for second rx window in IN865
+
+    const uint8_t IN865_TX_POWER_MAX = 30;                      //!< Max power for IN865 channel plan
 
     // 0.1% duty cycle 863-868
     // Limiting to 865-868 allows for 1% duty cycle
