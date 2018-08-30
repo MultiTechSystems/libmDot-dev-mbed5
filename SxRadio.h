@@ -70,6 +70,7 @@ public:
      * \param [IN] modem Modem to be used [0: FSK, 1: LoRa] 
      */
     virtual void SetModem( RadioModems_t modem ) = 0;
+	virtual RadioModems_t GetModem( void ) { return Modem; }
     /*!
      * \brief Sets the channel frequency
      *

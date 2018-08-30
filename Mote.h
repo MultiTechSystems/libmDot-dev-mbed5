@@ -16,8 +16,11 @@
 #ifndef __LORA_MOTE_H__
 #define __LORA_MOTE_H__
 
-#include "rtos.h"
+#include "mbed.h"
+#include "mbed_events.h"
+
 #include "MacEvents.h"
+
 #include <vector>
 
 class SxRadio;
@@ -91,6 +94,20 @@ namespace lora {
             virtual void RxDone(uint8_t *payload, uint16_t size, int16_t rssi, int8_t snr, lora::DownlinkControl ctrl, uint8_t slot);
 
             /**
+             * Fired when a beacon is received
+             * @param payload received bytes
+             * @param size number of received bytes
+             * @param rssi of received beacon
+             * @param snr of received beacon
+             */
+            virtual void BeaconRx(uint8_t *payload, uint16_t size, int16_t rssi, int8_t snr);
+
+            /**
+             * Fired upon losing beacon synchronization (120 minutes elapsed from last beacon reception)
+             */
+            virtual void BeaconLost();
+
+            /**
              * Fired if rx window times out
              * @param slot rx window that timed out
              */
@@ -119,6 +136,13 @@ namespace lora {
              * @param s_gateways number of gateways reporting the packet
              */
             virtual void NetworkLinkCheck(int16_t m_rssi, int8_t m_snr, int8_t s_snr, uint8_t s_gateways);
+
+            /**
+             * Fired upon receiving a server time answer
+             * @param seconds from the GPS epoch
+             * @param sub_seconds from the GPS epoch
+             */
+            virtual void ServerTime(uint32_t seconds, uint8_t sub_seconds);
 
             /**
              * Callback to for device to measure the battery level and report to server
@@ -293,6 +317,10 @@ namespace lora {
         private:
             ChannelPlan* _plan;
             MoteEvents _events;
+
+            // Event queue objects for timing events
+            EventQueue _evtQueue;
+            Thread _dispatch_thread;
     };
 
 }

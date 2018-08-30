@@ -91,6 +91,11 @@ void ChannelPlan_IN865::Init() {
     GetSettings()->Session.Rx2Frequency = 866550000;
     GetSettings()->Session.Rx2DatarateIndex = DR_2;
 
+    GetSettings()->Session.BeaconFrequency = IN865_BEACON_FREQ;
+    GetSettings()->Session.BeaconDatarateIndex = IN865_BEACON_DR;
+    GetSettings()->Session.PingSlotFrequency = IN865_BEACON_FREQ;
+    GetSettings()->Session.PingSlotDatarateIndex = IN865_BEACON_DR;
+
     logInfo("Initialize datarates...");
 
     dr.SpreadingFactor = SF_12;
@@ -274,7 +279,7 @@ uint8_t ChannelPlan_IN865::SetTxConfig() {
 }
 
 
-uint8_t ChannelPlan_IN865::SetRxConfig(uint8_t window, bool continuous) {
+uint8_t ChannelPlan_IN865::SetRxConfig(uint8_t window, bool continuous, uint16_t wnd_growth) {
 
     RxWindow rxw = GetRxWindow(window);
 
@@ -288,8 +293,10 @@ uint8_t ChannelPlan_IN865::SetRxConfig(uint8_t window, bool continuous) {
     uint32_t sf = rxDr.SpreadingFactor;
     uint8_t cr = rxDr.Coderate;
     uint8_t pl = rxDr.PreambleLength;
-    uint16_t sto = rxDr.SymbolTimeout();
+    uint16_t sto = rxDr.SymbolTimeout() * wnd_growth;
     uint32_t afc = 0;
+    bool fixLen = false;
+    uint8_t payloadLen = 0U;
     bool crc = false; // downlink does not use CRC according to LORAWAN
 
     if (GetSettings()->Network.DisableCRC == true)
@@ -300,6 +307,14 @@ uint8_t ChannelPlan_IN865::SetRxConfig(uint8_t window, bool continuous) {
 
     if (P2PEnabled()) {
         iq = txDr.TxIQ;
+    }
+
+    // Beacon modifications - no I/Q inversion, fixed length rx, preamble
+    if (window == RX_BEACON) {
+        iq = txDr.TxIQ;
+        fixLen = true;
+        payloadLen = sizeof(BCNPayload);
+        pl = BEACON_PREAMBLE_LENGTH;
     }
 
     SxRadio::RadioModems_t modem = SxRadio::MODEM_LORA;
@@ -318,7 +333,7 @@ uint8_t ChannelPlan_IN865::SetRxConfig(uint8_t window, bool continuous) {
     // logTrace("Configure radio for RX%d on freq: %lu", window, rxw.Frequency);
     // logTrace("RX SF: %u BW: %u CR: %u PL: %u STO: %u CRC: %d IQ: %d", sf, bw, cr, pl, sto, crc, iq);
 
-    GetRadio()->SetRxConfig(modem, bw, sf, cr, afc, pl, sto, false, 0, crc, false, 0, iq, continuous);
+    GetRadio()->SetRxConfig(modem, bw, sf, cr, afc, pl, sto, fixLen, payloadLen, crc, false, 0, iq, continuous);
 
     return LORA_OK;
 }
@@ -364,7 +379,8 @@ RxWindow ChannelPlan_IN865::GetRxWindow(uint8_t window) {
         rxw.Frequency = GetSettings()->Network.TxFrequency;
         index = GetSettings()->Session.TxDatarate;
     } else {
-        if (window == 1) {
+        switch (window) {
+        case RX_1:
             // Use same frequency as TX
             rxw.Frequency = _channels[_txChannel].Frequency;
 
@@ -377,8 +393,20 @@ RxWindow ChannelPlan_IN865::GetRxWindow(uint8_t window) {
                 index = 0;
             }
 
-        } else {
-            // Use session RX2 frequency
+            break;
+
+        case RX_BEACON:
+            rxw.Frequency = GetSettings()->Session.BeaconFrequency;
+            index = GetSettings()->Session.BeaconDatarateIndex;
+            break;
+
+        case RX_SLOT:
+            rxw.Frequency = GetSettings()->Session.PingSlotFrequency;
+            index = GetSettings()->Session.PingSlotDatarateIndex;
+            break;
+
+        // RX2, RXC, RX_TEST, etc..
+        default:
             rxw.Frequency = GetSettings()->Session.Rx2Frequency;
             index = GetSettings()->Session.Rx2DatarateIndex;
         }
@@ -480,57 +508,69 @@ uint8_t ChannelPlan_IN865::HandleNewChannel(const uint8_t* payload, uint8_t inde
 }
 
 uint8_t ChannelPlan_IN865::HandlePingSlotChannelReq(const uint8_t* payload, uint8_t index, uint8_t size, uint8_t& status) {
-
-    lora::CopyFreqtoInt(payload + index, _beaconRxChannel.Frequency);
-    index += 3;
-
-    if (_beaconRxChannel.Frequency != 0) {
-        _beaconRxChannel.DrRange.Value = payload[index];
-    } else {
-        // TODO: set to default beacon rx channel
-    }
+    uint8_t datarate = 0;
+    uint32_t freq = 0;
 
     status = 0x03;
+
+    freq = payload[index++];
+    freq |= payload[index++] << 8;
+    freq |= payload[index++] << 16;
+    freq *= 100;
+
+    datarate = payload[index] & 0x0F;
+
+    if (freq == 0U) {
+        logInfo("Received request to reset ping slot frequency to default");
+        freq = IN865_BEACON_FREQ;
+    } else if (!CheckRfFrequency(freq)) {
+        logInfo("Freq KO");
+        status &= 0xFE; // Channel frequency KO
+    }
+
+    if (datarate < _minRx2Datarate || datarate > _maxRx2Datarate) {
+        logInfo("DR KO");
+        status &= 0xFD; // Datarate KO
+    }
+
+    if ((status & 0x03) == 0x03) {
+        logInfo("PingSlotChannelReq accepted DR: %d Freq: %d", datarate, freq);
+        GetSettings()->Session.PingSlotFrequency = freq;
+        GetSettings()->Session.PingSlotDatarateIndex = datarate;
+    } else {
+        logInfo("PingSlotChannelReq rejected DR: %d Freq: %d", datarate, freq);
+    }
+
     return LORA_OK;
 }
 
 uint8_t ChannelPlan_IN865::HandleBeaconFrequencyReq(const uint8_t* payload, uint8_t index, uint8_t size, uint8_t& status) {
-
-    status = 0x03;
-    Channel chParam;
-
-    // Skip channel index
-    index++;
-
-    lora::CopyFreqtoInt(payload + index, chParam.Frequency);
-    index += 3;
-    chParam.DrRange.Value = payload[index++];
-
-    if (!GetRadio()->CheckRfFrequency(chParam.Frequency)) {
-        status &= 0xFE; // Channel frequency KO
-    }
-
-    if (chParam.DrRange.Fields.Min < chParam.DrRange.Fields.Max) {
-        status &= 0xFD; // Datarate range KO
-    } else if (chParam.DrRange.Fields.Min < _minDatarate || chParam.DrRange.Fields.Min > _maxDatarate) {
-        status &= 0xFD; // Datarate range KO
-    } else if (chParam.DrRange.Fields.Max < _minDatarate || chParam.DrRange.Fields.Max > _maxDatarate) {
-        status &= 0xFD; // Datarate range KO
-    }
-
-    if ((status & 0x03) == 0x03) {
-        _beaconChannel = chParam;
-    }
-
-    if (_beaconChannel.Frequency == 0) {
-        // TODO: Set to default
-    }
+    uint32_t freq = 0;
 
     status = 0x01;
 
+    freq = payload[index++];
+    freq |= payload[index++] << 8;
+    freq |= payload[index] << 16;
+    freq *= 100;
+
+    if (freq == 0U) {
+        logInfo("Received request to reset beacon frequency to default");
+        freq = IN865_BEACON_FREQ;
+    } else if (!CheckRfFrequency(freq)) {
+        logInfo("Freq KO");
+        status &= 0xFE; // Channel frequency KO
+    }
+
+    if (status & 0x01) {
+        logInfo("BeaconFrequencyReq accepted Freq: %d", freq);
+        GetSettings()->Session.BeaconFrequency = freq;
+    } else {
+        logInfo("BeaconFrequencyReq rejected Freq: %d", freq);
+    }
+
     return LORA_OK;
 }
-
 
 uint8_t ChannelPlan_IN865::HandleAdrCommand(const uint8_t* payload, uint8_t index, uint8_t size, uint8_t& status) {
 
@@ -1016,3 +1056,39 @@ void ChannelPlan_IN865::DecrementDatarate() {
     GetSettings()->Session.TxDatarate = dr;
 }
 
+bool ChannelPlan_IN865::DecodeBeacon(const uint8_t* payload, size_t size, BeaconData_t& data) {
+    uint16_t crc1, crc1_rx, crc2, crc2_rx;
+    const BCNPayload* beacon = (const BCNPayload*)payload;
+
+    // First check the size of the packet
+    if (size != sizeof(BCNPayload))
+        return false;
+
+    // Next we verify the CRCs are correct
+    crc1 = CRC16(beacon->RFU1, sizeof(beacon->RFU1) + sizeof(beacon->Time));
+    memcpy((uint8_t*)&crc1_rx, beacon->CRC1, sizeof(uint16_t));
+
+    if (crc1 != crc1_rx)
+        return false;
+
+    crc2 = CRC16(beacon->GwSpecific, sizeof(beacon->GwSpecific) + sizeof(beacon->RFU2));
+    memcpy((uint8_t*)&crc2_rx, beacon->CRC2, sizeof(uint16_t));
+
+    if (crc2 != crc2_rx)
+        return false;
+
+    // Now that we have confirmed this packet is a beacon, parse and complete the output struct
+    memcpy(&data.Time, beacon->Time, sizeof(beacon->Time));
+    data.InfoDesc = beacon->GwSpecific[0];
+
+    // Update the GPS fields if we have a gps info descriptor
+    if (data.InfoDesc == GPS_FIRST_ANTENNA ||
+        data.InfoDesc == GPS_SECOND_ANTENNA ||
+        data.InfoDesc == GPS_THIRD_ANTENNA) {
+        // Latitude and Longitude 3 bytes in length
+        memcpy(&data.Latitude, &beacon->GwSpecific[1], 3);
+        memcpy(&data.Longitude, &beacon->GwSpecific[4], 3);
+    }
+
+    return true;
+}

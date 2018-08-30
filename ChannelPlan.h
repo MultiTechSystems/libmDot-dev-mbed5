@@ -16,6 +16,8 @@
 #ifndef __CHANNEL_STRATEGY_H__
 #define __CHANNEL_STRATEGY_H__
 
+#include "mbed_events.h"
+
 #include "Lora.h"
 #include "SxRadio.h"
 #include <vector>
@@ -94,6 +96,11 @@ namespace lora {
              * Set Settings object
              */
             virtual void SetSettings(Settings* settings);
+
+            /**
+             * Setter for the event queue
+             */
+            virtual void SetEventQueue(EventQueue* queue);
 
             /**
              * Get the next channel to use to transmit
@@ -256,9 +263,10 @@ namespace lora {
              * Set the SxRadio rx config provided window
              * @param window to be opened
              * @param continuous keep window open
+             * @param wnd_growth factor to increase the rx window by
              * @return LORA_OK
              */
-            virtual uint8_t SetRxConfig(uint8_t window, bool continuous) = 0;
+            virtual uint8_t SetRxConfig(uint8_t window, bool continuous, uint16_t wnd_growth = 1) = 0;
 
             /**
              * Set frequency sub band if supported by plan
@@ -468,8 +476,9 @@ namespace lora {
             /**
              * Get time on air with current settings
              * @param bytes number of bytes to be sent
+             * @param cfg for setting up the radio before getting time on air
              */
-            virtual uint32_t GetTimeOnAir(uint8_t bytes);
+            virtual uint32_t GetTimeOnAir(uint8_t bytes, RadioCfg_t cfg = TX_RADIO_CFG);
 
             /**
              * Reset the duty timers with the current time off air
@@ -556,11 +565,34 @@ namespace lora {
              * use to clear downlink channels on join
              */
             virtual void ClearChannels();
-    
+
+            /**
+             * Check if this packet is a beacon and if so extract parameters needed
+             * @param payload of potential beacon
+             * @param size of the packet
+             * @param [out] data extracted from the beacon if this packet was indeed a beacon
+             * @return true if this packet is beacon, false if not
+             */
+            virtual bool DecodeBeacon(const uint8_t* payload,
+                                      size_t size,
+                                      BeaconData_t& data) = 0;
+
+            /**
+             * Update class B beacon and ping slot settings if frequency hopping enabled
+             * @param time received in the last beacon
+             * @param period of the beacon
+             * @param devAddr of this end device
+             */
+            virtual void FrequencyHop(uint32_t time, uint32_t period, uint32_t devAddr) { }
+
         protected:
 
             SxRadio* GetRadio();                //!< Get pointer to the SxRadio object or assert if it is null
             Settings* GetSettings();            //!< Get pointer to the settings object or assert if it is null
+            /**
+             * 16 bit ITU-T CRC implementation
+             */
+            uint16_t CRC16(const uint8_t* data, size_t size);
 
             uint8_t _txChannel;                 //!< Current channel for transmit
             uint8_t _txFrequencySubBand;        //!< Current frequency sub band for hybrid operation
@@ -577,9 +609,6 @@ namespace lora {
 
             uint32_t _minFrequency;             //!< Minimum Frequency
             uint32_t _maxFrequency;             //!< Maximum Frequency
-
-            Channel _beaconChannel;             //!< Beacon window settings
-            Channel _beaconRxChannel;           //!< Beacon slot rx window settings
 
             uint8_t _minDatarate;               //!< Minimum datarate to accept in ADR request
             uint8_t _maxDatarate;               //!< Maximum datarate to accept in ADR request
@@ -606,11 +635,11 @@ namespace lora {
             std::vector<uint16_t> _channelMask; //!< Bit mask for currently enabled channels
 
             Timer _dutyCycleTimer;              //!< Timer for tracking time-off-air
-            RtosTimer _txDutyTimer;             //!< Event timer for expiration of time-off-air
+            int _txDutyEvtId;                   //!< Event ID for expiration of time-off-air
 
             bool _txDutyCyclePending;           //!< Flag for pending duty cycle event
 
-            static void OnTxDutyCycleEvent(const void* arg);    //!< Rtos callback for duty cycle event
+            void OnTxDutyCycleEvent();          //!< Callback for duty cycle event
             void OnTxDutyCycleEventBottom();                    //!< Callback for duty cycle event
 
             static const uint8_t* TX_POWERS;                    //!< List of available tx powers
@@ -625,6 +654,7 @@ namespace lora {
 
             SxRadio* _radio;                    //!< Injected SxRadio dependency
             Settings* _settings;                //!< Current settings
+            EventQueue* _evtQueue;              //!< mbed Event Queue
     };
 }
 

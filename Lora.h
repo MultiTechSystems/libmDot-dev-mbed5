@@ -103,110 +103,14 @@ namespace lora {
     const uint16_t RX2_DELAY_OFFSET = 1000;                     //!< Delay between first and second window
     const uint16_t RXC_OFFSET = 50;                             //!< Time between end of RXC after TX and RX1
 
-    const uint8_t US915_125K_NUM_CHANS = 64;                    //!< Number of 125k channels in US915 channel plan
-    const uint8_t US915_500K_NUM_CHANS = 8;                     //!< Number of 500k channels in US915 channel plan
-
-    const uint32_t US915_125K_FREQ_BASE = 902300000;            //!< Frequency base for 125k US915 uplink channels
-    const uint32_t US915_125K_FREQ_STEP = 200000;               //!< Frequency step for 125k US915 uplink channels
-
-    const uint32_t US915_500K_FREQ_BASE = 903000000;            //!< Frequency base for 500k US915 uplink channels
-    const uint32_t US915_500K_FREQ_STEP = 1600000;              //!< Frequency step for 500k US915 uplink channels
-
-    const uint32_t US915_500K_DBASE = 923300000;                //!< Frequency base for 500k US915 downlink channels
-    const uint32_t US915_500K_DSTEP = 600000;                   //!< Frequency step for 500k US915 downlink channels
-
-    const uint32_t US915_FREQ_MIN = 902000000;
-    const uint32_t US915_FREQ_MAX = 928000000;
-
-    const uint8_t US915_MIN_DATARATE = (uint8_t) DR_0;       //!< Minimum transmit datarate for US915
-    const uint8_t US915_MAX_DATARATE = (uint8_t) DR_4;       //!< Maximum transmit datarate for US915
-
-    const uint8_t US915_MIN_DATARATE_OFFSET = (uint8_t) 0;       //!< Minimum transmit datarate for US915
-    const uint8_t US915_MAX_DATARATE_OFFSET = (uint8_t) 3;       //!< Maximum transmit datarate for US915
-
-    const uint8_t AU915_125K_NUM_CHANS = 64;                    //!< Number of 125k channels in AU915 channel plan
-    const uint8_t AU915_500K_NUM_CHANS = 8;                     //!< Number of 500k channels in AU915 channel plan
-
-    const uint32_t AU915_125K_FREQ_BASE = 915200000;            //!< Frequency base for 125k AU915 uplink channels
-    const uint32_t AU915_125K_FREQ_STEP = 200000;               //!< Frequency step for 125k AU915 uplink channels
-
-    const uint32_t AU915_500K_FREQ_BASE = 915900000;            //!< Frequency base for 500k AU915 uplink channels
-    const uint32_t AU915_500K_FREQ_STEP = 1600000;              //!< Frequency step for 500k AU915 uplink channels
-
-    const uint32_t AU915_500K_DBASE = 923300000;                //!< Frequency base for 500k AU915 downlink channels
-    const uint32_t AU915_500K_DSTEP = 600000;                   //!< Frequency step for 500k AU915 downlink channels
-
-    const uint32_t AU915_FREQ_MIN = 915000000;
-    const uint32_t AU915_FREQ_MAX = 928000000;
-
-    const uint8_t AU915_MIN_DATARATE = (uint8_t) DR_0;       //!< Minimum transmit datarate for AU915
-    const uint8_t AU915_MAX_DATARATE = (uint8_t) DR_6;       //!< Maximum transmit datarate for AU915
-
-    const uint8_t AU915_MIN_DATARATE_OFFSET = (uint8_t) 0;       //!< Minimum transmit datarate for AU915
-    const uint8_t AU915_MAX_DATARATE_OFFSET = (uint8_t) 5;       //!< Maximum transmit datarate for AU915
-
-    const uint8_t EU868_125K_NUM_CHANS = 16;                    //!< Number of 125k channels in EU868 channel plan
-    const uint8_t EU868_DEFAULT_NUM_CHANS = 3;                  //!< Number of default channels in EU868 channel plan
-    const uint32_t EU868_125K_FREQ_BASE = 868100000;            //!< Frequency base for 125k EU868 uplink channels
-    const uint32_t EU868_125K_FREQ_STEP = 200000;               //!< Frequency step for 125k EU868 uplink channels
-    const uint32_t EU868_RX2_FREQ = 869525000;                  //!< Frequency default for second rx window in EU868
-
-    const uint8_t EU868_TX_POWER_MAX = 14;                      //!< Max power for EU868 channel plan
-
-    const uint8_t KR920_125K_NUM_CHANS = 16;                    //!< Number of 125k channels in KR920 channel plan
-    const uint8_t KR920_DEFAULT_NUM_CHANS = 3;                  //!< Number of default channels in KR920 channel plan
-    const uint32_t KR920_125K_FREQ_BASE = 868100000;            //!< Frequency base for 125k KR920 uplink channels
-    const uint32_t KR920_125K_FREQ_STEP = 200000;               //!< Frequency step for 125k KR920 uplink channels
-    const uint32_t KR920_RX2_FREQ = 869525000;                  //!< Frequency default for second rx window in KR920
-
-    const uint8_t KR920_TX_POWER_MAX = 14;                      //!< Max power for KR920 channel plan
-
-    const uint8_t AS923_125K_NUM_CHANS = 16;                    //!< Number of 125k channels in AS923 channel plan
-    const uint8_t AS923_DEFAULT_NUM_CHANS = 2;                  //!< Number of default channels in AS923 channel plan
-    const uint32_t AS923_125K_FREQ_BASE = 868100000;            //!< Frequency base for 125k AS923 uplink channels
-    const uint32_t AS923_125K_FREQ_STEP = 200000;               //!< Frequency step for 125k AS923 uplink channels
-    const uint32_t AS923_RX2_FREQ = 869525000;                  //!< Frequency default for second rx window in AS923
-
-    const uint8_t AS923_TX_POWER_MAX = 14;                      //!< Max power for AS923 channel plan
-
-    const uint8_t IN865_125K_NUM_CHANS = 16;                    //!< Number of 125k channels in IN865 channel plan
-    const uint8_t IN865_DEFAULT_NUM_CHANS = 3;                  //!< Number of default channels in IN865 channel plan
-    const uint32_t IN865_125K_DEF_FREQ_1 = 865062500;
-    const uint32_t IN865_125K_DEF_FREQ_2 = 865402500;
-    const uint32_t IN865_125K_DEF_FREQ_3 = 865985000;
-    const uint32_t IN865_RX2_FREQ = 866550000;                  //!< Frequency default for second rx window in IN865
-
-    const uint8_t IN865_TX_POWER_MAX = 30;                      //!< Max power for IN865 channel plan
-
-    // 0.1% duty cycle 863-868
-    // Limiting to 865-868 allows for 1% duty cycle
-    const uint32_t EU868_MILLI_FREQ_MIN = 865000000;
-    const uint32_t EU868_MILLI_FREQ_MAX = 868000000;
-
-    const uint32_t EU868_MILLI_1_FREQ_MIN = 868700000;
-    const uint32_t EU868_MILLI_1_FREQ_MAX = 869200000;
-
-    // 1% duty cycle
-    const uint32_t EU868_CENTI_FREQ_MIN = 868000000;
-    const uint32_t EU868_CENTI_FREQ_MAX = 868600000;
-
-    // 10% duty cycle
-    const uint32_t EU868_DECI_FREQ_MIN = 869400000;
-    const uint32_t EU868_DECI_FREQ_MAX = 869650000;
-
-    // Below 7dBm there is no duty cycle for these frequencies
-    // Up to 14dBm there is 1% duty cycle
-    const uint32_t EU868_VAR_FREQ_MIN = 869700000;
-    const uint32_t EU868_VAR_FREQ_MAX = 870000000;
-
-    const uint32_t EU868_FREQ_MIN = 863000000;
-    const uint32_t EU868_FREQ_MAX = 870000000;
-
-    const uint8_t EU868_MIN_DATARATE = (uint8_t) DR_0;       //!< Minimum transmit datarate for EU868
-    const uint8_t EU868_MAX_DATARATE = (uint8_t) DR_7;       //!< Maximum transmit datarate for EU868
-
-    const uint8_t EU868_MIN_DATARATE_OFFSET = (uint8_t) 0;       //!< Minimum transmit datarate for US915
-    const uint8_t EU868_MAX_DATARATE_OFFSET = (uint8_t) 5;       //!< Maximum transmit datarate for US915
+    const uint16_t BEACON_PREAMBLE_LENGTH = 10U;                //!< Beacon preamble length
+    const uint16_t DEFAULT_BEACON_PERIOD = 128U;                //!< Default period of the beacon (in seconds)
+    const uint16_t PING_SLOT_LENGTH = 30U;                      //!< Duration of each class B ping slot (in milliseconds)
+    const uint16_t BEACON_RESERVED_TIME = 2120U;                //!< Time reserved for beacon broadcast (in milliseconds)
+    const uint16_t BEACON_GUARD_TIME = 3000U;                   //!< Guard time before beacon transmission where no ping slots can be scheduled (in milliseconds)
+    const uint32_t MAX_BEACONLESS_OP_TIME = 7200U;              //!< Maximum time to operate in class B since last beacon received (in seconds)
+    const uint16_t MAX_CLASS_B_WINDOW_GROWTH = 3U;              //!< Maximum window growth factor for beacons and ping slots in beacon-less operation
+    const uint16_t DEFAULT_PING_NB = 1U;                        //!< Default number of ping slots per beacon interval
 
     const int16_t DEFAULT_FREE_CHAN_RSSI_THRESHOLD = -90;       //!< Threshold for channel activity detection (CAD) dBm
 
@@ -332,15 +236,24 @@ namespace lora {
 
 
     /**
-     * Received window used by Link
+     * Receive window used by Link
      */
     enum ReceiveWindows {
         RX_1 = 1,           //!< First receive window
         RX_2,               //!< Second receive window
         RX_BEACON,          //!< Beacon receive window
-        RX_SLOT,            //!< Ping Slot receive window
+        RX_SLOT,            //!< Ping slot receive window
         RXC,                //!< Class C continuous window
         RX_TEST
+    };
+
+    /**
+     * Beacon info descriptors for the GwSpecific Info field
+     */
+    enum BeaconInfoDesc {
+        GPS_FIRST_ANTENNA = 0,    //!< GPS coordinates of the gateway's first antenna
+        GPS_SECOND_ANTENNA,       //!< GPS coordinates of the gateway's second antenna
+        GPS_THIRD_ANTENNA,        //!< GPS coordinates of the gateway's third antenna
     };
 
     /**
@@ -367,6 +280,7 @@ namespace lora {
             uint8_t TxIQ;
             uint8_t RxIQ;
             uint8_t SymbolTimeout();
+            float Timeout();
             Datarate();
     } Datarate;
 
@@ -401,6 +315,16 @@ namespace lora {
     } DutyBand;
 
     /**
+     * Beacon data content (w/o CRCs and RFUs)
+     */
+    typedef struct {
+        uint32_t Time;
+        uint8_t InfoDesc;
+        uint32_t Latitude;
+        uint32_t Longitude;
+    } BeaconData_t;
+
+    /**
      * Device configuration
      */
     typedef struct {
@@ -430,12 +354,13 @@ namespace lora {
             uint32_t TxFrequency;       //!< Frequency for P2P transmit
             int8_t AntennaGain;         //!< Antenna Gain
             uint8_t DisableEncryption;  //!< Disable Encryption
-            uint8_t DisableCRC;        //!< Disable CRC on uplink packets
+            uint8_t DisableCRC;         //!< Disable CRC on uplink packets
             uint16_t P2PACKTimeout;
             uint16_t P2PACKBackoff;
             uint8_t JoinRx1DatarateOffset;  //!< Offset for datarate for first window
             uint32_t JoinRx2Frequency;      //!< Frequency used in second window
             uint8_t JoinRx2DatarateIndex;   //!< Datarate for second window
+            uint8_t PingPeriodicity;        //!< Number of ping slots to open in a beacon interval (2^(7-PingPeriodicity))
     } NetworkConfig;
 
     /**
@@ -444,9 +369,14 @@ namespace lora {
      */
     typedef struct {
             uint8_t Joined;                     //!< State of session
+            uint8_t Class;                      //!< Operating class of device
             uint8_t Rx1DatarateOffset;          //!< Offset for datarate for first window
             uint32_t Rx2Frequency;              //!< Frequency used in second window
             uint8_t Rx2DatarateIndex;           //!< Datarate for second window
+            uint32_t BeaconFrequency;           //!< Frequency used for the beacon window
+            uint8_t BeaconDatarateIndex;        //!< Datarate for the beacon
+            uint32_t PingSlotFrequency;         //!< Frequency used for ping slot windows
+            uint8_t PingSlotDatarateIndex;      //!< Datarate for the ping slots
             uint8_t TxPower;                    //!< Current total radiated output power in dBm
             uint8_t TxDatarate;                 //!< Current datarate can be changed when ADR is enabled
             uint32_t Address;                   //!< Network address
@@ -636,13 +566,16 @@ namespace lora {
         MOTE_MAC_RX_TIMING_SETUP_ANS = 0x08,
         MOTE_MAC_TX_PARAM_SETUP_ANS = 0x09,
         MOTE_MAC_DL_CHANNEL_ANS = 0x0A,
+        MOTE_MAC_REKEY_IND = 0x0B,
+        MOTE_MAC_ADR_PARAM_SETUP_ANS = 0x0C,
+        MOTE_MAC_DEVICE_TIME_REQ = 0x0D,
+        MOTE_MAC_REJOIN_PARAM_SETUP_ANS = 0x0F,
 
         /* Class B */
-        MOTE_MAC_PING_SLOT_INFO_REQ = 0x0B,
-        MOTE_MAC_PING_SLOT_FREQ_ANS = 0x0C,
-        MOTE_MAC_PING_SLOT_CHANNEL_ANS = 0x0D,
-        MOTE_MAC_BEACON_TIMING_REQ = 0x0E,
-        MOTE_MAC_BEACON_FREQ_ANS = 0x0F,
+        MOTE_MAC_PING_SLOT_INFO_REQ = 0x10,
+        MOTE_MAC_PING_SLOT_CHANNEL_ANS = 0x11,
+        MOTE_MAC_BEACON_TIMING_REQ = 0x12,
+        MOTE_MAC_BEACON_FREQ_ANS = 0x13,
 
         /* Multitech */
         MOTE_MAC_PING_REQ = 0x80,
@@ -668,13 +601,17 @@ namespace lora {
         SRV_MAC_RX_TIMING_SETUP_REQ = 0x08,
         SRV_MAC_TX_PARAM_SETUP_REQ = 0x09,
         SRV_MAC_DL_CHANNEL_REQ = 0x0A,
+        SRV_MAC_REKEY_CONF = 0x0B,
+        SRV_MAC_ADR_PARAM_SETUP_REQ = 0x0C,
+        SRV_MAC_DEVICE_TIME_ANS = 0x0D,
+        SRV_MAC_FORCE_REJOIN_REQ = 0x0E,
+        SRV_MAC_REJOIN_PARAM_SETUP_REQ = 0x0F,
 
         /* Class B */
-        SRV_MAC_PING_SLOT_INFO_ANS = 0x0B,
-        SRV_MAC_PING_SLOT_FREQ_REQ = 0x0C,
-        SRV_MAC_PING_SLOT_CHANNEL_REQ = 0x0D,
-        SRV_MAC_BEACON_TIMING_ANS = 0x0E,
-        SRV_MAC_BEACON_FREQ_REQ = 0x0F,
+        SRV_MAC_PING_SLOT_INFO_ANS = 0x10,
+        SRV_MAC_PING_SLOT_CHANNEL_REQ = 0x11,
+        SRV_MAC_BEACON_TIMING_ANS = 0x12,
+        SRV_MAC_BEACON_FREQ_REQ = 0x13,
 
         /* Multitech */
         SRV_MAC_PING_ANS = 0x80,
@@ -685,6 +622,15 @@ namespace lora {
         SRV_MAC_MULTIPART_END_REQ = 0x85,
         SRV_MAC_MULTIPART_END_ANS = 0x86
     } ServerCommand;
+
+    /**
+     * Radio configuration options
+     */
+    typedef enum RadioCfg {
+        NO_RADIO_CFG,
+        TX_RADIO_CFG,
+        RX_RADIO_CFG
+    } RadioCfg_t;
 
     /**
      * Random seed for software RNG

@@ -1194,6 +1194,21 @@ class mDot {
         uint8_t getMinTxPower();
 
         /**
+         * Set ping slot periodicity
+         * Specify the the number of ping slots in a given beacon interval
+         * Note: Must switch back to class A for the change to take effect
+         * @param exp - number_of_pings = 2^(7 - exp) where 0 <= exp <= 7
+         * @returns MDOT_OK if success
+         */
+        uint32_t setPingPeriodicity(uint8_t exp);
+
+        /**
+         * Get ping slot periodicity
+         * @returns exp = 7 - log2(number_of_pings)
+         */
+        uint8_t getPingPeriodicity();
+
+        /**
          *
          * get/set adaptive data rate
          * configure data rates and power levels based on signal to noise of packets received at gateway

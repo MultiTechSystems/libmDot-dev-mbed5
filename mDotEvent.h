@@ -63,9 +63,13 @@ class mDotEvent: public lora::MacEvents {
           PacketReceived(false),
           RxPort(0),
           RxPayloadSize(0),
+          BeaconLocked(false),
+          BeaconPayloadSize(0U),
           PongReceived(false),
           PongRssi(0),
           PongSnr(0),
+          ServerTimeReceived(false),
+          ServerTimeSeconds(0U),
           AckReceived(false),
           DuplicateRx(false),
           TxNbRetries(0),
@@ -234,11 +238,30 @@ class mDotEvent: public lora::MacEvents {
                 _sleep_cb(mDot::AUTO_SLEEP_EVT_CLEANUP);
         }
 
+        virtual void BeaconRx(uint8_t *payload, uint16_t size, int16_t rssi, int8_t snr) {
+            logDebug("mDotEvent - BeaconRx");
+            BeaconLocked = true;
+
+            memcpy(BeaconPayload, payload, size);
+            BeaconPayloadSize = size;
+        }
+
+        virtual void BeaconLost() {
+            logDebug("mDotEvent - BeaconLost");
+            BeaconLocked = false;
+        }
+
         virtual void Pong(int16_t m_rssi, int8_t m_snr, int16_t s_rssi, int8_t s_snr) {
             logDebug("mDotEvent - Pong");
             PongReceived = true;
             PongRssi = s_rssi;
             PongSnr = s_snr;
+        }
+
+        virtual void ServerTime(uint32_t seconds, uint8_t sub_seconds) {
+            logDebug("mDotEvent - ServerTime");
+            ServerTimeReceived = true;
+            ServerTimeSeconds = seconds;
         }
 
         virtual void NetworkLinkCheck(int16_t m_rssi, int8_t m_snr, int8_t s_snr, uint8_t s_gateways) {
@@ -309,9 +332,16 @@ class mDotEvent: public lora::MacEvents {
         uint8_t RxPayload[255];
         uint8_t RxPayloadSize;
 
+        bool BeaconLocked;
+        uint8_t BeaconPayload[25];
+        uint8_t BeaconPayloadSize;
+
         bool PongReceived;
         int16_t PongRssi;
         int16_t PongSnr;
+
+        bool ServerTimeReceived;
+        uint32_t ServerTimeSeconds;
 
         bool AckReceived;
         bool DuplicateRx;

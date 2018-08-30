@@ -23,6 +23,15 @@
 
 namespace lora {
 
+    const uint8_t  KR920_125K_NUM_CHANS = 16;        //!< Number of 125k channels in KR920 channel plan
+    const uint8_t  KR920_DEFAULT_NUM_CHANS = 3;      //!< Number of default channels in KR920 channel plan
+    const uint32_t KR920_125K_FREQ_BASE = 922100000; //!< Frequency base for 125k KR920 uplink channels
+    const uint32_t KR920_125K_FREQ_STEP = 200000;    //!< Frequency step for 125k KR920 uplink channels
+    const uint32_t KR920_RX2_FREQ = 921900000;       //!< Frequency default for second rx window in KR920
+    const uint8_t  KR920_TX_POWER_MAX = 14;          //!< Max power for KR920 channel plan
+    const uint8_t  KR920_BEACON_DR = DR_3;           //!< Default beacon datarate
+    const uint32_t KR920_BEACON_FREQ = 923100000U;   //!< Default beacon broadcast frequency
+
     class ChannelPlan_KR920 : public lora::ChannelPlan {
         public:
             /**
@@ -95,9 +104,10 @@ namespace lora {
              * Set the SxRadio rx config provided window
              * @param window to be opened
              * @param continuous keep window open
+             * @param wnd_growth factor to increase the rx window by
              * @return LORA_OK
              */
-            virtual uint8_t SetRxConfig(uint8_t window, bool continuous);
+            virtual uint8_t SetRxConfig(uint8_t window, bool continuous, uint16_t wnd_growth);
 
             /**
              * Set frequency sub band if supported by plan
@@ -224,12 +234,31 @@ namespace lora {
              */
             virtual void DefaultLBT();
 
+            /**
+             * Check if this packet is a beacon and if so extract parameters needed
+             * @param payload of potential beacon
+             * @param size of the packet
+             * @param [out] data extracted from the beacon if this packet was indeed a beacon
+             * @return true if this packet is beacon, false if not
+             */
+            virtual bool DecodeBeacon(const uint8_t* payload,
+                                      size_t size,
+                                      BeaconData_t& data);
+
         protected:
 
             static const uint8_t KR920_TX_POWERS[8];                    //!< List of available tx powers
             static const uint8_t KR920_RADIO_POWERS[21];                 //!< List of calibrated tx powers
             static const uint8_t KR920_MAX_PAYLOAD_SIZE[];              //!< List of max payload sizes for each datarate
             static const uint8_t KR920_MAX_PAYLOAD_SIZE_REPEATER[];     //!< List of repeater compatible max payload sizes for each datarate
+
+            typedef struct __attribute__((packed)) {
+                uint8_t RFU[2];
+                uint8_t Time[4];
+                uint8_t CRC1[2];
+                uint8_t GwSpecific[7];
+                uint8_t CRC2[2];
+            } BCNPayload;
     };
 }
 

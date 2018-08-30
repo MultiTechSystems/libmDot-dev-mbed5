@@ -23,6 +23,16 @@
 
 namespace lora {
 
+    const uint8_t  IN865_125K_NUM_CHANS = 16;         //!< Number of 125k channels in IN865 channel plan
+    const uint8_t  IN865_DEFAULT_NUM_CHANS = 3;       //!< Number of default channels in IN865 channel plan
+    const uint32_t IN865_125K_DEF_FREQ_1 = 865062500;
+    const uint32_t IN865_125K_DEF_FREQ_2 = 865402500;
+    const uint32_t IN865_125K_DEF_FREQ_3 = 865985000;
+    const uint32_t IN865_RX2_FREQ = 866550000;        //!< Frequency default for second rx window in IN865
+    const uint8_t  IN865_TX_POWER_MAX = 30;           //!< Max power for IN865 channel plan
+    const uint8_t  IN865_BEACON_DR = DR_4;            //!< Default beacon datarate
+    const uint32_t IN865_BEACON_FREQ = 866550000U;    //!< Default beacon broadcast frequency
+
     class ChannelPlan_IN865 : public lora::ChannelPlan {
         public:
             /**
@@ -95,9 +105,10 @@ namespace lora {
              * Set the SxRadio rx config provided window
              * @param window to be opened
              * @param continuous keep window open
+             * @param wnd_growth factor to increase the rx window by
              * @return LORA_OK
              */
-            virtual uint8_t SetRxConfig(uint8_t window, bool continuous);
+            virtual uint8_t SetRxConfig(uint8_t window, bool continuous, uint16_t wnd_growth);
 
             /**
              * Set frequency sub band if supported by plan
@@ -229,12 +240,32 @@ namespace lora {
              */
             virtual void IncrementDatarate();
 
+            /**
+             * Check if this packet is a beacon and if so extract parameters needed
+             * @param payload of potential beacon
+             * @param size of the packet
+             * @param [out] data extracted from the beacon if this packet was indeed a beacon
+             * @return true if this packet is beacon, false if not
+             */
+            virtual bool DecodeBeacon(const uint8_t* payload,
+                                      size_t size,
+                                      BeaconData_t& data);
+
         protected:
 
             static const uint8_t IN865_TX_POWERS[11];                    //!< List of available tx powers
             static const uint8_t IN865_RADIO_POWERS[21];                 //!< List of calibrated tx powers
             static const uint8_t IN865_MAX_PAYLOAD_SIZE[];              //!< List of max payload sizes for each datarate
             static const uint8_t IN865_MAX_PAYLOAD_SIZE_REPEATER[];     //!< List of repeater compatible max payload sizes for each datarate
+
+            typedef struct __attribute__((packed)) {
+                uint8_t RFU1[1];
+                uint8_t Time[4];
+                uint8_t CRC1[2];
+                uint8_t GwSpecific[7];
+                uint8_t RFU2[3];
+                uint8_t CRC2[2];
+            } BCNPayload;
     };
 }
 

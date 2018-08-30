@@ -23,6 +23,47 @@
 
 namespace lora {
 
+    const uint8_t EU868_125K_NUM_CHANS = 16;                    //!< Number of 125k channels in EU868 channel plan
+    const uint8_t EU868_DEFAULT_NUM_CHANS = 3;                  //!< Number of defualt channels in EU868 channel plan
+    const uint32_t EU868_125K_FREQ_BASE = 868100000;            //!< Frequency base for 125k EU868 uplink channels
+    const uint32_t EU868_125K_FREQ_STEP = 200000;               //!< Frequency step for 125k EU868 uplink channels
+    const uint32_t EU868_RX2_FREQ = 869525000;                  //!< Frequency default for second rx window in EU868
+
+    const uint8_t EU868_TX_POWER_MAX = 14;                      //!< Max power for EU868 channel plan
+
+    // 0.1% duty cycle 863-868
+    // Limiting to 865-868 allows for 1% duty cycle
+    const uint32_t EU868_MILLI_FREQ_MIN = 865000000;
+    const uint32_t EU868_MILLI_FREQ_MAX = 868000000;
+
+    const uint32_t EU868_MILLI_1_FREQ_MIN = 868700000;
+    const uint32_t EU868_MILLI_1_FREQ_MAX = 869200000;
+
+    // 1% duty cycle
+    const uint32_t EU868_CENTI_FREQ_MIN = 868000000;
+    const uint32_t EU868_CENTI_FREQ_MAX = 868600000;
+
+    // 10% duty cycle
+    const uint32_t EU868_DECI_FREQ_MIN = 869400000;
+    const uint32_t EU868_DECI_FREQ_MAX = 869650000;
+
+    // Below 7dBm there is no duty cycle for these frequencies
+    // Up to 14dBm there is 1% duty cycle
+    const uint32_t EU868_VAR_FREQ_MIN = 869700000;
+    const uint32_t EU868_VAR_FREQ_MAX = 870000000;
+
+    const uint32_t EU868_FREQ_MIN = 863000000;
+    const uint32_t EU868_FREQ_MAX = 870000000;
+
+    const uint8_t EU868_MIN_DATARATE = (uint8_t) DR_0;           //!< Minimum transmit datarate for EU868
+    const uint8_t EU868_MAX_DATARATE = (uint8_t) DR_7;           //!< Maximum transmit datarate for EU868
+
+    const uint8_t EU868_MIN_DATARATE_OFFSET = (uint8_t) 0;       //!< Minimum transmit datarate for US915
+    const uint8_t EU868_MAX_DATARATE_OFFSET = (uint8_t) 5;       //!< Maximum transmit datarate for US915
+
+    const uint8_t  EU868_BEACON_DR = DR_3;                       //!< Default beacon datarate
+    const uint32_t EU868_BEACON_FREQ = 869525000U;               //!< Default beacon broadcast frequency
+
     class ChannelPlan_EU868 : public lora::ChannelPlan {
         public:
             /**
@@ -95,9 +136,10 @@ namespace lora {
              * Set the SxRadio rx config provided window
              * @param window to be opened
              * @param continuous keep window open
+             * @param wnd_growth factor to increase the rx window by
              * @return LORA_OK
              */
-            virtual uint8_t SetRxConfig(uint8_t window, bool continuous);
+            virtual uint8_t SetRxConfig(uint8_t window, bool continuous, uint16_t wnd_growth);
 
             /**
              * Set frequency sub band if supported by plan
@@ -105,12 +147,6 @@ namespace lora {
              * @return LORA_OK
              */
             virtual uint8_t SetFrequencySubBand(uint8_t sub_band);
-
-            /**
-             * Get time on air with current settings
-             * @param bytes number of bytes to be sent
-             */
-            virtual uint32_t GetTimeOnAir(uint8_t bytes);
 
             /**
              * Callback for ACK timeout event
@@ -218,12 +254,31 @@ namespace lora {
              */
             virtual void EnableDefaultChannels();
 
+            /**
+             * Check if this packet is a beacon and if so extract parameters needed
+             * @param payload of potential beacon
+             * @param size of the packet
+             * @param [out] data extracted from the beacon if this packet was indeed a beacon
+             * @return true if this packet is beacon, false if not
+             */
+            virtual bool DecodeBeacon(const uint8_t* payload,
+                                      size_t size,
+                                      BeaconData_t& data);
+
         protected:
 
             static const uint8_t EU868_TX_POWERS[8];                    //!< List of available tx powers
             static const uint8_t EU868_RADIO_POWERS[21];                 //!< List of calibrated tx powers
             static const uint8_t EU868_MAX_PAYLOAD_SIZE[];              //!< List of max payload sizes for each datarate
             static const uint8_t EU868_MAX_PAYLOAD_SIZE_REPEATER[];     //!< List of repeater compatible max payload sizes for each datarate
+
+            typedef struct __attribute__((packed)) {
+                uint8_t RFU[2];
+                uint8_t Time[4];
+                uint8_t CRC1[2];
+                uint8_t GwSpecific[7];
+                uint8_t CRC2[2];
+            } BCNPayload;
     };
 }
 
