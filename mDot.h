@@ -1350,21 +1350,6 @@ class mDot {
         int32_t sleep(const uint32_t& interval, const uint8_t& wakeup_mode = RTC_ALARM, const bool& deepsleep = true);
 
         /**
-         * Set auto sleep mode
-         * Auto sleep mode will automatically put the MCU to sleep after tx and in between receive windows
-         * Note: The MCU will go into a stop mode sleep in between rx windows.  This means that
-         *       peripherals such as timers will not function during the sleep intervals.
-         * @param enable - Flag to enable auto sleep mode
-         */
-        void setAutoSleep(bool enable);
-
-        /**
-         * Get auto sleep mode
-         * @returns 0 if sleep mode is disabled, 1 if it is enabled
-         */
-        uint8_t getAutoSleep();
-
-        /**
          * Set wake pin
          * @param pin the pin to use to wake the device from sleep mode
          *      For MDOT, XBEE_DI (2-8)
@@ -1703,26 +1688,9 @@ class mDot {
 
         void mcGroupKeys(uint8_t *mcKeyEncrypt, uint32_t addr, uint8_t groupId, uint32_t frame_count);  
     private:
-        typedef enum {
-            AUTO_SLEEP_EVT_CFG,
-            AUTO_SLEEP_EVT_TXDONE,
-            AUTO_SLEEP_EVT_RX1_TIMEOUT,
-            AUTO_SLEEP_EVT_CLEANUP
-        } AutoSleepEvent_t;
-
-        typedef enum {
-            USER_SLEEP,
-            AUTO_SLEEP
-        } SleepClient_t;
-
         void sleep_ms(uint32_t interval,
                       uint8_t wakeup_mode = RTC_ALARM,
-                      bool deepsleep = true,
-                      SleepClient_t sleep_client = USER_SLEEP);
-
-        void auto_sleep(AutoSleepEvent_t evt);
-
-        void wakeup(SleepClient_t sleep_client);
+                      bool deepsleep = true);
 
         mdot_stats _stats;
 
