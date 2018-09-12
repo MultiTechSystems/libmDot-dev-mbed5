@@ -93,9 +93,10 @@ void ChannelPlan_EU868::Init() {
     GetSettings()->Session.Rx2DatarateIndex = DR_0;
 
     GetSettings()->Session.BeaconFrequency = EU868_BEACON_FREQ;
-    GetSettings()->Session.BeaconDatarateIndex = EU868_BEACON_DR;
+    GetSettings()->Session.BeaconFreqHop = false;
     GetSettings()->Session.PingSlotFrequency = EU868_BEACON_FREQ;
     GetSettings()->Session.PingSlotDatarateIndex = EU868_BEACON_DR;
+    GetSettings()->Session.PingSlotFreqHop = false;
 
     logInfo("Initialize datarates...");
 
@@ -421,7 +422,7 @@ RxWindow ChannelPlan_EU868::GetRxWindow(uint8_t window) {
 
         case RX_BEACON:
             rxw.Frequency = GetSettings()->Session.BeaconFrequency;
-            index = GetSettings()->Session.BeaconDatarateIndex;
+            index = EU868_BEACON_DR;
             break;
 
         case RX_SLOT:

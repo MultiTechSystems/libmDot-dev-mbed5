@@ -308,10 +308,6 @@ namespace lora {
                 uint8_t RFU2[3];
                 uint8_t CRC2[2];
             } BCNPayload;
-
-        private:
-            bool _bcnFreqHop;
-            bool _pingFreqHop;
     };
 }
 

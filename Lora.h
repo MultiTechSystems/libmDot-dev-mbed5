@@ -374,9 +374,10 @@ namespace lora {
             uint32_t Rx2Frequency;              //!< Frequency used in second window
             uint8_t Rx2DatarateIndex;           //!< Datarate for second window
             uint32_t BeaconFrequency;           //!< Frequency used for the beacon window
-            uint8_t BeaconDatarateIndex;        //!< Datarate for the beacon
+            bool BeaconFreqHop;                 //!< Beacon frequency hopping enable
             uint32_t PingSlotFrequency;         //!< Frequency used for ping slot windows
             uint8_t PingSlotDatarateIndex;      //!< Datarate for the ping slots
+            bool PingSlotFreqHop;               //!< Ping slot frequency hopping enable
             uint8_t TxPower;                    //!< Current total radiated output power in dBm
             uint8_t TxDatarate;                 //!< Current datarate can be changed when ADR is enabled
             uint32_t Address;                   //!< Network address

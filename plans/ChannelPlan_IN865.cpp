@@ -92,9 +92,10 @@ void ChannelPlan_IN865::Init() {
     GetSettings()->Session.Rx2DatarateIndex = DR_2;
 
     GetSettings()->Session.BeaconFrequency = IN865_BEACON_FREQ;
-    GetSettings()->Session.BeaconDatarateIndex = IN865_BEACON_DR;
+    GetSettings()->Session.BeaconFreqHop = false;
     GetSettings()->Session.PingSlotFrequency = IN865_BEACON_FREQ;
     GetSettings()->Session.PingSlotDatarateIndex = IN865_BEACON_DR;
+    GetSettings()->Session.PingSlotFreqHop = false;
 
     logInfo("Initialize datarates...");
 
@@ -397,7 +398,7 @@ RxWindow ChannelPlan_IN865::GetRxWindow(uint8_t window) {
 
         case RX_BEACON:
             rxw.Frequency = GetSettings()->Session.BeaconFrequency;
-            index = GetSettings()->Session.BeaconDatarateIndex;
+            index = IN865_BEACON_DR;
             break;
 
         case RX_SLOT:

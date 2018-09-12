@@ -28,8 +28,6 @@ const uint8_t ChannelPlan_US915::US915_MAX_PAYLOAD_SIZE_REPEATER[] = { 11, 53, 1
 ChannelPlan_US915::ChannelPlan_US915()
 :
   ChannelPlan(NULL, NULL)
-  , _bcnFreqHop(true)
-  , _pingFreqHop(true)
 {
 
 }
@@ -37,8 +35,6 @@ ChannelPlan_US915::ChannelPlan_US915()
 ChannelPlan_US915::ChannelPlan_US915(Settings* settings)
 :
   ChannelPlan(NULL, settings)
-  , _bcnFreqHop(true)
-  , _pingFreqHop(true)
 {
 
 }
@@ -46,8 +42,6 @@ ChannelPlan_US915::ChannelPlan_US915(Settings* settings)
 ChannelPlan_US915::ChannelPlan_US915(SxRadio* radio, Settings* settings)
 :
   ChannelPlan(radio, settings)
-  , _bcnFreqHop(true)
-  , _pingFreqHop(true)
 {
 
 }
@@ -94,9 +88,10 @@ void ChannelPlan_US915::Init() {
     GetSettings()->Session.Rx2Frequency = US915_500K_DBASE;
 
     GetSettings()->Session.BeaconFrequency = US915_BEACON_FREQ_BASE;
-    GetSettings()->Session.BeaconDatarateIndex = US915_BEACON_DR;
+    GetSettings()->Session.BeaconFreqHop = true;
     GetSettings()->Session.PingSlotFrequency = US915_BEACON_FREQ_BASE;
     GetSettings()->Session.PingSlotDatarateIndex = US915_BEACON_DR;
+    GetSettings()->Session.PingSlotFreqHop = true;
 
     _minDatarate = US915_MIN_DATARATE;
     _maxDatarate = US915_MAX_DATARATE;
@@ -458,7 +453,7 @@ RxWindow ChannelPlan_US915::GetRxWindow(uint8_t window) {
 
         case RX_BEACON:
             rxw.Frequency = GetSettings()->Session.BeaconFrequency;
-            index = GetSettings()->Session.BeaconDatarateIndex;
+            index = US915_BEACON_DR;
             break;
 
         case RX_SLOT:
@@ -575,7 +570,7 @@ uint8_t ChannelPlan_US915::HandlePingSlotChannelReq(const uint8_t* payload, uint
         logInfo("PingSlotChannelReq accepted DR: %d Freq: %d", datarate, freq);
         GetSettings()->Session.PingSlotFrequency = freq;
         GetSettings()->Session.PingSlotDatarateIndex = datarate;
-        _pingFreqHop = freqHop;
+        GetSettings()->Session.PingSlotFreqHop = freqHop;
     } else {
         logInfo("PingSlotChannelReq rejected DR: %d Freq: %d", datarate, freq);
     }
@@ -606,7 +601,7 @@ uint8_t ChannelPlan_US915::HandleBeaconFrequencyReq(const uint8_t* payload, uint
     if (status & 0x01) {
         logInfo("BeaconFrequencyReq accepted Freq: %d", freq);
         GetSettings()->Session.BeaconFrequency = freq;
-        _bcnFreqHop = freqHop;
+        GetSettings()->Session.BeaconFreqHop = freqHop;
     } else {
         logInfo("BeaconFrequencyReq rejected Freq: %d", freq);
     }
@@ -1090,13 +1085,13 @@ void ChannelPlan_US915::FrequencyHop(uint32_t time, uint32_t period, uint32_t de
     uint32_t channel;
     uint32_t freq;
 
-    if (_bcnFreqHop) {
+    if (GetSettings()->Session.BeaconFreqHop) {
         channel = (time / period) % US915_BEACON_CHANNELS;
         freq = US915_BEACON_FREQ_BASE + (channel * US915_BEACON_FREQ_STEP);
         GetSettings()->Session.BeaconFrequency = freq;
     }
 
-    if (_pingFreqHop) {
+    if (GetSettings()->Session.PingSlotFreqHop) {
         channel = (time / period + devAddr) % US915_BEACON_CHANNELS;
         freq = US915_BEACON_FREQ_BASE + (channel * US915_BEACON_FREQ_STEP);
         GetSettings()->Session.PingSlotFrequency = freq;

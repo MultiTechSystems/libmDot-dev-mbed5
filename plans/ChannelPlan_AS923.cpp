@@ -94,9 +94,10 @@ void ChannelPlan_AS923::Init() {
     GetSettings()->Session.Rx2DatarateIndex = DR_2;
 
     GetSettings()->Session.BeaconFrequency = AS923_BEACON_FREQ;
-    GetSettings()->Session.BeaconDatarateIndex = AS923_BEACON_DR;
+    GetSettings()->Session.BeaconFreqHop = false;
     GetSettings()->Session.PingSlotFrequency = AS923_BEACON_FREQ;
     GetSettings()->Session.PingSlotDatarateIndex = AS923_BEACON_DR;
+    GetSettings()->Session.PingSlotFreqHop = false;
 
     GetSettings()->Session.Max_EIRP  = 16;
 
@@ -415,7 +416,7 @@ RxWindow ChannelPlan_AS923::GetRxWindow(uint8_t window) {
 
         case RX_BEACON:
             rxw.Frequency = GetSettings()->Session.BeaconFrequency;
-            index = GetSettings()->Session.BeaconDatarateIndex;
+            index = AS923_BEACON_DR;
             break;
 
         case RX_SLOT:
