@@ -208,7 +208,7 @@ uint8_t ChannelPlan_RU864::HandleJoinAccept(const uint8_t* buffer, uint8_t size)
 
     if (size == 33) {
         Channel ch;
-        int index = 3;
+        int index = 2;
         for (int i = 13; i < size - 5; i += 3) {
 
             ch.Frequency = ((buffer[i]) | (buffer[i + 1] << 8) | (buffer[i + 2] << 16)) * 100u;
