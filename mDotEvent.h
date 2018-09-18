@@ -64,7 +64,6 @@ class mDotEvent: public lora::MacEvents {
           RxPort(0),
           RxPayloadSize(0),
           BeaconLocked(false),
-          BeaconPayloadSize(0U),
           PongReceived(false),
           PongRssi(0),
           PongSnr(0),
@@ -220,12 +219,10 @@ class mDotEvent: public lora::MacEvents {
             logDebug("mDotEvent - RxDone");
         }
 
-        virtual void BeaconRx(uint8_t *payload, uint16_t size, int16_t rssi, int8_t snr) {
+        virtual void BeaconRx(const lora::BeaconData_t& beacon_data, int16_t rssi, int8_t snr) {
             logDebug("mDotEvent - BeaconRx");
             BeaconLocked = true;
-
-            memcpy(BeaconPayload, payload, size);
-            BeaconPayloadSize = size;
+            BeaconData = beacon_data;
         }
 
         virtual void BeaconLost() {
@@ -296,8 +293,7 @@ class mDotEvent: public lora::MacEvents {
         uint8_t RxPayloadSize;
 
         bool BeaconLocked;
-        uint8_t BeaconPayload[25];
-        uint8_t BeaconPayloadSize;
+        lora::BeaconData_t BeaconData;
 
         bool PongReceived;
         int16_t PongRssi;

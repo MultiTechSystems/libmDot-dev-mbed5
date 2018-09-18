@@ -95,12 +95,11 @@ namespace lora {
 
             /**
              * Fired when a beacon is received
-             * @param payload received bytes
-             * @param size number of received bytes
+             * @param beacon_data parsed from the beacon payload
              * @param rssi of received beacon
              * @param snr of received beacon
              */
-            virtual void BeaconRx(uint8_t *payload, uint16_t size, int16_t rssi, int8_t snr);
+            virtual void BeaconRx(const BeaconData_t& beacon_data, int16_t rssi, int8_t snr);
 
             /**
              * Fired upon losing beacon synchronization (120 minutes elapsed from last beacon reception)
