@@ -45,7 +45,7 @@ public:
         RF_CAD,
     }RadioState_t;
 
-    SxRadio(uint32_t WakeupTime) : WakeupTime(WakeupTime), State(RF_IDLE), Modem(MODEM_LORA) { }
+    SxRadio(uint32_t WakeupTime) : WakeupTime(WakeupTime), freq_offset(0), State(RF_IDLE), Modem(MODEM_LORA) { }
     virtual ~SxRadio() {};
 
     /*!
@@ -186,6 +186,8 @@ public:
                               bool fixLen, bool crcOn, bool FreqHopOn,
                               uint8_t HopPeriod, bool iqInverted, uint32_t timeout ) = 0;
 
+    virtual void SetTxPower(int8_t power) = 0;
+
     virtual void SetTxContinuous(bool enable) = 0;
 
     /*!
@@ -278,9 +280,15 @@ public:
     void GrabMutex(void) { mutex.lock(); }
     void ReleaseMutex(void) { mutex.unlock(); }
 
+    int32_t GetFrequencyOffset() { return freq_offset; }
+    void SetFrequencyOffset(int32_t offset) { freq_offset = offset; }
+
     const uint32_t WakeupTime;
 
+
 protected:
+    int32_t freq_offset;
+
     RadioState_t State;
 
     RadioModems_t Modem;
@@ -289,6 +297,7 @@ protected:
      * Access protection
      */
     Mutex mutex;
+
 };
 
 #endif // __SXRADIO_H__

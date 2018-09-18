@@ -642,9 +642,11 @@ uint8_t ChannelPlan_AS923::HandleAdrCommand(const uint8_t* payload, uint8_t inde
     }
 
     if (GetSettings()->Network.ADREnabled) {
-        GetSettings()->Session.TxDatarate = datarate;
-        GetSettings()->Session.TxPower = GetSettings()->Session.Max_EIRP - (power * 2);
-        GetSettings()->Session.Redundancy = nbRep;
+        if (status == 0x07) {
+            GetSettings()->Session.TxDatarate = datarate;
+            GetSettings()->Session.TxPower = GetSettings()->Session.Max_EIRP - (power * 2);
+            GetSettings()->Session.Redundancy = nbRep;
+        }
     } else {
         logDebug("ADR is disabled, DR and Power not changed.");
         status &= 0xFB; // TxPower KO

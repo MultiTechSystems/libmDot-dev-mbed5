@@ -5,6 +5,7 @@
 #include "ChannelPlan_KR920.h"
 #include "ChannelPlan_IN865.h"
 #include "ChannelPlan_AS923_Japan.h"
+#include "ChannelPlan_RU864.h"
 
 
 #define CP_AS923 1
@@ -14,3 +15,4 @@
 #define CP_KR920 5
 #define CP_IN865 6
 #define CP_AS923_JAPAN 7
+#define CP_RU864 8

@@ -160,8 +160,11 @@ void ChannelPlan_AU915::Init() {
 }
 
 uint8_t ChannelPlan_AU915::HandleJoinAccept(const uint8_t* buffer, uint8_t size) {
-    if (size > 17) {
-        // TODO: Handle future channel mask settings
+
+    if (size > 17 && buffer[28] == 0x01) {
+        for (int i = 13; i < size - 5; i += 2) {
+            SetChannelMask((i-13)/2, buffer[i+1] << 8 | buffer[i]);
+        }
     }
 
     return LORA_OK;
@@ -668,9 +671,11 @@ uint8_t ChannelPlan_AU915::HandleAdrCommand(const uint8_t* payload, uint8_t inde
     }
 
     if (GetSettings()->Network.ADREnabled) {
-        GetSettings()->Session.TxDatarate = datarate;
-        GetSettings()->Session.TxPower = TX_POWERS[power];
-        GetSettings()->Session.Redundancy = nbRep;
+        if (status == 0x07) {
+            GetSettings()->Session.TxDatarate = datarate;
+            GetSettings()->Session.TxPower = TX_POWERS[power];
+            GetSettings()->Session.Redundancy = nbRep;
+        }
     } else {
         logDebug("ADR is disabled, DR and Power not changed.");
         status &= 0xFB; // TxPower KO

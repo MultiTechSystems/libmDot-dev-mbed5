@@ -1407,6 +1407,20 @@ class mDot {
          */
         int8_t getLbtThreshold();
 
+        /**
+         * Get Radio Frequency Offset
+         * Used for fine calibration of radio frequencies
+         * @returns frequency offset in MHz
+         */
+        int32_t getFrequencyOffset();
+        /**
+         * Get Radio Frequency Offset
+         * Used for fine calibration of radio frequencies
+         * @param offset frequency offset in MHz
+         */
+        void setFrequencyOffset(int32_t offset);
+
+
 #if defined(TARGET_MTS_MDOT_F411RE)
         ///////////////////////////////////////////////////////////////////
         // Filesystem (Non Volatile Memory) Operation Functions for mDot //
@@ -1647,7 +1661,7 @@ class mDot {
 
         void openRxWindow(uint32_t timeout, uint8_t bandwidth = 0);
         void closeRxWindow();
-        void sendContinuous(bool enable=true);
+        void sendContinuous(bool enable=true, uint32_t timeout=0, uint32_t frequency=0, int8_t txpower=-1);
         int32_t setDeviceId(const std::vector<uint8_t>& id);
         int32_t setProtectedAppEUI(const std::vector<uint8_t>& appEUI);
         int32_t setProtectedAppKey(const std::vector<uint8_t>& appKey);
