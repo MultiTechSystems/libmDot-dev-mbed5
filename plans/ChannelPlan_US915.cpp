@@ -646,6 +646,8 @@ uint8_t ChannelPlan_US915::HandleAdrCommand(const uint8_t* payload, uint8_t inde
         status &= 0xFB; // TxPower KO
     }
 
+    uint16_t t_125k = 0; //used only in ctrl case 5
+
     switch (ctrl) {
         case 0:
         case 1:
@@ -653,6 +655,25 @@ uint8_t ChannelPlan_US915::HandleAdrCommand(const uint8_t* payload, uint8_t inde
         case 3:
         case 4:
             SetChannelMask(ctrl, mask);
+            break;
+
+        case 5:
+            if(mask != 0) {
+                for(int i = 0; i < 8; i++) {  //0 - 7 bits
+                    if(((mask >> i) & 1) == 1) { //if bit in mask is a one
+                        t_125k |= (0xff << ((i % 2) * 8)); // this does either 0xff00 or 0x00ff to t_125k 
+                    }
+                    if(i % 2 == 1) { // if 1 then both halfs of the mask were set
+                        SetChannelMask(i/2, t_125k); 
+                        t_125k = 0; //reset mask for next two bits
+                    }
+                }
+                SetChannelMask(4, mask);
+            } else {
+                status &= 0xFE; // ChannelMask KO
+                logWarning("Rejecting mask, will not disable all channels");
+                return LORA_ERROR;
+            }
             break;
 
         case 6:
@@ -916,45 +937,24 @@ uint8_t ChannelPlan_US915::GetNextChannel()
 
 uint8_t lora::ChannelPlan_US915::GetJoinDatarate() {
     uint8_t dr = GetSettings()->Session.TxDatarate;
-
+    static int fsb = 1; 
     if (GetSettings()->Test.DisableRandomJoinDatarate == lora::OFF) {
-        static bool altDatarate = false;
 
         if (GetSettings()->Network.FrequencySubBand == 0) {
-            static uint16_t used_bands_125k = 0;
-            static uint16_t used_bands_500k = 0;
-            uint8_t frequency_sub_band = 0;
 
-            if (altDatarate) {
-                // 500k channel
-                if (CountBits(used_bands_500k) == 8) {
-                    used_bands_500k = 0;
-                }
-                while ((frequency_sub_band = rand_r(1, 8)) && (used_bands_500k & (1 << (frequency_sub_band - 1))) != 0)
-                    ;
-                used_bands_500k |= (1 << (frequency_sub_band - 1));
+            if (fsb < 9) {
+                SetFrequencySubBand(fsb);
+                logDebug("JoinDatarate setting frequency sub band to %d",fsb);
+                fsb++;
+                dr = lora::DR_0;
             } else {
-                // 125k channel
-                if (CountBits(used_bands_125k) == 8) {
-                    used_bands_125k = 0;
-                }
-                while ((frequency_sub_band = rand_r(1, 8)) && (used_bands_125k & (1 << (frequency_sub_band - 1))) != 0)
-                    ;
-                used_bands_125k |= (1 << (frequency_sub_band - 1));
+                dr = lora::DR_4;
+                fsb = 1;
             }
-
-            logWarning("JoinDatarate setting frequency sub band to %d 125k: %04x 500k: %04x", frequency_sub_band, used_bands_125k, used_bands_500k);
-            SetFrequencySubBand(frequency_sub_band);
-        }
-
-        if (altDatarate && CountBits(_channelMask[4] > 0)) {
-            dr = lora::DR_4;
         } else {
             dr = lora::DR_0;
         }
-        altDatarate = !altDatarate;
     }
-
     return dr;
 }
 

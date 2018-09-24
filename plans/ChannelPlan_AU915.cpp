@@ -637,6 +637,8 @@ uint8_t ChannelPlan_AU915::HandleAdrCommand(const uint8_t* payload, uint8_t inde
         status &= 0xFB; // TxPower KO
     }
 
+    uint16_t t_125k = 0; //used only in ctrl case 5
+
     switch (ctrl) {
         case 0:
         case 1:
@@ -644,6 +646,25 @@ uint8_t ChannelPlan_AU915::HandleAdrCommand(const uint8_t* payload, uint8_t inde
         case 3:
         case 4:
             SetChannelMask(ctrl, mask);
+            break;
+
+        case 5:
+            if(mask != 0) { //see US915 for same code with comments
+                for(int i = 0; i < 8; i++) {
+                    if(((mask >> i) & 1) == 1) {
+                        t_125k |= (0xff << ((i % 2) * 8));
+                    }
+                    if(i % 2 == 1) {
+                        SetChannelMask(i/2, t_125k);
+                        t_125k = 0;
+                    }
+                }
+                SetChannelMask(4, mask);
+            } else {
+                status &= 0xFE; // ChannelMask KO
+                logWarning("Rejecting mask, will not disable all channels");
+                return LORA_ERROR;
+            }
             break;
 
         case 6:
@@ -941,7 +962,7 @@ uint8_t lora::ChannelPlan_AU915::GetJoinDatarate() {
         if (altDatarate && CountBits(_channelMask[4] > 0)) {
             dr = lora::DR_6;
         } else {
-            dr = lora::DR_0;
+            dr = lora::DR_2;
         }
         altDatarate = !altDatarate;
     }

@@ -944,12 +944,8 @@ uint8_t ChannelPlan_AS923::GetNextChannel()
 
 
 uint8_t lora::ChannelPlan_AS923::GetJoinDatarate() {
-    uint8_t dr = GetSettings()->Session.TxDatarate;
-    
     // Default join datarate is DR2:SF10BW125
-    dr = lora::DR_2;
-    
-    return dr;
+    return lora::DR_2;
 }
 
 uint8_t ChannelPlan_AS923::CalculateJoinBackoff(uint8_t size) {
