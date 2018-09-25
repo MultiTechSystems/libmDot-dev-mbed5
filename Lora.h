@@ -129,8 +129,8 @@ namespace lora {
     const uint8_t PKT_JOIN_DL_SETTINGS = 11;                    //!< Index to downlink settings in Join Accept message
     const uint8_t PKT_JOIN_RX_DELAY = 12;                       //!< Index to rx delay in Join Accept message
 
-    const uint8_t ADR_ACK_LIMIT = 64;                           //!< Number of packets without ADR ACK Request
-    const uint8_t ADR_ACK_DELAY = 32;                           //!< Number of packets to expect ADR ACK Response within
+    const uint8_t DEFAULT_ADR_ACK_LIMIT = 64;                   //!< Number of packets without ADR ACK Request
+    const uint8_t DEFAULT_ADR_ACK_DELAY = 32;                   //!< Number of packets to expect ADR ACK Response within
 
     const uint16_t ACK_TIMEOUT = 2000;                          //!< Base millisecond timeout to resend after missed ACK
     const uint16_t ACK_TIMEOUT_RND = 1000;                      //!< Random millisecond adjustment to resend after missed ACK
@@ -346,6 +346,8 @@ namespace lora {
             uint8_t AckAttempts;        //!< Number of attempts to send packet and receive an ACK from server
             uint8_t Retries;            //!< Number of times to resend a packet without receiving an ACK, redundancy
             uint8_t ADREnabled;         //!< Enable adaptive datarate
+            uint16_t AdrAckLimit;       //!< Number of uplinks without a downlink to allow before setting ADRACKReq
+            uint16_t AdrAckDelay;       //!< Number of downlinks to expect ADR ACK Response within
             uint8_t CADEnabled;         //!< Enable listen before talk/channel activity detection
             uint8_t RepeaterMode;       //!< Limit payloads to repeater compatible sizes
             uint8_t TxPower;            //!< Default radio output power in dBm

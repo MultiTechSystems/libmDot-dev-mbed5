@@ -1222,6 +1222,30 @@ class mDot {
         bool getAdr();
 
         /**
+         * Set the ADR ACK Limit
+         * @param limit - ADR ACK limit
+         */
+        void setAdrAckLimit(uint16_t limit);
+
+        /**
+         * Get the ADR ACK Limit
+         * @returns ADR ACK limit
+         */
+        uint16_t getAdrAckLimit();
+
+        /**
+         * Set the ADR ACK Delay
+         * @param delay - ADR ACK delay
+         */
+        void setAdrAckDelay(uint16_t delay);
+
+        /**
+         * Get the ADR ACK Delay
+         * @returns ADR ACK delay
+         */
+        uint16_t getAdrAckDelay();
+
+        /**
          * Set forward error correction bytes
          * @param bytes 1 - 4 bytes
          * @returns MDOT_OK if success
