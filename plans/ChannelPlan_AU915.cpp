@@ -24,6 +24,10 @@ const uint8_t ChannelPlan_AU915::AU915_TX_POWERS[] = { 30, 28, 26, 24, 22, 20, 1
 const uint8_t ChannelPlan_AU915::AU915_RADIO_POWERS[] = { 3, 3, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 18, 19, 19 };
 const uint8_t ChannelPlan_AU915::AU915_MAX_PAYLOAD_SIZE[] = { 51, 51, 51, 115, 242, 242, 242, 0, 53, 129, 242, 242, 242, 242, 0, 0 };
 const uint8_t ChannelPlan_AU915::AU915_MAX_PAYLOAD_SIZE_REPEATER[] = { 51, 51, 51, 115, 222, 222, 222, 0, 33, 109, 222, 222, 222, 222, 0, 0 };
+const uint8_t ChannelPlan_AU915::AU915_MAX_PAYLOAD_SIZE_400[] = { 0, 0, 11, 53, 125, 242, 242, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+const uint8_t ChannelPlan_AU915::AU915_MAX_PAYLOAD_SIZE_REPEATER_400[] = { 0, 0, 11, 53, 125, 222, 222, 222, 0, 0, 0, 0, 0, 0, 0, 0 };
+
+const uint8_t ChannelPlan_AU915::MAX_ERP_VALUES[] = { 8, 10, 12, 13, 14, 16, 18, 20, 21, 24, 26, 27, 29, 30, 33, 36 };
 
 ChannelPlan_AU915::ChannelPlan_AU915()
 :
@@ -410,6 +414,20 @@ void ChannelPlan_AU915::LogRxWindow(uint8_t wnd) {
 
     logTrace("RX%d on freq: %lu", wnd, rxw.Frequency);
     logTrace("RX DR: %u SF: %u BW: %u CR: %u PL: %u STO: %u CRC: %d IQ: %d", rxDr.Index, sf, bw, cr, pl, sto, crc, iq);
+}
+
+uint8_t ChannelPlan_AU915::GetMaxPayloadSize() {
+    if (GetSettings()->Session.UplinkDwelltime == 1) {
+        if (GetSettings()->Network.RepeaterMode)
+            return AU915_MAX_PAYLOAD_SIZE_REPEATER_400[GetSettings()->Session.TxDatarate];
+        else
+            return AU915_MAX_PAYLOAD_SIZE_400[GetSettings()->Session.TxDatarate];
+    } else {
+        if (GetSettings()->Network.RepeaterMode)
+            return MAX_PAYLOAD_SIZE_REPEATER[GetSettings()->Session.TxDatarate];
+        else
+            return MAX_PAYLOAD_SIZE[GetSettings()->Session.TxDatarate];
+    }
 }
 
 RxWindow ChannelPlan_AU915::GetRxWindow(uint8_t window) {
@@ -1055,6 +1073,44 @@ uint8_t lora::ChannelPlan_AU915::CalculateJoinBackoff(uint8_t size) {
     } else {
         GetSettings()->Session.JoinTimeOnAir += GetTimeOnAir(size);
         GetSettings()->Session.JoinTimeOffEnd = now + rand_r(GetSettings()->Network.JoinDelay + 2, GetSettings()->Network.JoinDelay + 3);
+    }
+
+    return LORA_OK;
+}
+
+uint8_t ChannelPlan_AU915::HandleMacCommand(uint8_t* payload, uint8_t& index) {
+    logDebug("AU915 Handle Mac index: %d", index);
+
+    switch (payload[index++]) {
+        case SRV_MAC_TX_PARAM_SETUP_REQ: {
+            uint8_t eirp_dwell = payload[index++];
+
+            GetSettings()->Session.DownlinkDwelltime = eirp_dwell >> 5 & 0x01;
+            GetSettings()->Session.UplinkDwelltime = eirp_dwell >> 4 & 0x01;
+            //change data rate with if dwell time changes
+            if(GetSettings()->Session.UplinkDwelltime == 0) {
+                _minDatarate = lora::DR_0;
+            } else {
+                _minDatarate = lora::DR_2;
+                if(GetSettings()->Session.TxDatarate < lora::DR_2) {
+                    GetSettings()->Session.TxDatarate = lora::DR_2;
+                    logDebug("Datarate is now DR%d",GetSettings()->Session.TxDatarate);
+                }
+            }
+
+            GetSettings()->Session.Max_EIRP = MAX_ERP_VALUES[(eirp_dwell & 0x0F)];
+            logDebug("buffer index %d", GetSettings()->Session.CommandBufferIndex);
+            if (GetSettings()->Session.CommandBufferIndex < COMMANDS_BUFFER_SIZE) {
+                logDebug("Add tx param setup mac cmd to buffer");
+                GetSettings()->Session.CommandBuffer[GetSettings()->Session.CommandBufferIndex++] = MOTE_MAC_TX_PARAM_SETUP_ANS;
+            }
+
+            logDebug("TX PARAM DWELL UL: %d DL: %d Max EIRP: %d", GetSettings()->Session.UplinkDwelltime, GetSettings()->Session.DownlinkDwelltime, GetSettings()->Session.Max_EIRP);
+            break;
+        }
+        default: {
+            return LORA_ERROR;
+        }
     }
 
     return LORA_OK;

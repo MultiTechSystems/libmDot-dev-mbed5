@@ -26,7 +26,7 @@ const uint8_t ChannelPlan_AS923::AS923_MAX_PAYLOAD_SIZE_REPEATER[] = { 51, 51, 5
 const uint8_t ChannelPlan_AS923::AS923_MAX_PAYLOAD_SIZE_400[] = { 0, 0, 11, 53, 125, 242, 242, 242, 0, 0, 0, 0, 0, 0, 0, 0 };
 const uint8_t ChannelPlan_AS923::AS923_MAX_PAYLOAD_SIZE_REPEATER_400[] = { 0, 0, 11, 53, 125, 222, 222, 222, 0, 0, 0, 0, 0, 0, 0, 0 };
 
-const uint8_t MAX_ERP_VALUES[] = { 8, 10, 12, 13, 14, 16, 18, 20, 21, 24, 26, 27, 29, 30, 33, 36 };
+const uint8_t ChannelPlan_AS923::MAX_ERP_VALUES[] = { 8, 10, 12, 13, 14, 16, 18, 20, 21, 24, 26, 27, 29, 30, 33, 36 };
 
 ChannelPlan_AS923::ChannelPlan_AS923()
 :

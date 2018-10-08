@@ -1246,19 +1246,6 @@ class mDot {
         uint16_t getAdrAckDelay();
 
         /**
-         * Set forward error correction bytes
-         * @param bytes 1 - 4 bytes
-         * @returns MDOT_OK if success
-         */
-        int32_t setFec(const uint8_t& bytes);
-
-        /**
-         * Get forward error correction bytes
-         * @returns bytes (1 - 4)
-         */
-        uint8_t getFec();
-
-        /**
          * Enable/disable CRC checking of packets
          * CRC checking must be enabled for use with Conduit gateway and MTAC_LORA card
          * @param on set to true to enable CRC checking
@@ -1606,14 +1593,6 @@ class mDot {
         uint32_t getTxFrequency();
         int32_t setRxFrequency(const uint32_t& freq);
         uint32_t getRxFrequency();
-
-        // get/set TX/RX inverted
-        // true == signal is inverted
-        // set function returns MDOT_OK if success
-        int32_t setTxInverted(const bool& on);
-        bool getTxInverted();
-        int32_t setRxInverted(const bool& on);
-        bool getRxInverted();
 
         // get/set RX output mode
         // valid options are HEXADECIMAL and BINARY

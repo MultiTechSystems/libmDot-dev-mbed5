@@ -271,6 +271,19 @@ namespace lora {
              */
             virtual void EnableDefaultChannels();
 
+            /**
+             * Called when MAC layer doesn't know about a command.
+             * Use to add custom or new mac command handling
+             * @return LORA_OK
+             */
+            virtual uint8_t HandleMacCommand(uint8_t* payload, uint8_t& index);
+
+            /**
+             * Get max payload size for current datarate
+             * @return size in bytes
+             */
+            virtual uint8_t GetMaxPayloadSize();
+
             virtual uint8_t GetMinDatarate();
 
             virtual uint8_t GetMaxDatarate();
@@ -299,7 +312,10 @@ namespace lora {
             static const uint8_t AU915_TX_POWERS[11];                   //!< List of available tx powers
             static const uint8_t AU915_RADIO_POWERS[21];                //!< List of calibrated tx powers
             static const uint8_t AU915_MAX_PAYLOAD_SIZE[];              //!< List of max payload sizes for each datarate
+            static const uint8_t AU915_MAX_PAYLOAD_SIZE_400[];          //!< List of max payload sizes for each datarate
             static const uint8_t AU915_MAX_PAYLOAD_SIZE_REPEATER[];     //!< List of repeater compatible max payload sizes for each datarate
+            static const uint8_t AU915_MAX_PAYLOAD_SIZE_REPEATER_400[]; //!< List of repeater compatible max payload sizes for each datarate
+            static const uint8_t MAX_ERP_VALUES[];                      //!< Lookup table for Max EIRP (dBm) codes
 
             typedef struct __attribute__((packed)) {
                 uint8_t RFU1[3];
