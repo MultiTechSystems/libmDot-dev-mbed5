@@ -188,7 +188,7 @@ public:
 
     virtual void SetTxPower(int8_t power) = 0;
 
-    virtual void SetTxContinuousWave( uint32_t freq, int8_t power, uint16_t time ) = 0;
+    virtual void SetTxContinuous(bool enable) = 0;
 
     /*!
      * \brief Checks if the given RF frequency is supported by the hardware

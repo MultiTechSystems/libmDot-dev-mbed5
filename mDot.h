@@ -130,7 +130,8 @@ class mDot {
 
         enum RX_Output {
             HEXADECIMAL,
-            BINARY
+            BINARY,
+            EXTENDED
         };
 
         enum DataRates {
@@ -1595,7 +1596,7 @@ class mDot {
         uint32_t getRxFrequency();
 
         // get/set RX output mode
-        // valid options are HEXADECIMAL and BINARY
+        // valid options are HEXADECIMAL, BINARY, and EXTENDED
         // set function returns MDOT_OK if success
         int32_t setRxOutput(const uint8_t& mode);
         uint8_t getRxOutput();
