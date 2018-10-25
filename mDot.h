@@ -51,6 +51,8 @@ class mDot {
         uint32_t RTC_ReadBackupRegister(uint32_t RTC_BKP_DR);
         void RTC_WriteBackupRegister(uint32_t RTC_BKP_DR, uint32_t Data);
 
+        void wakeup();
+
         void RTC_DisableWakeupTimer();
         void RTC_EnableWakeupTimer();
 
