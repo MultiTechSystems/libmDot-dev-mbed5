@@ -88,6 +88,7 @@ void ChannelPlan_RU864::Init() {
 
     _numChans125k = RU864_125K_NUM_CHANS;
     _numChans500k = 0;
+    _numDefaultChans = RU864_DEFAULT_NUM_CHANS;
 
     GetSettings()->Session.Rx2Frequency = RU864_RX2_FREQ;
     GetSettings()->Session.Rx2DatarateIndex = DR_0;

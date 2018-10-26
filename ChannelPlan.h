@@ -586,6 +586,11 @@ namespace lora {
              */
             virtual void FrequencyHop(uint32_t time, uint32_t period, uint32_t devAddr) { }
 
+
+            /*
+             * Get default number of channels for a plan
+             */
+            virtual uint8_t GetNumDefaultChans();
         protected:
 
             SxRadio* GetRadio();                //!< Get pointer to the SxRadio object or assert if it is null
@@ -629,7 +634,8 @@ namespace lora {
             uint8_t _numChans;                  //!< Number of total channels in plan
             uint8_t _numChans125k;              //!< Number of 125K  channels in plan
             uint8_t _numChans500k;              //!< Number of 500K channels in plan
-
+            uint8_t _numDefaultChans;           //!< Number of default channels in plan
+            
             uint16_t _LBT_TimeUs;               //!< Sample time in us for LBT
             int8_t _LBT_Threshold;              //!< Threshold in dBm for LBT
 

@@ -89,6 +89,8 @@ void ChannelPlan_EU868::Init() {
     _numChans125k = EU868_125K_NUM_CHANS;
     _numChans500k = 0;
 
+    _numDefaultChans = EU868_DEFAULT_NUM_CHANS;
+
     GetSettings()->Session.Rx2Frequency = EU868_RX2_FREQ;
     GetSettings()->Session.Rx2DatarateIndex = DR_0;
 

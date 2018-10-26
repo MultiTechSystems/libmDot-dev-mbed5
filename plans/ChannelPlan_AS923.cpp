@@ -89,6 +89,7 @@ void ChannelPlan_AS923::Init() {
 
     _numChans125k = 16;
     _numChans500k = 0;
+    _numDefaultChans = AS923_DEFAULT_NUM_CHANS;
 
     GetSettings()->Session.Rx2Frequency = 923200000;
     GetSettings()->Session.Rx2DatarateIndex = DR_2;
@@ -145,7 +146,7 @@ void ChannelPlan_AS923::Init() {
     chan.Frequency = 923200000;
     SetNumberOfChannels(16);
 
-    for (uint8_t i = 0; i < 2; i++) {
+    for (uint8_t i = 0; i < AS923_DEFAULT_NUM_CHANS; i++) {
         AddChannel(i, chan);
         chan.Index++;
         chan.Frequency += 200000;
@@ -154,7 +155,7 @@ void ChannelPlan_AS923::Init() {
     chan.DrRange.Value = 0;
     chan.Frequency = 0;
 
-    for (uint8_t i = 2; i < 16; i++) {
+    for (uint8_t i = AS923_DEFAULT_NUM_CHANS; i < 16; i++) {
         AddChannel(i, chan);
         chan.Index++;
     }

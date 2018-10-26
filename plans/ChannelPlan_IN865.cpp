@@ -87,6 +87,7 @@ void ChannelPlan_IN865::Init() {
 
     _numChans125k = 16;
     _numChans500k = 0;
+    _numDefaultChans = IN865_DEFAULT_NUM_CHANS; 
 
     GetSettings()->Session.Rx2Frequency = 866550000;
     GetSettings()->Session.Rx2DatarateIndex = DR_2;
@@ -139,7 +140,7 @@ void ChannelPlan_IN865::Init() {
     chan.Frequency = 865062500;
     SetNumberOfChannels(16);
 
-    uint8_t numDefaultChannels = 3;
+    uint8_t numDefaultChannels = IN865_DEFAULT_NUM_CHANS;
 
     AddChannel(0, chan);
 
