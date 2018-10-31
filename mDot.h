@@ -35,16 +35,21 @@ class mDot {
         void waitForPacket();
         void waitForLinkCheck();
 
-        void setActivityLedState(const uint8_t& state);
-        uint8_t getActivityLedState();
 
+        MBED_DEPRECATED("Will be removed in dotlib 3.3.0")
+        void setActivityLedState(const uint8_t& state);
+        
+        MBED_DEPRECATED("Will be removed in dotlib 3.3.0")
+        uint8_t getActivityLedState();
+        
+        MBED_DEPRECATED("Will be removed in dotlib 3.3.0")
         void blinkActivityLed(void) {
             if (_activity_led) {
                 int val = _activity_led->read();
                 _activity_led->write(!val);
             }
         }
-
+       
         mDot(const mDot&);
         mDot& operator=(const mDot&);
 
@@ -68,12 +73,12 @@ class mDot {
 
         std::string _last_error;
         static const uint32_t _baud_rates[];
-        uint8_t _activity_led_state;
+        uint8_t _activity_led_state; //deprecated will be removed
         Ticker _tick;
-        DigitalOut* _activity_led;
-        bool _activity_led_enable;
-        PinName _activity_led_pin;
-        bool _activity_led_external;
+        DigitalOut* _activity_led; //deprecated will be removed
+        bool _activity_led_enable; //deprecated will be removed
+        PinName _activity_led_pin;  //deprecated will be removed
+        bool _activity_led_external; //deprecated will be removed
         uint8_t _linkFailCount;
         uint8_t _class;
         InterruptIn* _wakeup;
@@ -339,36 +344,19 @@ class mDot {
 
         lora::Settings* getSettings();
 
-        /**
-         * Enable or disable the activity LED.
-         * @param enable true to enable the LED, false to disable
-         */
+        MBED_DEPRECATED("Will be removed in dotlib 3.3.0")
         void setActivityLedEnable(const bool& enable);
 
-        /**
-         * Find out if the activity LED is enabled
-         * @returns true if activity LED is enabled, false if disabled
-         */
+        MBED_DEPRECATED("Will be removed in dotlib 3.3.0")
         bool getActivityLedEnable();
 
-        /**
-         * Use a different pin for the activity LED.
-         * The default is XBEE_RSSI.
-         * @param pin the new pin to use
-         */
+        MBED_DEPRECATED("Will be removed in dotlib 3.3.0")
         void setActivityLedPin(const PinName& pin);
 
-        /**
-         * Use an external DigitalOut object for the activity LED.
-         * The pointer must stay valid!
-         * @param pin the DigitalOut object to use
-         */
+        MBED_DEPRECATED("Will be removed in dotlib 3.3.0")
         void setActivityLedPin(DigitalOut* pin);
 
-        /**
-         * Find out what pin the activity LED is on
-         * @returns the pin the activity LED is using
-         */
+        MBED_DEPRECATED("Will be removed in dotlib 3.3.0")
         PinName getActivityLedPin();
 
         /**
@@ -1083,6 +1071,7 @@ class mDot {
          * @returns spreading factor and bandwidth
          */
         std::string getDataRateDetails(uint8_t rate);
+        MBED_DEPRECATED("Will be removed in 3.3.0")
         std::string getDateRateDetails(uint8_t rate);
 
 
@@ -1588,8 +1577,6 @@ class mDot {
         uint8_t getRxDataRate();
 
         // get/set TX/RX frequency
-        // if frequency band == FB_868 (Europe), must be between 863000000 - 870000000
-        // if frequency band == FB_915 (United States), must be between 902000000-928000000
         // if set to 0, device will hop frequencies
         // set function returns MDOT_OK if success
         int32_t setTxFrequency(const uint32_t& freq);
@@ -1678,21 +1665,6 @@ class mDot {
         int32_t setRadioMode(const uint8_t& mode);
         std::map<uint8_t, uint8_t> dumpRegisters();
         void eraseFlash();
-
-        // deprecated - use setWakeInterval
-        int32_t setSerialWakeInterval(const uint32_t& interval);
-        // deprecated - use getWakeInterval
-        uint32_t getSerialWakeInterval();
-
-        // deprecated - use setWakeDelay
-        int32_t setSerialWakeDelay(const uint32_t& delay);
-        // deprecated - use setWakeDelay
-        uint32_t getSerialWakeDelay();
-
-        // deprecated - use setWakeTimeout
-        int32_t setSerialReceiveTimeout(const uint16_t& timeout);
-        // deprecated - use getWakeTimeout
-        uint16_t getSerialReceiveTimeout();
 
         void setWakeupCallback(void (*function)(void));
 
