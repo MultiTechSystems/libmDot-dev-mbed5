@@ -423,15 +423,6 @@ namespace lora {
     } MulticastSession;
 
     /**
-     * Application configuration
-     */
-    typedef struct {
-            uint8_t Port;                   //!< Port used by application
-            uint8_t AppEUI;                 //!< Application ID
-            uint8_t AppKey[16];             //!< Application Key
-    } ApplicationConfig;
-
-    /**
      * Statistics of current network session
      */
     typedef struct Statistics {
@@ -472,7 +463,6 @@ namespace lora {
             DeviceConfig Device;
             NetworkConfig Network;
             NetworkSession Session;
-            ApplicationConfig Applications[MAX_APPS];
             MulticastSession Multicast[MAX_MULTICAST_SESSIONS];
             Statistics Stats;
             Testing Test;
