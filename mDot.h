@@ -1423,6 +1423,12 @@ class mDot {
          */
         void setFrequencyOffset(int32_t offset);
 
+        /**
+         * Get GPS time from network server
+         * Sends a DeviceTimeReq command to the network server
+         * @returns time since GPS epoch, 0 on failure
+         */
+        uint32_t getGPSTime();
 
 #if defined(TARGET_MTS_MDOT_F411RE)
         ///////////////////////////////////////////////////////////////////

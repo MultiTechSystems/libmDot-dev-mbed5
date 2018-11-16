@@ -1097,27 +1097,25 @@ bool ChannelPlan_AS923::DecodeBeacon(const uint8_t* payload, size_t size, Beacon
     if (size != sizeof(BCNPayload))
         return false;
 
-    // Next we verify the CRCs are correct
+    // Next we verify CRC1 is correct
     crc1 = CRC16(beacon->RFU, sizeof(beacon->RFU) + sizeof(beacon->Time));
     memcpy((uint8_t*)&crc1_rx, beacon->CRC1, sizeof(uint16_t));
 
     if (crc1 != crc1_rx)
         return false;
 
-    crc2 = CRC16(beacon->GwSpecific, sizeof(beacon->GwSpecific));
-    memcpy((uint8_t*)&crc2_rx, beacon->CRC2, sizeof(uint16_t));
-
-    if (crc2 != crc2_rx)
-        return false;
-
     // Now that we have confirmed this packet is a beacon, parse and complete the output struct
     memcpy(&data.Time, beacon->Time, sizeof(beacon->Time));
     data.InfoDesc = beacon->GwSpecific[0];
 
-    // Update the GPS fields if we have a gps info descriptor
-    if (data.InfoDesc == GPS_FIRST_ANTENNA ||
-        data.InfoDesc == GPS_SECOND_ANTENNA ||
-        data.InfoDesc == GPS_THIRD_ANTENNA) {
+    crc2 = CRC16(beacon->GwSpecific, sizeof(beacon->GwSpecific));
+    memcpy((uint8_t*)&crc2_rx, beacon->CRC2, sizeof(uint16_t));
+
+    // Update the GPS fields if we have a gps info descriptor and valid crc
+    if (crc2 == crc2_rx &&
+        (data.InfoDesc == GPS_FIRST_ANTENNA ||
+         data.InfoDesc == GPS_SECOND_ANTENNA ||
+         data.InfoDesc == GPS_THIRD_ANTENNA)) {
         // Latitude and Longitude 3 bytes in length
         memcpy(&data.Latitude, &beacon->GwSpecific[1], 3);
         memcpy(&data.Longitude, &beacon->GwSpecific[4], 3);
