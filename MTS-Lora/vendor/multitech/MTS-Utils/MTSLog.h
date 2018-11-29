@@ -16,6 +16,14 @@ inline const char* className(const std::string& prettyFunction)
 
 #define __CLASSNAME__ className(__PRETTY_FUNCTION__)
 
+#ifdef MTS_TIMESTAMP_LOG
+#define __LOG__(logLevel, format, ...)                                   \
+    mts::MTSLog::printMessage(logLevel, "%s| [%s] " format "\r\n", \
+                              mts::MTSLog::getTime().c_str(), mts::MTSLog::getLogLevelString(logLevel), ##__VA_ARGS__)
+#else
+#define __LOG__(logLevel, format, ...)                                   \
+    mts::MTSLog::printMessage(logLevel, "[%s] " format "\r\n", mts::MTSLog::getLogLevelString(logLevel), ##__VA_ARGS__)
+#endif
 
 #ifdef MTS_DEBUG
 #define logFatal(format, ...) \
@@ -32,17 +40,17 @@ inline const char* className(const std::string& prettyFunction)
     mts::MTSLog::printMessage(mts::MTSLog::TRACE_LEVEL, "%s:%s:%d| [%s] " format "\r\n", __CLASSNAME__, __func__, __LINE__, mts::MTSLog::TRACE_LABEL, ##__VA_ARGS__)
 #else
 #define logFatal(format, ...) \
-    mts::MTSLog::printMessage(mts::MTSLog::FATAL_LEVEL, "[%s] " format "\r\n", mts::MTSLog::FATAL_LABEL, ##__VA_ARGS__)
+    __LOG__(mts::MTSLog::FATAL_LEVEL, format, ##__VA_ARGS__)
 #define logError(format, ...) \
-    mts::MTSLog::printMessage(mts::MTSLog::ERROR_LEVEL, "[%s] " format "\r\n", mts::MTSLog::ERROR_LABEL, ##__VA_ARGS__)
+    __LOG__(mts::MTSLog::ERROR_LEVEL, format, ##__VA_ARGS__)
 #define logWarning(format, ...) \
-    mts::MTSLog::printMessage(mts::MTSLog::WARNING_LEVEL, "[%s] " format "\r\n", mts::MTSLog::WARNING_LABEL, ##__VA_ARGS__)
+    __LOG__(mts::MTSLog::WARNING_LEVEL, format, ##__VA_ARGS__)
 #define logInfo(format, ...) \
-    mts::MTSLog::printMessage(mts::MTSLog::INFO_LEVEL, "[%s] " format "\r\n", mts::MTSLog::INFO_LABEL, ##__VA_ARGS__)
+    __LOG__(mts::MTSLog::INFO_LEVEL, format, ##__VA_ARGS__)
 #define logDebug(format, ...) \
-    mts::MTSLog::printMessage(mts::MTSLog::DEBUG_LEVEL, "[%s] " format "\r\n", mts::MTSLog::DEBUG_LABEL, ##__VA_ARGS__)
+    __LOG__(mts::MTSLog::DEBUG_LEVEL, format, ##__VA_ARGS__)
 #define logTrace(format, ...) \
-    mts::MTSLog::printMessage(mts::MTSLog::TRACE_LEVEL, "[%s] " format "\r\n", mts::MTSLog::TRACE_LABEL, ##__VA_ARGS__)
+    __LOG__(mts::MTSLog::TRACE_LEVEL, format, ##__VA_ARGS__)
 #endif
 
 namespace mts {
@@ -84,6 +92,11 @@ public:
     /** Get string representation of the current log level.
      */
     static const char* getLogLevelString();
+    static const char* getLogLevelString(int level);
+
+    /** Get a formatted time string as HH:MM:SS
+     */
+    static std::string getTime();
 
     static const char* NONE_LABEL;
     static const char* FATAL_LABEL;
