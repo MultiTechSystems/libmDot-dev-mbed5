@@ -339,6 +339,11 @@ class mDot {
          */
         void seedRandom(uint32_t seed);
 
+        /**
+         * @returns true if MAC command answers are ready to be sent
+         */
+        bool hasMacCommands();
+
 
         uint8_t setChannelPlan(lora::ChannelPlan* plan);
 
@@ -1428,7 +1433,7 @@ class mDot {
          * Sends a DeviceTimeReq command to the network server
          * @returns time since GPS epoch, 0 on failure
          */
-        uint32_t getGPSTime();
+        uint64_t getGPSTime();
 
 #if defined(TARGET_MTS_MDOT_F411RE)
         ///////////////////////////////////////////////////////////////////

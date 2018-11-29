@@ -201,7 +201,9 @@ namespace lora {
         LINK_RX1,       //!< Link has first received window open
         LINK_RX2,       //!< Link has second received window open
         LINK_RXC,       //!< Link has class C received window open
-        LINK_P2P,       //!< Link is busy sending
+        LINK_RX_BEACON, //!< Link has a beacon receive window open
+        LINK_RX_PING,   //!< Link has a ping slot receive window open
+        LINK_P2P        //!< Link is busy sending
     };
 
     /**

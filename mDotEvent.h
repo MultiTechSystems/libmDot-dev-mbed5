@@ -241,6 +241,7 @@ class mDotEvent: public lora::MacEvents {
             logDebug("mDotEvent - ServerTime");
             ServerTimeReceived = true;
             ServerTimeSeconds = seconds;
+            ServerTimeMillis = uint16_t(sub_seconds) * 4;
         }
 
         virtual void NetworkLinkCheck(int16_t m_rssi, int8_t m_snr, int8_t s_snr, uint8_t s_gateways) {
@@ -301,6 +302,7 @@ class mDotEvent: public lora::MacEvents {
 
         bool ServerTimeReceived;
         uint32_t ServerTimeSeconds;
+        uint16_t ServerTimeMillis;
 
         bool AckReceived;
         bool DuplicateRx;
