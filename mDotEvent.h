@@ -126,6 +126,9 @@ class mDotEvent: public lora::MacEvents {
         }
 
         virtual void TxDone(uint8_t dr) {
+            _timeSinceTx.reset();
+            _timeSinceTx.start();
+
             RxPayloadSize = 0;
             LinkCheckAnsReceived = false;
             PacketReceived = false;
@@ -240,8 +243,12 @@ class mDotEvent: public lora::MacEvents {
         virtual void ServerTime(uint32_t seconds, uint8_t sub_seconds) {
             logDebug("mDotEvent - ServerTime");
             ServerTimeReceived = true;
-            ServerTimeSeconds = seconds;
-            ServerTimeMillis = uint16_t(sub_seconds) * 4;
+
+            uint64_t current_server_time_ms = static_cast<uint64_t>(seconds) * 1000 +
+                static_cast<uint16_t>(sub_seconds) * 4 + _timeSinceTx.read_ms();
+
+            ServerTimeSeconds = static_cast<uint32_t>(current_server_time_ms / 1000);
+            ServerTimeMillis = static_cast<uint16_t>(current_server_time_ms % 1000);
         }
 
         virtual void NetworkLinkCheck(int16_t m_rssi, int8_t m_snr, int8_t s_snr, uint8_t s_gateways) {
@@ -318,6 +325,8 @@ class mDotEvent: public lora::MacEvents {
     private:
         LoRaMacEventFlags _flags;
         LoRaMacEventInfo _info;
+
+        LowPowerTimer _timeSinceTx;
 
 //
 //        /*!
