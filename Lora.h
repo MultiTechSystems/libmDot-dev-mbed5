@@ -111,6 +111,7 @@ namespace lora {
     const uint32_t MAX_BEACONLESS_OP_TIME = 7200U;              //!< Maximum time to operate in class B since last beacon received (in seconds)
     const uint16_t MAX_CLASS_B_WINDOW_GROWTH = 3U;              //!< Maximum window growth factor for beacons and ping slots in beacon-less operation
     const uint16_t DEFAULT_PING_NB = 1U;                        //!< Default number of ping slots per beacon interval
+    const uint16_t CLS_B_PAD = 15U;                             //!< Pad added to the beginning of ping slot rx windows (in milliseconds)
 
     const int16_t DEFAULT_FREE_CHAN_RSSI_THRESHOLD = -90;       //!< Threshold for channel activity detection (CAD) dBm
 
@@ -281,7 +282,7 @@ namespace lora {
             uint8_t Crc;
             uint8_t TxIQ;
             uint8_t RxIQ;
-            uint8_t SymbolTimeout();
+            uint8_t SymbolTimeout(uint16_t pad_ms = 0);
             float Timeout();
             Datarate();
     } Datarate;

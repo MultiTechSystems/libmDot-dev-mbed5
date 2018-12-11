@@ -105,9 +105,13 @@ namespace lora {
              * @param window to be opened
              * @param continuous keep window open
              * @param wnd_growth factor to increase the rx window by
+             * @param pad_ms time in milliseconds to add to computed window size
              * @return LORA_OK
              */
-            virtual uint8_t SetRxConfig(uint8_t window, bool continuous, uint16_t wnd_growth);
+            virtual uint8_t SetRxConfig(uint8_t window,
+                                        bool continuous,
+                                        uint16_t wnd_growth,
+                                        uint16_t pad_ms);
 
             /**
              * Set frequency sub band if supported by plan

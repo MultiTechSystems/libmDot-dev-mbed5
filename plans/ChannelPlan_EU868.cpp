@@ -310,7 +310,10 @@ uint8_t ChannelPlan_EU868::SetTxConfig() {
     return LORA_OK;
 }
 
-uint8_t ChannelPlan_EU868::SetRxConfig(uint8_t window, bool continuous, uint16_t wnd_growth) {
+uint8_t ChannelPlan_EU868::SetRxConfig(uint8_t window,
+                                       bool continuous,
+                                       uint16_t wnd_growth,
+                                       uint16_t pad_ms) {
 
     RxWindow rxw = GetRxWindow(window);
 
@@ -324,7 +327,7 @@ uint8_t ChannelPlan_EU868::SetRxConfig(uint8_t window, bool continuous, uint16_t
     uint32_t sf = rxDr.SpreadingFactor;
     uint8_t cr = rxDr.Coderate;
     uint8_t pl = rxDr.PreambleLength;
-    uint16_t sto = rxDr.SymbolTimeout() * wnd_growth;
+    uint16_t sto = rxDr.SymbolTimeout(pad_ms) * wnd_growth;
     uint32_t afc = 0;
     bool fixLen = false;
     uint8_t payloadLen = 0U;
