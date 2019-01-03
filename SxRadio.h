@@ -137,6 +137,9 @@ public:
      *                          LoRa: [0: not inverted, 1: inverted]
      * \param [IN] rxContinuous Sets the reception in continuous mode
      *                          [false: single mode, true: continuous mode]
+     * \param [IN] fskPad       Duration in ms to increase FSK rx window
+     *                          FSK: time in ms to increase FSK rx window duration
+     *                          LoRa: N/A
      */
     virtual void SetRxConfig( RadioModems_t modem, uint32_t bandwidth,
                               uint32_t datarate, uint8_t coderate,
@@ -144,7 +147,7 @@ public:
                               uint16_t symbTimeout, bool fixLen,
                               uint8_t payloadLen,
                               bool crcOn, bool FreqHopOn, uint8_t HopPeriod,
-                              bool iqInverted, bool rxContinuous ) = 0;
+                              bool iqInverted, bool rxContinuous , uint32_t fskPad = 0) = 0;
     /*!
      * \brief Sets the transmission parameters
      *

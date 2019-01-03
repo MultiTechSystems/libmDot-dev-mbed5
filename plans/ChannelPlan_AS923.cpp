@@ -336,7 +336,7 @@ uint8_t ChannelPlan_AS923::SetRxConfig(uint8_t window,
     // logTrace("Configure radio for RX%d on freq: %lu", window, rxw.Frequency);
     // logTrace("RX SF: %u BW: %u CR: %u PL: %u STO: %u CRC: %d IQ: %d", sf, bw, cr, pl, sto, crc, iq);
 
-    GetRadio()->SetRxConfig(modem, bw, sf, cr, afc, pl, sto, fixLen, payloadLen, crc, false, 0, iq, continuous);
+    GetRadio()->SetRxConfig(modem, bw, sf, cr, afc, pl, sto, fixLen, payloadLen, crc, false, 0, iq, continuous, pad_ms * wnd_growth);
 
     return LORA_OK;
 }
