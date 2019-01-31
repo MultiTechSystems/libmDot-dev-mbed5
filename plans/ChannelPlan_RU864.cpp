@@ -209,7 +209,7 @@ uint8_t ChannelPlan_RU864::HandleJoinAccept(const uint8_t* buffer, uint8_t size)
 
     if (size == 33) {
         Channel ch;
-        int index = 2;
+        int index = _numDefaultChans;
         for (int i = 13; i < size - 5; i += 3) {
 
             ch.Frequency = ((buffer[i]) | (buffer[i + 1] << 8) | (buffer[i + 2] << 16)) * 100u;
@@ -476,7 +476,7 @@ uint8_t ChannelPlan_RU864::HandleNewChannel(const uint8_t* payload, uint8_t inde
     index += 3;
     chParam.DrRange.Value = payload[index++];
 
-    if (channelIndex < 3 || channelIndex > _channels.size() - 1) {
+    if (channelIndex < _numDefaultChans || channelIndex > _channels.size() - 1) {
         logError("New Channel index KO");
         status &= 0xFE; // Channel index KO
     }
@@ -664,7 +664,7 @@ uint8_t ChannelPlan_RU864::ValidateAdrConfiguration() {
     }
 
     // mask must not contain any undefined channels
-    for (int i = 3; i < 16; i++) {
+    for (int i = _numDefaultChans; i < 16; i++) {
         if ((_channelMask[0] & (1 << i)) && (_channels[i].Frequency == 0)) {
             logWarning("ADR Channel Mask KO - cannot enable undefined channel");
             status &= 0xFE; // ChannelMask KO

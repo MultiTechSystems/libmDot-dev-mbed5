@@ -1051,15 +1051,13 @@ uint8_t lora::ChannelPlan_AU915::CalculateJoinBackoff(uint8_t size) {
             if (GetSettings()->Session.JoinTimeOnAir < 72000) {
                 GetSettings()->Session.JoinTimeOnAir = 72000;
             }
-            uint32_t join_time = 2500;
-
-            // 16 join attempts is ~2754 ms, check if this is the third of the 24 hour period
+            // 16 join attempts is ~3192 ms, check if this is the third of the 24 hour period
 
             time_on_max = 80700;
             time_off_max = 1 * 60 * 60; // 1 hour
             rand_time_off = rand_r(time_off_max - 1, time_off_max + 1);
 
-            if (GetSettings()->Session.JoinTimeOnAir < time_on_max - join_time) {
+            if (GetSettings()->Session.JoinTimeOnAir < time_on_max) {
                 GetSettings()->Session.JoinTimeOnAir += GetTimeOnAir(size);
                 GetSettings()->Session.JoinTimeOffEnd = now + rand_time_off;
             } else {

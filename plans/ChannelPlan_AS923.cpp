@@ -183,6 +183,8 @@ void ChannelPlan_AS923::Init() {
     AddDutyBand(-1, band);
 
     GetSettings()->Session.TxPower = GetSettings()->Network.TxPower;
+    GetSettings()->Session.UplinkDwelltime = 1;
+    GetSettings()->Session.DownlinkDwelltime = 1;
 }
 
 uint8_t ChannelPlan_AS923::AddChannel(int8_t index, Channel channel) {
@@ -203,7 +205,7 @@ uint8_t ChannelPlan_AS923::HandleJoinAccept(const uint8_t* buffer, uint8_t size)
 
     if (size == 33) {
         Channel ch;
-        int index = 2;
+        int index = _numDefaultChans;
         for (int i = 13; i < size - 5; i += 3) {
 
             ch.Frequency = ((buffer[i]) | (buffer[i + 1] << 8) | (buffer[i + 2] << 16)) * 100u;
@@ -493,7 +495,7 @@ uint8_t ChannelPlan_AS923::HandleNewChannel(const uint8_t* payload, uint8_t inde
     index += 3;
     chParam.DrRange.Value = payload[index++];
 
-    if (channelIndex < 2 || channelIndex > _channels.size() - 1) {
+    if (channelIndex < _numDefaultChans || channelIndex > _channels.size() - 1) {
         logError("New Channel index KO");
         status &= 0xFE; // Channel index KO
     }
@@ -688,7 +690,7 @@ uint8_t ChannelPlan_AS923::ValidateAdrConfiguration() {
     }
 
     // mask must not contain any undefined channels
-    for (int i = 2; i < 16; i++) {
+    for (int i = _numDefaultChans; i < 16; i++) {
         if ((_channelMask[0] & (1 << i)) && (_channels[i].Frequency == 0)) {
             logWarning("ADR Channel Mask KO - cannot enable undefined channel");
             status &= 0xFE; // ChannelMask KO
@@ -1039,6 +1041,13 @@ uint8_t ChannelPlan_AS923::CalculateJoinBackoff(uint8_t size) {
     }
 
     return LORA_OK;
+}
+
+uint8_t ChannelPlan_AS923::GetMinDatarate() {
+    if (GetSettings()->Session.UplinkDwelltime == 1)
+        return lora::DR_2;
+    else
+        return _minDatarate;
 }
 
 
