@@ -183,8 +183,6 @@ void ChannelPlan_AS923::Init() {
     AddDutyBand(-1, band);
 
     GetSettings()->Session.TxPower = GetSettings()->Network.TxPower;
-    GetSettings()->Session.UplinkDwelltime = 1;
-    GetSettings()->Session.DownlinkDwelltime = 1;
 }
 
 uint8_t ChannelPlan_AS923::AddChannel(int8_t index, Channel channel) {
