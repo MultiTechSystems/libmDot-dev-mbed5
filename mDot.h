@@ -198,11 +198,6 @@ class mDot {
             FSB_8
         };
 
-        enum JoinByteOrder {
-            LSB,
-            MSB
-        };
-
         enum wakeup_mode {
             RTC_ALARM,
             INTERRUPT,
@@ -746,18 +741,6 @@ class mDot {
          * Up to 3 MULTICAST_SESSIONS can be set
          */
         int32_t setMulticastDownlinkCounter(uint8_t index, uint32_t count);
-
-        /**
-         * Set join byte order
-         * @param order 0:LSB 1:MSB
-         */
-        uint32_t setJoinByteOrder(uint8_t order);
-
-        /**
-         * Get join byte order
-         * @returns byte order to use in joins 0:LSB 1:MSB
-         */
-        uint8_t getJoinByteOrder();
 
         /**
          * Attempt to join network
