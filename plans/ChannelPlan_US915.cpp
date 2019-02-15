@@ -726,20 +726,16 @@ uint8_t ChannelPlan_US915::ValidateAdrConfiguration() {
     uint8_t datarate = GetSettings()->Session.TxDatarate;
     uint8_t power = GetSettings()->Session.TxPower;
 
-    if (!GetSettings()->Network.ADREnabled) {
-        logDebug("ADR disabled - no applied changes to validate");
-        return status;
-    }
-
-    if (datarate > _maxDatarate) {
-        logWarning("ADR Datarate KO - outside allowed range");
-        status &= 0xFD; // Datarate KO
-    }
-    if (power < _minTxPower || power > _maxTxPower) {
-        logWarning("ADR TX Power KO - outside allowed range");
-        status &= 0xFB; // TxPower KO
-    }
-    
+    if (GetSettings()->Network.ADREnabled) {
+        if (datarate > _maxDatarate) {
+            logWarning("ADR Datarate KO - outside allowed range");
+            status &= 0xFD; // Datarate KO
+        }
+        if (power < _minTxPower || power > _maxTxPower) {
+            logWarning("ADR TX Power KO - outside allowed range");
+            status &= 0xFB; // TxPower KO
+        }
+    } 
     // at least 2 125kHz channels must be enabled
     chans_enabled += CountBits(_channelMask[0]);
     chans_enabled += CountBits(_channelMask[1]);

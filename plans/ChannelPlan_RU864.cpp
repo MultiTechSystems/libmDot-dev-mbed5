@@ -649,20 +649,16 @@ uint8_t ChannelPlan_RU864::ValidateAdrConfiguration() {
     uint8_t datarate = GetSettings()->Session.TxDatarate;
     uint8_t power = GetSettings()->Session.TxPower;
 
-    if (!GetSettings()->Network.ADREnabled) {
-        logDebug("ADR disabled - no applied changes to validate");
-        return status;
+    if (GetSettings()->Network.ADREnabled) {
+        if (datarate > _maxDatarate) {
+            logWarning("ADR Datarate KO - outside allowed range");
+            status &= 0xFD; // Datarate KO
+        }
+        if (power < _minTxPower || power > _maxTxPower) {
+            logWarning("ADR TX Power KO - outside allowed range");
+            status &= 0xFB; // TxPower KO
+        }
     }
-
-    if (datarate > _maxDatarate) {
-        logWarning("ADR Datarate KO - outside allowed range");
-        status &= 0xFD; // Datarate KO
-    }
-    if (power < _minTxPower || power > _maxTxPower) {
-        logWarning("ADR TX Power KO - outside allowed range");
-        status &= 0xFB; // TxPower KO
-    }
-
     // mask must not contain any undefined channels
     for (int i = _numDefaultChans; i < 16; i++) {
         if ((_channelMask[0] & (1 << i)) && (_channels[i].Frequency == 0)) {
