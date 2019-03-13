@@ -394,7 +394,7 @@ class mDotEvent: public lora::MacEvents {
         LoRaMacEventFlags _flags;
         LoRaMacEventInfo _info;
 
-        LowPowerTimer _timeSinceTx;
+        Timer _timeSinceTx;
 
 //
 //        /*!
