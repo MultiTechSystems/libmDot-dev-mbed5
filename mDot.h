@@ -64,10 +64,10 @@ class mDot {
 
         MBED_DEPRECATED("Will be removed in dotlib 3.3.0")
         void setActivityLedState(const uint8_t& state);
-        
+
         MBED_DEPRECATED("Will be removed in dotlib 3.3.0")
         uint8_t getActivityLedState();
-        
+
         MBED_DEPRECATED("Will be removed in dotlib 3.3.0")
         void blinkActivityLed(void) {
             if (_activity_led) {
@@ -75,7 +75,7 @@ class mDot {
                 _activity_led->write(!val);
             }
         }
-       
+
         mDot(const mDot&);
         mDot& operator=(const mDot&);
 
@@ -294,7 +294,7 @@ class mDot {
         static mDot* getInstance(lora::ChannelPlan* plan);
 
         /**
-	 * Can only be used after a dot has 
+	 * Can only be used after a dot has
          * configured with a plan
          * @returns pointer to mDot object
          */
@@ -1548,7 +1548,7 @@ class mDot {
         ///////////////////////////////////////////////////////////////
         // EEPROM (Non Volatile Memory) Operation Functions for xDot //
         ///////////////////////////////////////////////////////////////
-        
+
         // Write to EEPROM
         // addr - address to write to (0 - 0x17FF)
         // data - data to write
@@ -1703,7 +1703,7 @@ class mDot {
         int32_t setProtectedAppKey(const std::vector<uint8_t>& appKey);
         int32_t setDefaultFrequencyBand(const uint8_t& band);
         bool saveProtectedConfig();
-        // resets the radio/mac/link 
+        // resets the radio/mac/link
         void resetRadio();
         int32_t setRadioMode(const uint8_t& mode);
         std::map<uint8_t, uint8_t> dumpRegisters();
@@ -1715,34 +1715,21 @@ class mDot {
         void setWakeupCallback(T *object, void (T::*member)(void)) {
             _wakeup_callback.attach(object, member);
         }
-        
-        lora::ChannelPlan* getChannelPlan(void);  
+
+        lora::ChannelPlan* getChannelPlan(void);
 
         uint32_t setRx2DataRate(uint8_t dr);
         uint8_t getRx2DataRate();
 
-        void mcGroupKeys(uint8_t *mcKeyEncrypt, uint32_t addr, uint8_t groupId, uint32_t frame_count);  
+        void mcGroupKeys(uint8_t *mcKeyEncrypt, uint32_t addr, uint8_t groupId, uint32_t frame_count);
     private:
-        typedef enum {
-            AUTO_SLEEP_EVT_CFG,
-            AUTO_SLEEP_EVT_TXDONE,
-            AUTO_SLEEP_EVT_RX1_TIMEOUT,
-            AUTO_SLEEP_EVT_CLEANUP
-        } AutoSleepEvent_t;
-
-        typedef enum {
-            USER_SLEEP,
-            AUTO_SLEEP
-        } SleepClient_t;
 
         void sleep_ms(uint32_t interval,
                       uint8_t wakeup_mode = RTC_ALARM,
-                      bool deepsleep = true,
-                      SleepClient_t sleep_client = USER_SLEEP);
+                      bool deepsleep = true);
 
-        void auto_sleep(AutoSleepEvent_t evt);
 
-        void wakeup(SleepClient_t sleep_client);
+        void wakeup();
 
         mdot_stats _stats;
 

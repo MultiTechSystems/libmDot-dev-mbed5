@@ -99,8 +99,7 @@ class mDotEvent: public lora::MacEvents {
           ServerTimeSeconds(0U),
           AckReceived(false),
           DuplicateRx(false),
-          TxNbRetries(0),
-          _sleep_cb(NULL)
+          TxNbRetries(0)
         {
             memset(&_flags, 0, sizeof(LoRaMacEventFlags));
             memset(&_info, 0, sizeof(LoRaMacEventInfo));
@@ -153,9 +152,6 @@ class mDotEvent: public lora::MacEvents {
         virtual void TxStart() {
             logDebug("mDotEvent - TxStart");
 
-            // Fire auto sleep cfg event if enabled
-            if (_sleep_cb)
-                _sleep_cb(mDot::AUTO_SLEEP_EVT_CFG);
         }
 
         virtual void TxDone(uint8_t dr) {
@@ -179,9 +175,6 @@ class mDotEvent: public lora::MacEvents {
             _info.Status = LORAMAC_EVENT_INFO_STATUS_OK;
             Notify();
 
-            // If configured, we can sleep until the rx window opens
-            if (_sleep_cb)
-                _sleep_cb(mDot::AUTO_SLEEP_EVT_TXDONE);
         }
 
         void Notify() {
@@ -204,8 +197,6 @@ class mDotEvent: public lora::MacEvents {
             _info.Status = LORAMAC_EVENT_INFO_STATUS_OK;
             Notify();
 
-            if (_sleep_cb)
-                _sleep_cb(mDot::AUTO_SLEEP_EVT_CLEANUP);
         }
 
         virtual void JoinFailed(uint8_t *payload, uint16_t size, int16_t rssi, int8_t snr) {
@@ -216,8 +207,6 @@ class mDotEvent: public lora::MacEvents {
             _info.Status = LORAMAC_EVENT_INFO_STATUS_JOIN_FAIL;
             Notify();
 
-            if (_sleep_cb)
-                _sleep_cb(mDot::AUTO_SLEEP_EVT_CLEANUP);
         }
 
         virtual void MissedAck(uint8_t retries) {
@@ -264,8 +253,6 @@ class mDotEvent: public lora::MacEvents {
         virtual void RxDone(uint8_t *payload, uint16_t size, int16_t rssi, int8_t snr, lora::DownlinkControl ctrl, uint8_t slot) {
             logDebug("mDotEvent - RxDone");
 
-            if (_sleep_cb)
-                _sleep_cb(mDot::AUTO_SLEEP_EVT_CLEANUP);
         }
 
         virtual void BeaconRx(const lora::BeaconData_t& beacon_data, int16_t rssi, int8_t snr) {
@@ -321,13 +308,6 @@ class mDotEvent: public lora::MacEvents {
             _info.Status = LORAMAC_EVENT_INFO_STATUS_RX_TIMEOUT;
             Notify();
 
-            if (_sleep_cb) {
-                // If this is the first rx window we can sleep until the next one
-                if (slot == 1)
-                    _sleep_cb(mDot::AUTO_SLEEP_EVT_RX1_TIMEOUT);
-                else
-                    _sleep_cb(mDot::AUTO_SLEEP_EVT_CLEANUP);
-            }
         }
 
         virtual void RxError(uint8_t slot) {
@@ -340,20 +320,10 @@ class mDotEvent: public lora::MacEvents {
             _info.Status = LORAMAC_EVENT_INFO_STATUS_RX_ERROR;
             Notify();
 
-            if (_sleep_cb)
-                _sleep_cb(mDot::AUTO_SLEEP_EVT_CLEANUP);
         }
 
         virtual uint8_t MeasureBattery(void) {
             return 255;
-        }
-
-        void AttachSleepCallback(Callback<void(mDot::AutoSleepEvent_t)> cb) {
-            _sleep_cb = cb;
-        }
-
-        void DetachSleepCallback() {
-            _sleep_cb = NULL;
         }
 
         bool LinkCheckAnsReceived;
@@ -388,8 +358,6 @@ class mDotEvent: public lora::MacEvents {
         }
 
     private:
-        /* Hook to inject a sleep method in between receive windows */
-        Callback<void(mDot::AutoSleepEvent_t)> _sleep_cb;
 
         LoRaMacEventFlags _flags;
         LoRaMacEventInfo _info;
