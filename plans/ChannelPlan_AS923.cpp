@@ -229,8 +229,6 @@ uint8_t ChannelPlan_AS923::HandleJoinAccept(const uint8_t* buffer, uint8_t size)
 
 uint8_t ChannelPlan_AS923::SetTxConfig() {
 
-    logInfo("Configure radio for TX");
-
     Datarate txDr = GetDatarate(GetSettings()->Session.TxDatarate);
     int8_t max_pwr = GetSettings()->Session.Max_EIRP;
 
@@ -1085,9 +1083,9 @@ uint8_t ChannelPlan_AS923::HandleMacCommand(uint8_t* payload, uint8_t& index) {
 
 void ChannelPlan_AS923::DecrementDatarate() {
     if(GetSettings()->Session.UplinkDwelltime == 0) {
-        _minDatarate = lora::DR_0; 
+        _minDatarate = lora::DR_0;
     } else {
-        _minDatarate = lora::DR_2; 
+        _minDatarate = lora::DR_2;
     }
 
     if (GetSettings()->Session.TxDatarate > _minDatarate) {

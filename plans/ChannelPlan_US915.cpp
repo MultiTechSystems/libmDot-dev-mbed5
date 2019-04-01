@@ -224,7 +224,6 @@ uint8_t ChannelPlan_US915::SetRx2DatarateIndex(uint8_t index) {
 }
 
 uint8_t ChannelPlan_US915::SetTxConfig() {
-    logInfo("Configure radio for TX");
 
     uint8_t band = GetDutyBand(GetChannel(_txChannel).Frequency);
     Datarate txDr = GetDatarate(GetSettings()->Session.TxDatarate);
@@ -664,10 +663,10 @@ uint8_t ChannelPlan_US915::HandleAdrCommand(const uint8_t* payload, uint8_t inde
             if(mask != 0) {
                 for(int i = 0; i < 8; i++) {  //0 - 7 bits
                     if(((mask >> i) & 1) == 1) { //if bit in mask is a one
-                        t_125k |= (0xff << ((i % 2) * 8)); // this does either 0xff00 or 0x00ff to t_125k 
+                        t_125k |= (0xff << ((i % 2) * 8)); // this does either 0xff00 or 0x00ff to t_125k
                     }
                     if(i % 2 == 1) { // if 1 then both halfs of the mask were set
-                        SetChannelMask(i/2, t_125k); 
+                        SetChannelMask(i/2, t_125k);
                         t_125k = 0; //reset mask for next two bits
                     }
                 }
@@ -711,8 +710,6 @@ uint8_t ChannelPlan_US915::HandleAdrCommand(const uint8_t* payload, uint8_t inde
         }
     } else {
         logDebug("ADR is disabled, DR and Power not changed.");
-        status &= 0xFB; // TxPower KO
-        status &= 0xFD; // Datarate KO
     }
 
     logDebug("ADR DR: %u PWR: %u Ctrl: %02x Mask: %04x NbRep: %u Stat: %02x", datarate, power, ctrl, mask, nbRep, status);
@@ -735,7 +732,7 @@ uint8_t ChannelPlan_US915::ValidateAdrConfiguration() {
             logWarning("ADR TX Power KO - outside allowed range");
             status &= 0xFB; // TxPower KO
         }
-    } 
+    }
     // at least 2 125kHz channels must be enabled
     chans_enabled += CountBits(_channelMask[0]);
     chans_enabled += CountBits(_channelMask[1]);
@@ -746,7 +743,7 @@ uint8_t ChannelPlan_US915::ValidateAdrConfiguration() {
         logWarning("ADR Channel Mask KO - at least 2 125kHz channels must be enabled");
         status &= 0xFE; // ChannelMask KO
     }
-    
+
     // if TXDR == 4 (SF8@500kHz) at least 1 500kHz channel must be enabled
     if (datarate == DR_4 && (CountBits(_channelMask[4] & 0xFF) == 0)) {
         logWarning("ADR Datarate KO - DR4 requires at least 1 500kHz channel enabled");
@@ -936,7 +933,10 @@ uint8_t ChannelPlan_US915::GetNextChannel()
 
 uint8_t lora::ChannelPlan_US915::GetJoinDatarate() {
     uint8_t dr = GetSettings()->Session.TxDatarate;
-    static int fsb = 1; 
+    static uint8_t fsb = 1;
+    static uint8_t dr4_fsb = 1;
+    static bool altdr = false;
+
     if (GetSettings()->Test.DisableRandomJoinDatarate == lora::OFF) {
 
         if (GetSettings()->Network.FrequencySubBand == 0) {
@@ -949,10 +949,17 @@ uint8_t lora::ChannelPlan_US915::GetJoinDatarate() {
             } else {
                 dr = lora::DR_4;
                 fsb = 1;
+                dr4_fsb++;
+                if(dr4_fsb > 8)
+                    dr4_fsb = 1;
+                SetFrequencySubBand(dr4_fsb);
             }
+        } else if (altdr && CountBits(_channelMask[4] > 0)) {
+            dr = lora::DR_4;
         } else {
             dr = lora::DR_0;
         }
+        altdr = !altdr;
     }
     return dr;
 }

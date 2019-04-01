@@ -235,8 +235,6 @@ uint8_t ChannelPlan_RU864::HandleJoinAccept(const uint8_t* buffer, uint8_t size)
 
 uint8_t ChannelPlan_RU864::SetTxConfig() {
 
-    logInfo("Configure radio for TX");
-
     uint8_t band = GetDutyBand(GetChannel(_txChannel).Frequency);
     Datarate txDr = GetDatarate(GetSettings()->Session.TxDatarate);
     int8_t max_pwr = _dutyBands[band].PowerMax;
@@ -245,7 +243,7 @@ uint8_t ChannelPlan_RU864::SetTxConfig() {
 
     pwr = std::min < int8_t > (GetSettings()->Session.TxPower, max_pwr);
     pwr -= GetSettings()->Network.AntennaGain;
-    
+
     for (int i = 20; i >= 0; i--) {
         if (RADIO_POWERS[i] <= pwr) {
             pwr = i;

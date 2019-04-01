@@ -213,8 +213,6 @@ uint8_t ChannelPlan_KR920::HandleJoinAccept(const uint8_t* buffer, uint8_t size)
 
 uint8_t ChannelPlan_KR920::SetTxConfig() {
 
-    logInfo("Configure radio for TX");
-
     uint8_t band = GetDutyBand(GetChannel(_txChannel).Frequency);
     Datarate txDr = GetDatarate(GetSettings()->Session.TxDatarate);
     int8_t max_pwr = _dutyBands[band].PowerMax;

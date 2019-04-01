@@ -87,7 +87,7 @@ void ChannelPlan_IN865::Init() {
 
     _numChans125k = 16;
     _numChans500k = 0;
-    _numDefaultChans = IN865_DEFAULT_NUM_CHANS; 
+    _numDefaultChans = IN865_DEFAULT_NUM_CHANS;
 
     GetSettings()->Session.Rx2Frequency = 866550000;
     GetSettings()->Session.Rx2DatarateIndex = DR_2;
@@ -228,8 +228,6 @@ uint8_t ChannelPlan_IN865::HandleJoinAccept(const uint8_t* buffer, uint8_t size)
 }
 
 uint8_t ChannelPlan_IN865::SetTxConfig() {
-
-    logInfo("Configure radio for TX");
 
     uint8_t band = GetDutyBand(GetChannel(_txChannel).Frequency);
     Datarate txDr = GetDatarate(GetSettings()->Session.TxDatarate);
