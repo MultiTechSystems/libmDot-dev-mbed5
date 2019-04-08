@@ -150,8 +150,7 @@ class mDotEvent: public lora::MacEvents {
         }
 
         virtual void TxStart() {
-            logDebug("mDotEvent - TxStart");
-
+            // logDebug("mDotEvent - TxStart");
         }
 
         virtual void TxDone(uint8_t dr) {
