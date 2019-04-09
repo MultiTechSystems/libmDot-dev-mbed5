@@ -67,7 +67,7 @@ public:
     /*!
      * \brief Configures the radio with the given modem
      *
-     * \param [IN] modem Modem to be used [0: FSK, 1: LoRa] 
+     * \param [IN] modem Modem to be used [0: FSK, 1: LoRa]
      */
     virtual void SetModem( RadioModems_t modem ) = 0;
 	virtual RadioModems_t GetModem( void ) { return Modem; }
@@ -91,7 +91,7 @@ public:
     /*!
      * \brief Generates a 32 bits random value based on the RSSI readings
      *
-     * \remark This function sets the radio in LoRa modem mode and disables 
+     * \remark This function sets the radio in LoRa modem mode and disables
      *         all interrupts.
      *         After calling this function either Radio.SetRxConfig or
      *         Radio.SetTxConfig functions must be called.
@@ -106,22 +106,22 @@ public:
      * \param [IN] bandwidth    Sets the bandwidth
      *                          FSK : >= 2600 and <= 250000 Hz
      *                          LoRa: [0: 125 kHz, 1: 250 kHz,
-     *                                 2: 500 kHz, 3: Reserved] 
+     *                                 2: 500 kHz, 3: Reserved]
      * \param [IN] datarate     Sets the Datarate
      *                          FSK : 600..300000 bits/s
      *                          LoRa: [6: 64, 7: 128, 8: 256, 9: 512,
      *                                10: 1024, 11: 2048, 12: 4096  chips]
      * \param [IN] coderate     Sets the coding rate (LoRa only)
      *                          FSK : N/A ( set to 0 )
-     *                          LoRa: [1: 4/5, 2: 4/6, 3: 4/7, 4: 4/8] 
-     * \param [IN] bandwidthAfc Sets the AFC Bandwidth (FSK only) 
+     *                          LoRa: [1: 4/5, 2: 4/6, 3: 4/7, 4: 4/8]
+     * \param [IN] bandwidthAfc Sets the AFC Bandwidth (FSK only)
      *                          FSK : >= 2600 and <= 250000 Hz
-     *                          LoRa: N/A ( set to 0 ) 
+     *                          LoRa: N/A ( set to 0 )
      * \param [IN] preambleLen  Sets the Preamble length
-     *                          FSK : Number of bytes 
+     *                          FSK : Number of bytes
      *                          LoRa: Length in symbols (the hardware adds 4 more symbols)
-     * \param [IN] symbTimeout  Sets the RxSingle timeout value (LoRa only) 
-     *                          FSK : N/A ( set to 0 ) 
+     * \param [IN] symbTimeout  Sets the RxSingle timeout value (LoRa only)
+     *                          FSK : N/A ( set to 0 )
      *                          LoRa: timeout in symbols
      * \param [IN] fixLen       Fixed length packets [0: variable, 1: fixed]
      * \param [IN] payloadLen   Sets payload length when fixed length is used
@@ -151,7 +151,7 @@ public:
     /*!
      * \brief Sets the transmission parameters
      *
-     * \param [IN] modem        Radio modem to be used [0: FSK, 1: LoRa] 
+     * \param [IN] modem        Radio modem to be used [0: FSK, 1: LoRa]
      * \param [IN] power        Sets the output power [dBm]
      * \param [IN] fdev         Sets the frequency deviation (FSK only)
      *                          FSK : [Hz]
@@ -159,16 +159,16 @@ public:
      * \param [IN] bandwidth    Sets the bandwidth (LoRa only)
      *                          FSK : 0
      *                          LoRa: [0: 125 kHz, 1: 250 kHz,
-     *                                 2: 500 kHz, 3: Reserved] 
+     *                                 2: 500 kHz, 3: Reserved]
      * \param [IN] datarate     Sets the Datarate
      *                          FSK : 600..300000 bits/s
      *                          LoRa: [6: 64, 7: 128, 8: 256, 9: 512,
      *                                10: 1024, 11: 2048, 12: 4096  chips]
      * \param [IN] coderate     Sets the coding rate (LoRa only)
      *                          FSK : N/A ( set to 0 )
-     *                          LoRa: [1: 4/5, 2: 4/6, 3: 4/7, 4: 4/8] 
+     *                          LoRa: [1: 4/5, 2: 4/6, 3: 4/7, 4: 4/8]
      * \param [IN] preambleLen  Sets the preamble length
-     *                          FSK : Number of bytes 
+     *                          FSK : Number of bytes
      *                          LoRa: Length in symbols (the hardware adds 4 more symbols)
      * \param [IN] fixLen       Fixed length packets [0: variable, 1: fixed]
      * \param [IN] crcOn        Enables disables the CRC [0: OFF, 1: ON]
@@ -183,7 +183,7 @@ public:
      *                          LoRa: [0: not inverted, 1: inverted]
      * \param [IN] timeout      Transmission timeout [us]
      */
-    virtual void SetTxConfig( RadioModems_t modem, int8_t power, uint32_t fdev, 
+    virtual void SetTxConfig( RadioModems_t modem, int8_t power, uint32_t fdev,
                               uint32_t bandwidth, uint32_t datarate,
                               uint8_t coderate, uint16_t preambleLen,
                               bool fixLen, bool crcOn, bool FreqHopOn,
@@ -280,8 +280,8 @@ public:
 
     virtual uint32_t GetTimeOnAir(void) = 0;
 
-    void GrabMutex(void) { mutex.lock(); }
-    void ReleaseMutex(void) { mutex.unlock(); }
+    void GrabMutex(void) { lock.wait(); }
+    void ReleaseMutex(void) { lock.release(); }
 
     int32_t GetFrequencyOffset() { return freq_offset; }
     void SetFrequencyOffset(int32_t offset) { freq_offset = offset; }
@@ -299,7 +299,7 @@ protected:
     /*!
      * Access protection
      */
-    Mutex mutex;
+    Semaphore lock;
 
 };
 
