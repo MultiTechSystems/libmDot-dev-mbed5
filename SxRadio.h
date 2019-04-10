@@ -275,18 +275,21 @@ public:
     virtual void ReadBuffer( uint8_t addr, uint8_t *buffer, uint8_t size ) = 0;
 
     virtual void SignalMacEvent(void) {};
+    virtual void SignalLinkEvent(void) {};
 
     virtual void ResetRadio(void) {};
 
     virtual uint32_t GetTimeOnAir(void) = 0;
 
-    void GrabMutex(void) { lock.wait(); }
-    void ReleaseMutex(void) { lock.release(); }
+    void GrabMutex(void) { mutex.lock(); }
+    void ReleaseMutex(void) { mutex.unlock(); }
 
     int32_t GetFrequencyOffset() { return freq_offset; }
     void SetFrequencyOffset(int32_t offset) { freq_offset = offset; }
 
     const uint32_t WakeupTime;
+
+
 
 
 protected:
@@ -299,7 +302,7 @@ protected:
     /*!
      * Access protection
      */
-    Semaphore lock;
+    Mutex mutex;
 
 };
 
