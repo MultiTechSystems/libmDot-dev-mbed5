@@ -759,7 +759,7 @@ void ChannelPlan_RU864::UpdateDutyCycle(uint32_t freq, uint32_t time_on_air_ms) 
 
     if (GetSettings()->Session.MaxDutyCycle > 0 && GetSettings()->Session.MaxDutyCycle <= 15) {
         GetSettings()->Session.AggregatedTimeOffEnd = _dutyCycleTimer.read_ms() + time_on_air_ms * GetSettings()->Session.AggregateDutyCycle;
-        logDebug("Updated Aggregate DCycle Time-off: %lu DC: %f%%", GetSettings()->Session.AggregatedTimeOffEnd, 1 / float(GetSettings()->Session.AggregateDutyCycle));
+        logDebug("Updated Aggregate DCycle Time-off: %lu DC: %f", GetSettings()->Session.AggregatedTimeOffEnd, 1 / float(GetSettings()->Session.AggregateDutyCycle));
     } else {
         GetSettings()->Session.AggregatedTimeOffEnd = 0;
     }
