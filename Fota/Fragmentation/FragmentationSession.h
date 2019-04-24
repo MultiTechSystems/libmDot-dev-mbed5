@@ -7,8 +7,8 @@
 #include "mDot.h"
 #include "WriteFile.h"
 
-#define MAX_PARITY 400
-#define FRAG_OFFSET 3 
+#define MAX_PARITY 300
+#define FRAG_OFFSET 3
 #define MULTICAST_SESSIONS 3
 
 class FragmentationSession {
@@ -63,7 +63,7 @@ class FragmentationSession {
         void reset(uint16_t num);
         void upgradeFile(uint8_t fragIndex);
         bool process_frame(uint8_t fragIndex,uint16_t index, uint8_t buffer[], size_t size);
-        
+
         mDot* _dot;
         WriteFile* _fh;
         fragGroup fg[MULTICAST_SESSIONS];

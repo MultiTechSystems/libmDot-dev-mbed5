@@ -8,7 +8,7 @@
 
 #define FRAG_SESSION_ONGOING    0xffffffff
 #ifndef MAX_PARITY
-#define MAX_PARITY 400
+#define MAX_PARITY 300
 #endif
 class FragmentationMath
 {
@@ -30,7 +30,7 @@ class FragmentationMath
     void StoreRowInFlash(uint8_t *rowData, int index);
     void XorLineData(uint8_t *dataL1, uint8_t *dataL2, int size);
     void XorLineBit(uint8_t *dataL1, uint8_t *dataL2, int size);
-    void XorRowWithMatrix(uint8_t* row, int matrix_row_num); 
+    void XorRowWithMatrix(uint8_t* row, int matrix_row_num);
     void FragmentationGetParityMatrixRow(int N, int M, uint8_t *matrixRow);
     void CondenseRow(uint8_t *row, int row_number, int start);
     void ExpandAndXorRow(uint8_t *row, int row_number);
@@ -38,7 +38,7 @@ class FragmentationMath
     void CompleteRow(int row_num);
     void printMatrix();
 
-    uint8_t _frame_size; 
+    uint8_t _frame_size;
     uint16_t _frame_count;
     uint16_t _max_parity;
     uint16_t numFramesMissing;
