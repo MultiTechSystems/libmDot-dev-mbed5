@@ -56,7 +56,7 @@ namespace lora {
              * @param rssi of received packet
              * @param snr of received packet
              */
-            virtual void JoinAccept(uint8_t *payload, uint16_t size, int16_t rssi, int8_t snr);
+            virtual void JoinAccept(uint8_t *payload, uint16_t size, int16_t rssi, int16_t snr);
 
             /**
              * Fired when JoinAccept message is received and MIC is not valid
@@ -65,7 +65,7 @@ namespace lora {
              * @param rssi of received packet
              * @param snr of received packet
              */
-            virtual void JoinFailed(uint8_t *payload, uint16_t size, int16_t rssi, int8_t snr);
+            virtual void JoinFailed(uint8_t *payload, uint16_t size, int16_t rssi, int16_t snr);
 
             /**
              * Fired when packet is received and MIC is valid
@@ -80,7 +80,7 @@ namespace lora {
              * @param address of the end device
              * @param dupRx set if this packet has already been received
              */
-            virtual void PacketRx(uint8_t port, uint8_t *payload, uint16_t size, int16_t rssi, int8_t snr, lora::DownlinkControl ctrl, uint8_t slot, uint8_t retries = 0, uint32_t address = 0, bool dupRx=false);
+            virtual void PacketRx(uint8_t port, uint8_t *payload, uint16_t size, int16_t rssi, int16_t snr, lora::DownlinkControl ctrl, uint8_t slot, uint8_t retries = 0, uint32_t address = 0, bool dupRx=false);
 
             /**
              * Fired when radio has received a packet, packet is not validated
@@ -91,7 +91,7 @@ namespace lora {
              * @param ctrl Downlink control field of packet
              * @param slot rx window packet was received
              */
-            virtual void RxDone(uint8_t *payload, uint16_t size, int16_t rssi, int8_t snr, lora::DownlinkControl ctrl, uint8_t slot);
+            virtual void RxDone(uint8_t *payload, uint16_t size, int16_t rssi, int16_t snr, lora::DownlinkControl ctrl, uint8_t slot);
 
             /**
              * Fired when a beacon is received
@@ -99,7 +99,7 @@ namespace lora {
              * @param rssi of received beacon
              * @param snr of received beacon
              */
-            virtual void BeaconRx(const BeaconData_t& beacon_data, int16_t rssi, int8_t snr);
+            virtual void BeaconRx(const BeaconData_t& beacon_data, int16_t rssi, int16_t snr);
 
             /**
              * Fired upon losing beacon synchronization (120 minutes elapsed from last beacon reception)
@@ -125,7 +125,7 @@ namespace lora {
              * @param s_rssi of received packet at server
              * @param s_snr of received packet at server
              */
-            virtual void Pong(int16_t m_rssi, int8_t m_snr, int16_t s_rssi, int8_t s_snr);
+            virtual void Pong(int16_t m_rssi, int16_t m_snr, int16_t s_rssi, int16_t s_snr);
 
             /**
              * Fired if network link check answer is received
@@ -134,7 +134,7 @@ namespace lora {
              * @param s_snr margin of received packet at server
              * @param s_gateways number of gateways reporting the packet
              */
-            virtual void NetworkLinkCheck(int16_t m_rssi, int8_t m_snr, int8_t s_snr, uint8_t s_gateways);
+            virtual void NetworkLinkCheck(int16_t m_rssi, int16_t m_snr, int16_t s_snr, uint8_t s_gateways);
 
             /**
              * Fired upon receiving a server time answer

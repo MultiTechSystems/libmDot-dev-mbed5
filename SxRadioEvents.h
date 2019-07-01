@@ -43,7 +43,7 @@ public:
      *                     FSK : N/A ( set to 0 )
      *                     LoRa: SNR value is two's complement in 1/4 dB
      */
-    virtual void RxDone( uint8_t *payload, uint16_t size, int16_t rssi, int8_t snr ) {}
+    virtual void RxDone( uint8_t *payload, uint16_t size, int16_t rssi, int16_t snr ) {}
     /*!
      * \brief  Rx Timeout callback prototype.
      */

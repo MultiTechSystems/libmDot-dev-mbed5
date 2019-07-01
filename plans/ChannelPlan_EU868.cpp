@@ -173,7 +173,7 @@ void ChannelPlan_EU868::Init() {
     band.Index = 0;
     band.FrequencyMin = EU868_MILLI_FREQ_MIN;
     band.FrequencyMax = EU868_MILLI_FREQ_MAX;
-    band.PowerMax = 14;
+    band.PowerMax = 16;
     band.TimeOffEnd = 0;
 
     // Limiting to 865-868 allows for 1% duty cycle
@@ -191,7 +191,7 @@ void ChannelPlan_EU868::Init() {
     band.Index++;
     band.FrequencyMin = EU868_DECI_FREQ_MIN;
     band.FrequencyMax = EU868_DECI_FREQ_MAX;
-    band.PowerMax = 27;
+    band.PowerMax = 29;
     band.DutyCycle = 10;
 
     AddDutyBand(-1, band);
@@ -569,7 +569,7 @@ uint8_t ChannelPlan_EU868::HandlePingSlotChannelReq(const uint8_t* payload, uint
     return LORA_OK;
 }
 
-uint8_t ChannelPlan_EU868::HandleBeaconFrequencyReq(const uint8_t* payload, uint8_t index, uint8_t size, uint8_t& status) 
+uint8_t ChannelPlan_EU868::HandleBeaconFrequencyReq(const uint8_t* payload, uint8_t index, uint8_t size, uint8_t& status)
 {
     uint32_t freq = 0;
 

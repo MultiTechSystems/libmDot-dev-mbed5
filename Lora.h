@@ -401,7 +401,7 @@ namespace lora {
             uint32_t AggregatedTimeOffEnd;      //!< Time off air expiration for aggregate duty cycle
             uint16_t AggregateDutyCycle;        //!< Used for enforcing time-on-air
             uint8_t AckCounter;                 //!< Current number of packets sent without ACK from server
-            uint8_t AdrCounter;                 //!< Current number of packets received without downlink from server
+            uint16_t AdrCounter;                 //!< Current number of packets received without downlink from server
             uint8_t RxDelay;                    //!< Number of seconds to wait before 1st RX Window
             uint8_t CommandBuffer[COMMANDS_BUFFER_SIZE]; //!< Buffer to hold Mac Commands and parameters to be sent in next packet
             uint8_t CommandBufferIndex;         //!< Index to place next Mac Command, also current size of Command Buffer
