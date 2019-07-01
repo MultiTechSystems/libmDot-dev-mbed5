@@ -189,7 +189,7 @@ class mDotEvent: public lora::MacEvents {
             Notify();
         }
 
-        virtual void JoinAccept(uint8_t *payload, uint16_t size, int16_t rssi, int8_t snr) {
+        virtual void JoinAccept(uint8_t *payload, uint16_t size, int16_t rssi, int16_t snr) {
             logDebug("mDotEvent - JoinAccept");
 
             _flags.Bits.Tx = 0;
@@ -199,7 +199,7 @@ class mDotEvent: public lora::MacEvents {
 
         }
 
-        virtual void JoinFailed(uint8_t *payload, uint16_t size, int16_t rssi, int8_t snr) {
+        virtual void JoinFailed(uint8_t *payload, uint16_t size, int16_t rssi, int16_t snr) {
             logDebug("mDotEvent - JoinFailed");
 
             _flags.Bits.Tx = 0;
@@ -215,7 +215,7 @@ class mDotEvent: public lora::MacEvents {
             _info.TxNbRetries = retries;
         }
 
-        virtual void PacketRx(uint8_t port, uint8_t *payload, uint16_t size, int16_t rssi, int8_t snr, lora::DownlinkControl ctrl, uint8_t slot, uint8_t retries, uint32_t address, bool dupRx) {
+        virtual void PacketRx(uint8_t port, uint8_t *payload, uint16_t size, int16_t rssi, int16_t snr, lora::DownlinkControl ctrl, uint8_t slot, uint8_t retries, uint32_t address, bool dupRx) {
             logDebug("mDotEvent - PacketRx ADDR: %08x", address);
             RxPort = port;
             PacketReceived = true;
@@ -250,12 +250,12 @@ class mDotEvent: public lora::MacEvents {
             Notify();
         }
 
-        virtual void RxDone(uint8_t *payload, uint16_t size, int16_t rssi, int8_t snr, lora::DownlinkControl ctrl, uint8_t slot) {
+        virtual void RxDone(uint8_t *payload, uint16_t size, int16_t rssi, int16_t snr, lora::DownlinkControl ctrl, uint8_t slot) {
             logDebug("mDotEvent - RxDone");
 
         }
 
-        virtual void BeaconRx(const lora::BeaconData_t& beacon_data, int16_t rssi, int8_t snr) {
+        virtual void BeaconRx(const lora::BeaconData_t& beacon_data, int16_t rssi, int16_t snr) {
             logDebug("mDotEvent - BeaconRx");
             BeaconLocked = true;
             BeaconData = beacon_data;
@@ -266,7 +266,7 @@ class mDotEvent: public lora::MacEvents {
             BeaconLocked = false;
         }
 
-        virtual void Pong(int16_t m_rssi, int8_t m_snr, int16_t s_rssi, int8_t s_snr) {
+        virtual void Pong(int16_t m_rssi, int16_t m_snr, int16_t s_rssi, int16_t s_snr) {
             logDebug("mDotEvent - Pong");
             PongReceived = true;
             PongRssi = s_rssi;
@@ -284,7 +284,7 @@ class mDotEvent: public lora::MacEvents {
             ServerTimeMillis = static_cast<uint16_t>(current_server_time_ms % 1000);
         }
 
-        virtual void NetworkLinkCheck(int16_t m_rssi, int8_t m_snr, int8_t s_snr, uint8_t s_gateways) {
+        virtual void NetworkLinkCheck(int16_t m_rssi, int16_t m_snr, int16_t s_snr, uint8_t s_gateways) {
             logDebug("mDotEvent - NetworkLinkCheck");
             LinkCheckAnsReceived = true;
             DemodMargin = s_snr;

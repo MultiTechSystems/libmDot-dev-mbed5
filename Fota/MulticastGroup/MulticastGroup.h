@@ -1,3 +1,20 @@
+/**********************************************************************
+* COPYRIGHT 2018 MULTI-TECH SYSTEMS, INC.
+*
+* ALL RIGHTS RESERVED BY AND FOR THE EXCLUSIVE BENEFIT OF
+* MULTI-TECH SYSTEMS, INC.
+*
+* MULTI-TECH SYSTEMS, INC. - CONFIDENTIAL AND PROPRIETARY
+* INFORMATION AND/OR TRADE SECRET.
+*
+* NOTICE: ALL CODE, PROGRAM, INFORMATION, SCRIPT, INSTRUCTION,
+* DATA, AND COMMENT HEREIN IS AND SHALL REMAIN THE CONFIDENTIAL
+* INFORMATION AND PROPERTY OF MULTI-TECH SYSTEMS, INC.
+* USE AND DISCLOSURE THEREOF, EXCEPT AS STRICTLY AUTHORIZED IN A
+* WRITTEN AGREEMENT SIGNED BY MULTI-TECH SYSTEMS, INC. IS PROHIBITED.
+*
+***********************************************************************/
+
 #ifndef MULTICASTGROUP_H
 #define MULTICASTGROUP_H
 #include "mDot.h"
@@ -39,7 +56,7 @@ class MulticastGroup {
             int32_t class_c_start;
             time_t time_setup;
         } mcgroup;
-        
+
         bool* _filled;
         uint8_t _groupId;
         uint8_t _ans;
@@ -49,8 +66,8 @@ class MulticastGroup {
         uint32_t _freq;
         uint32_t _frame_count;
         time_t _now;
-        
-        mDot* _dot; 
+
+        mDot* _dot;
         Thread _event_thread;
         EventQueue _switch_class_queue;
         mcgroup _mcGroup[MULTICAST_SESSIONS];
