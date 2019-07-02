@@ -1080,18 +1080,17 @@ class mDot {
          *
          * AU915 Datarates
          * ---------------
-         * DR0 - SF10BW125
-         * DR1 - SF9BW125
-         * DR2 - SF8BW125
-         * DR3 - SF7BW125
-         * DR4 - SF8BW500
+         * DR0 - SF12BW125
+         * DR1 - SF11BW125
+         * DR2 - SF10BW125
+         * DR3 - SF9BW125
+         * DR4 - SF8BW125
+         * DR5 - SF7BW125
+         * DR6 - SF8BW500
          *
          * @returns spreading factor and bandwidth
          */
         std::string getDataRateDetails(uint8_t rate);
-        MBED_DEPRECATED("Will be removed in 3.3.0")
-        std::string getDateRateDetails(uint8_t rate);
-
 
         /**
          * Set TX power output of radio before antenna gain, default: 14 dBm
