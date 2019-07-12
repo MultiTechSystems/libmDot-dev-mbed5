@@ -43,6 +43,7 @@ public:
         RF_RX_RUNNING,
         RF_TX_RUNNING,
         RF_CAD,
+        RF_LBT
     }RadioState_t;
 
     SxRadio(uint32_t WakeupTime) : WakeupTime(WakeupTime), freq_offset(0), State(RF_IDLE), Modem(MODEM_LORA) { }
@@ -87,7 +88,7 @@ public:
      *
      * \retval isFree         [true: Channel is free, false: Channel is not free]
      */
-    virtual bool IsChannelFree( RadioModems_t modem, uint32_t freq, uint8_t datarate, int16_t rssiThresh, uint8_t bandwidth, uint32_t timeout = 5000, int16_t *rssiVal = NULL ) = 0;
+    virtual bool IsChannelFree( RadioModems_t modem, uint32_t freq, int16_t rssiThresh, uint32_t timeout = 5000, int16_t *rssiVal = NULL ) = 0;
     /*!
      * \brief Generates a 32 bits random value based on the RSSI readings
      *

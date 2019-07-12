@@ -343,6 +343,8 @@ namespace lora {
             uint8_t Class;              //!< Operating class of device
             uint8_t EUI[8];             //!< Network ID or AppEUI
             uint8_t Key[16];            //!< Network Key or AppKey
+            uint8_t GenAppKey[16];      //!< Generic App Key, will be AppKey for LW 1.1.x
+            uint8_t McKEKey[16];        //!< Multicast Key Encryption Key
             uint8_t JoinDelay;          //!< Number of seconds to wait before 1st RX Window
             uint8_t RxDelay;            //!< Number of seconds to wait before 1st RX Window
             uint8_t FrequencySubBand;   //!< FrequencySubBand used for US915 hybrid operation 0:72 channels, 1:1-8 channels ...

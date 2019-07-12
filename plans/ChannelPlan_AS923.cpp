@@ -920,7 +920,7 @@ uint8_t ChannelPlan_AS923::GetNextChannel()
             freq = GetChannel(enabledChannels[j]).Frequency;
 
             // Listen before talk
-            if (GetRadio()->IsChannelFree(SxRadio::MODEM_LORA, freq, sf, thres, bw)) {
+            if (GetRadio()->IsChannelFree(SxRadio::MODEM_LORA, freq, thres)) {
                 _txChannel = enabledChannels[j];
                 break;
             }

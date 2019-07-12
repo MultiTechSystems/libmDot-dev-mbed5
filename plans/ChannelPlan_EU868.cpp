@@ -922,7 +922,7 @@ uint8_t ChannelPlan_EU868::GetNextChannel()
         for (uint8_t j = rand_r(0, nbEnabledChannels - 1); tmr.read_ms() < timeout; j++) {
             freq = GetChannel(enabledChannels[j]).Frequency;
 
-            if (GetRadio()->IsChannelFree(SxRadio::MODEM_LORA, freq, sf, thres, bw)) {
+            if (GetRadio()->IsChannelFree(SxRadio::MODEM_LORA, freq, thres)) {
                 _txChannel = enabledChannels[j];
                 break;
             }
