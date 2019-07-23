@@ -351,8 +351,8 @@ namespace lora {
             uint8_t AckAttempts;        //!< Number of attempts to send packet and receive an ACK from server
             uint8_t Retries;            //!< Number of times to resend a packet without receiving an ACK, redundancy
             uint8_t ADREnabled;         //!< Enable adaptive datarate
-            uint16_t AdrAckLimit;       //!< Number of uplinks without a downlink to allow before setting ADRACKReq
-            uint16_t AdrAckDelay;       //!< Number of downlinks to expect ADR ACK Response within
+            uint8_t AdrAckLimit;       //!< Number of uplinks without a downlink to allow before setting ADRACKReq
+            uint8_t AdrAckDelay;       //!< Number of downlinks to expect ADR ACK Response within
             uint8_t CADEnabled;         //!< Enable listen before talk/channel activity detection
             uint8_t RepeaterMode;       //!< Limit payloads to repeater compatible sizes
             uint8_t TxPower;            //!< Default radio output power in dBm
@@ -403,7 +403,7 @@ namespace lora {
             uint32_t AggregatedTimeOffEnd;      //!< Time off air expiration for aggregate duty cycle
             uint16_t AggregateDutyCycle;        //!< Used for enforcing time-on-air
             uint8_t AckCounter;                 //!< Current number of packets sent without ACK from server
-            uint16_t AdrCounter;                 //!< Current number of packets received without downlink from server
+            uint8_t AdrCounter;                 //!< Current number of packets received without downlink from server
             uint8_t RxDelay;                    //!< Number of seconds to wait before 1st RX Window
             uint8_t CommandBuffer[COMMANDS_BUFFER_SIZE]; //!< Buffer to hold Mac Commands and parameters to be sent in next packet
             uint8_t CommandBufferIndex;         //!< Index to place next Mac Command, also current size of Command Buffer

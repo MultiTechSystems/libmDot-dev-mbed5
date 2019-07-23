@@ -1233,26 +1233,28 @@ class mDot {
         /**
          * Set the ADR ACK Limit
          * @param limit - ADR ACK limit
+         * @returns MDOT_OK if success
          */
-        void setAdrAckLimit(uint16_t limit);
+        int32_t setAdrAckLimit(uint8_t limit);
 
         /**
          * Get the ADR ACK Limit
          * @returns ADR ACK limit
          */
-        uint16_t getAdrAckLimit();
+        uint8_t getAdrAckLimit();
 
         /**
          * Set the ADR ACK Delay
          * @param delay - ADR ACK delay
+         * @returns MDOT_OK if success
          */
-        void setAdrAckDelay(uint16_t delay);
+        int32_t setAdrAckDelay(uint8_t delay);
 
         /**
          * Get the ADR ACK Delay
          * @returns ADR ACK delay
          */
-        uint16_t getAdrAckDelay();
+        uint8_t getAdrAckDelay();
 
         /**
          * Enable/disable CRC checking of packets
