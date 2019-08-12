@@ -140,12 +140,6 @@ namespace lora {
             virtual uint8_t SetFrequencySubBand(uint8_t sub_band);
 
             /**
-             * Callback for ACK timeout event
-             * @return LORA_OK
-             */
-            virtual uint8_t HandleAckTimeout();
-
-            /**
              * Callback for Join Accept packet to load optional channels
              * @return LORA_OK
              */

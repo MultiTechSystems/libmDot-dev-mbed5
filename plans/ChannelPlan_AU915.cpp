@@ -646,13 +646,13 @@ uint8_t ChannelPlan_AU915::HandleAdrCommand(const uint8_t* payload, uint8_t inde
         nbRep = 1;
     }
 
-    if (datarate > _maxDatarate) {
+    if (datarate != 0xF && datarate > _maxDatarate) {
         status &= 0xFD; // Datarate KO
     }
     //
     // Remark MaxTxPower = 0 and MinTxPower = 10
     //
-    if (power > 10) {
+    if (power != 0xF && power > 10) {
         status &= 0xFB; // TxPower KO
     }
 
@@ -712,8 +712,10 @@ uint8_t ChannelPlan_AU915::HandleAdrCommand(const uint8_t* payload, uint8_t inde
 
     if (GetSettings()->Network.ADREnabled) {
         if (status == 0x07) {
-            GetSettings()->Session.TxDatarate = datarate;
-            GetSettings()->Session.TxPower = TX_POWERS[power];
+            if (datarate != 0xF)
+                GetSettings()->Session.TxDatarate = datarate;
+            if (power != 0xF)
+                GetSettings()->Session.TxPower = TX_POWERS[power];
             GetSettings()->Session.Redundancy = nbRep;
         }
     } else {

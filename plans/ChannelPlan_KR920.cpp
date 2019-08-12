@@ -192,7 +192,7 @@ uint8_t ChannelPlan_KR920::HandleJoinAccept(const uint8_t* buffer, uint8_t size)
 
             ch.Frequency = ((buffer[i]) | (buffer[i + 1] << 8) | (buffer[i + 2] << 16)) * 100u;
 
-            if (ch.Frequency > 0) {
+            if (ch.Frequency > 0 && ch.Frequency >= _minFrequency && ch.Frequency <= _maxFrequency) {
                 ch.Index = index;
                 ch.DrRange.Fields.Min = static_cast<int8_t>(DR_0);
                 ch.DrRange.Fields.Max = static_cast<int8_t>(DR_5);
@@ -584,13 +584,13 @@ uint8_t ChannelPlan_KR920::HandleAdrCommand(const uint8_t* payload, uint8_t inde
         nbRep = 1;
     }
 
-    if (datarate > _maxDatarate) {
+    if (datarate != 0xF && datarate > _maxDatarate) {
         status &= 0xFD; // Datarate KO
     }
     //
     // Remark MaxTxPower = 0 and MinTxPower = 7
     //
-    if (power > 7) {
+    if (power != 0xF && power > 7) {
         status &= 0xFB; // TxPower KO
     }
 
@@ -614,14 +614,14 @@ uint8_t ChannelPlan_KR920::HandleAdrCommand(const uint8_t* payload, uint8_t inde
 
     if (GetSettings()->Network.ADREnabled) {
         if (status == 0x07) {
-            GetSettings()->Session.TxDatarate = datarate;
-            GetSettings()->Session.TxPower = TX_POWERS[power];
+            if (datarate != 0xF)
+                GetSettings()->Session.TxDatarate = datarate;
+            if (power != 0xF)
+                GetSettings()->Session.TxPower = TX_POWERS[power];
             GetSettings()->Session.Redundancy = nbRep;
         }
     } else {
         logDebug("ADR is disabled, DR and Power not changed.");
-        status &= 0xFB; // TxPower KO
-        status &= 0xFD; // Datarate KO
     }
 
     logDebug("ADR DR: %u PWR: %u Ctrl: %02x Mask: %04x NbRep: %u Stat: %02x", datarate, power, ctrl, mask, nbRep, status);
@@ -654,25 +654,6 @@ uint8_t ChannelPlan_KR920::ValidateAdrConfiguration() {
     }
 
     return status;
-}
-
-uint8_t ChannelPlan_KR920::HandleAckTimeout() {
-
-    if (!GetSettings()->Network.ADREnabled) {
-        return LORA_ADR_OFF;
-    }
-
-    if ((++(GetSettings()->Session.AckCounter) % 2) == 0) {
-        if (GetSettings()->Session.TxPower < GetSettings()->Network.TxPowerMax) {
-            logTrace("ADR Setting power to maximum");
-            GetSettings()->Session.TxPower = GetSettings()->Network.TxPowerMax;
-        } else if (GetSettings()->Session.TxDatarate > 0) {
-            logTrace("ADR Lowering datarate");
-            (GetSettings()->Session.TxDatarate)--;
-        }
-    }
-
-    return LORA_OK;
 }
 
 

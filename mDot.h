@@ -728,6 +728,18 @@ class mDot {
         const uint8_t* getAppKey();
 
         /**
+         * Set join nonce counter incremented with each Join Request
+         * @returns MDOT_OK if success
+         */
+        int32_t setJoinNonce(const uint16_t& nonce);
+
+        /**
+         * Get join nonce counter incremented with each Join Request
+         * @returns join nonce
+         */
+        uint16_t getJoinNonce();
+
+        /**
          * Add a multicast session address and keys
          * Downlink counter is set to 0
          * Up to 3 MULTICAST_SESSIONS can be set
@@ -1734,7 +1746,7 @@ class mDot {
 
         mdot_stats _stats;
 
-        FunctionPointer _wakeup_callback;
+        Callback<void()> _wakeup_callback;
 
         bool _standbyFlag;
         bool _testMode;

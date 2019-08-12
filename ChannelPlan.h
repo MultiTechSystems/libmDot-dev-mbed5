@@ -193,6 +193,12 @@ namespace lora {
             virtual uint8_t GetMaxPayloadSize();
 
             /**
+             * Get max payload size for a given datarate
+             * @return size in bytes
+             */
+            virtual uint8_t GetMaxPayloadSize(uint8_t dr);
+
+            /**
              * Get rx window settings for requested window
              * RX_1, RX_2, RX_BEACON, RX_SLOT
              * @param window
@@ -285,11 +291,6 @@ namespace lora {
              * @return sub band 0-8 or 0 if not supported
              */
             virtual uint8_t GetFrequencySubBand();
-
-            /**
-             * Reset the ack counter used to lower datarate if ACK's are missed
-             */
-            virtual void ResetAckCounter();
 
             /**
              * Callback for radio to request channel change when frequency hopping
