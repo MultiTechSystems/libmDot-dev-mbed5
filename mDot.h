@@ -659,6 +659,20 @@ class mDot {
         int32_t setNetworkKey(const std::vector<uint8_t>& id);
 
         /**
+         * Get generic app key
+         * @returns a vector containing key (size 16)
+         */
+        std::vector<uint8_t> getGenAppKey();
+
+        /**
+         * Set generic app key
+         * for use with Multicast key exchange
+         * @param id a vector of 16 bytes
+         * @returns MDOT_OK if success
+         */
+        int32_t setGenAppKey(const std::vector<uint8_t>& id);
+
+        /**
          * Get network key
          * @returns a vector containing network key (size 16)
          */
