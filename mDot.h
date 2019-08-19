@@ -61,21 +61,6 @@ class mDot {
         void waitForPacket();
         void waitForLinkCheck();
 
-
-        MBED_DEPRECATED("Will be removed in dotlib 3.3.0")
-        void setActivityLedState(const uint8_t& state);
-
-        MBED_DEPRECATED("Will be removed in dotlib 3.3.0")
-        uint8_t getActivityLedState();
-
-        MBED_DEPRECATED("Will be removed in dotlib 3.3.0")
-        void blinkActivityLed(void) {
-            if (_activity_led) {
-                int val = _activity_led->read();
-                _activity_led->write(!val);
-            }
-        }
-
         mDot(const mDot&);
         mDot& operator=(const mDot&);
 
@@ -97,12 +82,7 @@ class mDot {
 
         std::string _last_error;
         static const uint32_t _baud_rates[];
-        uint8_t _activity_led_state; //deprecated will be removed
-        Ticker _tick;
-        DigitalOut* _activity_led; //deprecated will be removed
-        bool _activity_led_enable; //deprecated will be removed
-        PinName _activity_led_pin;  //deprecated will be removed
-        bool _activity_led_external; //deprecated will be removed
+
         uint8_t _linkFailCount;
         uint8_t _class;
         InterruptIn* _wakeup;
@@ -367,21 +347,6 @@ class mDot {
         uint8_t setChannelPlan(lora::ChannelPlan* plan);
 
         lora::Settings* getSettings();
-
-        MBED_DEPRECATED("Will be removed in dotlib 3.3.0")
-        void setActivityLedEnable(const bool& enable);
-
-        MBED_DEPRECATED("Will be removed in dotlib 3.3.0")
-        bool getActivityLedEnable();
-
-        MBED_DEPRECATED("Will be removed in dotlib 3.3.0")
-        void setActivityLedPin(const PinName& pin);
-
-        MBED_DEPRECATED("Will be removed in dotlib 3.3.0")
-        void setActivityLedPin(DigitalOut* pin);
-
-        MBED_DEPRECATED("Will be removed in dotlib 3.3.0")
-        PinName getActivityLedPin();
 
         /**
          * Returns boolean indicative of start-up from standby mode
