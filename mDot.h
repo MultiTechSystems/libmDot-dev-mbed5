@@ -721,15 +721,32 @@ class mDot {
         /**
          * Add a multicast session address and keys
          * Downlink counter is set to 0
-         * Up to 3 MULTICAST_SESSIONS can be set
+         * Up to 8 MULTICAST_SESSIONS can be set
          */
-        int32_t setMulticastSession(uint8_t index, uint32_t addr, const uint8_t* nsk, const uint8_t* dsk);
+        int32_t setMulticastSession(uint8_t index, uint32_t addr, const uint8_t* nsk, const uint8_t* ask);
+
+        /**
+         * Set multicast session info
+         * Up to 8 MULTICAST_SESSIONS
+         */
+        int32_t setMulticastAddress(uint8_t index, uint32_t addr);
+        int32_t setMulticastNetworkSessionKey(uint8_t index, const uint8_t* nsk);
+        int32_t setMulticastApplicationSessionKey(uint8_t index, const uint8_t* ask);
 
         /**
          * Set a multicast session counter
-         * Up to 3 MULTICAST_SESSIONS can be set
+         * Up to 8 MULTICAST_SESSIONS
          */
         int32_t setMulticastDownlinkCounter(uint8_t index, uint32_t count);
+
+        /**
+         * Get multicast session info
+         * Up to 8 MULTICAST_SESSIONS
+         */
+        uint32_t getMulticastAddress(uint8_t index);
+        int32_t getMulticastNetworkSessionKey(uint8_t index, uint8_t* nsk);
+        int32_t getMulticastApplicationSessionKey(uint8_t index, uint8_t* ask);
+        uint32_t getMulticastDownlinkCounter(uint8_t index);
 
         /**
          * Attempt to join network
