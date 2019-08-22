@@ -1536,6 +1536,8 @@ class mDot {
         // Return total size of all files saved in FLASH
         // Does not include SPIFFS overhead
         uint32_t getUsedSpace();
+
+        bool repairFlashFileSystem();
 #else
         ///////////////////////////////////////////////////////////////
         // EEPROM (Non Volatile Memory) Operation Functions for xDot //
