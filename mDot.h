@@ -142,7 +142,8 @@ class mDot {
         enum RX_Output {
             HEXADECIMAL,
             BINARY,
-            EXTENDED
+            EXTENDED,
+            EXTENDED_HEX
         };
 
         enum DataRates {
