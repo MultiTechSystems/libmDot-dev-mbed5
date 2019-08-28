@@ -288,6 +288,12 @@ namespace lora {
              */
             virtual uint8_t GetMaxPayloadSize();
 
+            /**
+             * Get max payload size for given datarate
+             * @return size in bytes
+             */
+            virtual uint8_t GetMaxPayloadSize(uint8_t dr) { return ChannelPlan::GetMaxPayloadSize(dr); }
+
             virtual uint8_t GetMinDatarate();
 
             virtual uint8_t GetMaxDatarate();

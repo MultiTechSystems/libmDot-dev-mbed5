@@ -943,45 +943,34 @@ uint8_t ChannelPlan_AU915::GetNextChannel()
 
 uint8_t lora::ChannelPlan_AU915::GetJoinDatarate() {
     uint8_t dr = GetSettings()->Session.TxDatarate;
+    static uint8_t fsb = 1;
+    static uint8_t dr4_fsb = 1;
+    static bool altdr = false;
 
     if (GetSettings()->Test.DisableRandomJoinDatarate == lora::OFF) {
-        static bool altDatarate = false;
 
         if (GetSettings()->Network.FrequencySubBand == 0) {
-            static uint16_t used_bands_125k = 0;
-            static uint16_t used_bands_500k = 0;
-            uint8_t frequency_sub_band = 0;
 
-            if (altDatarate) {
-                // 500k channel
-                if (CountBits(used_bands_500k) == 8) {
-                    used_bands_500k = 0;
-                }
-                while ((frequency_sub_band = rand_r(1, 8)) && (used_bands_500k & (1 << (frequency_sub_band - 1))) != 0)
-                    ;
-                used_bands_500k |= (1 << (frequency_sub_band - 1));
+            if (fsb < 9) {
+                SetFrequencySubBand(fsb);
+                logDebug("JoinDatarate setting frequency sub band to %d",fsb);
+                fsb++;
+                dr = lora::DR_0;
             } else {
-                // 125k channel
-                if (CountBits(used_bands_125k) == 8) {
-                    used_bands_125k = 0;
-                }
-                while ((frequency_sub_band = rand_r(1, 8)) && (used_bands_125k & (1 << (frequency_sub_band - 1))) != 0)
-                    ;
-                used_bands_125k |= (1 << (frequency_sub_band - 1));
+                dr = lora::DR_4;
+                fsb = 1;
+                dr4_fsb++;
+                if(dr4_fsb > 8)
+                    dr4_fsb = 1;
+                SetFrequencySubBand(dr4_fsb);
             }
-
-            logWarning("JoinDatarate setting frequency sub band to %d 125k: %04x 500k: %04x", frequency_sub_band, used_bands_125k, used_bands_500k);
-            SetFrequencySubBand(frequency_sub_band);
-        }
-
-        if (altDatarate && CountBits(_channelMask[4] > 0)) {
-            dr = lora::DR_6;
+        } else if (altdr && CountBits(_channelMask[4] > 0)) {
+            dr = lora::DR_4;
         } else {
-            dr = lora::DR_2;
+            dr = lora::DR_0;
         }
-        altDatarate = !altDatarate;
+        altdr = !altdr;
     }
-
     return dr;
 }
 
