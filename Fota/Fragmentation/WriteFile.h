@@ -23,10 +23,10 @@ class WriteFile {
     public:
         WriteFile(mDot* dot);
         ~WriteFile();
-        void writeFile(uint8_t* buffer, uint32_t size);
-        void readFile(uint8_t* buffer, uint32_t size);
-        void seekFile(uint32_t index);
-        void createFile(uint16_t numOfFrags, uint8_t fragSize, uint8_t padding);
+        int writeFile(uint8_t* buffer, uint32_t size);
+        int readFile(uint8_t* buffer, uint32_t size);
+        int seekFile(uint32_t index);
+        int createFile(uint16_t numOfFrags, uint8_t fragSize, uint8_t padding);
         uint64_t completeFile(uint16_t numOfFrags, uint8_t padding, uint32_t total_frags);
         void cleanUp(bool complete);
         void reset();
@@ -34,7 +34,7 @@ class WriteFile {
     private:
         mDot* _dot;
         char* _temp;
-        char* _firmware;
+        char _firmware[2] = "a";
         uint8_t* _frag;
         uint8_t _padding;
         uint8_t _frag_size;

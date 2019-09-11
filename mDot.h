@@ -1715,6 +1715,7 @@ class mDot {
         int32_t setProtectedAppKey(const std::vector<uint8_t>& appKey);
         std::vector<uint8_t> getProtectedAppEUI();
         std::vector<uint8_t> getProtectedAppKey();
+        int32_t setProtectedGenAppKey(const std::vector<uint8_t>& appKey);
         int32_t setDefaultFrequencyBand(const uint8_t& band);
         bool saveProtectedConfig();
         // resets the radio/mac/link
