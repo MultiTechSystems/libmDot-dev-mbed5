@@ -296,6 +296,14 @@ class mDot {
          */
         std::string getMtsLoraId();
 
+
+        /**
+         * MAC version
+         *
+         * @return string containing version information of supported LoRaWAN MAC Version
+         */
+        const char* getMACVersion();
+
         /**
          * Perform a soft reset of the system
          */
@@ -739,6 +747,9 @@ class mDot {
          * Up to 8 MULTICAST_SESSIONS
          */
         int32_t setMulticastDownlinkCounter(uint8_t index, uint32_t count);
+        int32_t setMulticastPeriodicity(uint8_t index, int8_t period);
+        int32_t setMulticastFrequency(uint8_t index, uint32_t freq);
+        int32_t setMulticastDatarate(uint8_t index, uint8_t dr);
 
         /**
          * Get multicast session info
@@ -748,6 +759,9 @@ class mDot {
         int32_t getMulticastNetworkSessionKey(uint8_t index, uint8_t* nsk);
         int32_t getMulticastApplicationSessionKey(uint8_t index, uint8_t* ask);
         uint32_t getMulticastDownlinkCounter(uint8_t index);
+        int8_t getMulticastPeriodicity(uint8_t index);
+        uint32_t getMulticastFrequency(uint8_t index);
+        uint8_t getMulticastDatarate(uint8_t index);
 
         /**
          * Attempt to join network
