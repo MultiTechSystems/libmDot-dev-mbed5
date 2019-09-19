@@ -19,7 +19,7 @@
 #define MULTICASTGROUP_H
 #include "mDot.h"
 #include "mbed.h"
-#define GPS_EPOCH 315986400
+#define GPS_EPOCH 315986400U
 #define MULTICAST_SESSIONS 3
 
 class MulticastGroup {

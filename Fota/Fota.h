@@ -38,7 +38,7 @@ class Fota {
         void fixEventQueue();
         int32_t timeToStart();
         bool getClockSynced();
-        int32_t setClockOffset(int32_t gps_time);
+        int32_t setClockOffset(uint32_t gps_time);
 
     private:
         static void start();
