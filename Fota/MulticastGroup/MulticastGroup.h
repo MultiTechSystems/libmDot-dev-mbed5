@@ -75,10 +75,10 @@ class MulticastGroup {
         EventQueue _switch_class_queue;
         mcgroup _mcGroup[MULTICAST_SESSIONS];
         std::vector<uint8_t>* _ret;
-        std::string _org_class;
+        char _org_class;
 
         void setupClassB(uint8_t id);
         void setupClassC(uint8_t id);
-        static void switchClass(uint32_t freq, uint8_t dr, std::string newClass);
+        static void switchClass(uint32_t freq, uint8_t dr, char newClass);
 };
 #endif
