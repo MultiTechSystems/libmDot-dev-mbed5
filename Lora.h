@@ -28,7 +28,7 @@
 namespace lora {
 
 #ifndef MAC_VERSION
-    const std::string MAC_VERSION;
+    const std::string MAC_VERSION = "1.0.4";
 #endif
 
     /**
@@ -290,7 +290,7 @@ namespace lora {
             uint8_t Crc;
             uint8_t TxIQ;
             uint8_t RxIQ;
-            uint8_t SymbolTimeout(uint16_t pad_ms = 0);
+            uint16_t SymbolTimeout(uint16_t pad_ms = 0);
             float Timeout();
             Datarate();
     } Datarate;

@@ -598,6 +598,11 @@ namespace lora {
              */
             virtual uint8_t GetNumDefaultChans();
 
+            /*
+             * Search enabled channels for lowest available datarate
+             */
+            virtual uint8_t GetMinEnabledDatarate();
+
             SxRadio* GetRadio();                //!< Get pointer to the SxRadio object or assert if it is null
             Settings* GetSettings();            //!< Get pointer to the settings object or assert if it is null
 
