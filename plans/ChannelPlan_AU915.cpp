@@ -91,8 +91,6 @@ void ChannelPlan_AU915::Init() {
     _freqDStep500k = AU915_500K_DSTEP;
     GetSettings()->Session.Rx2Frequency = AU915_500K_DBASE;
 
-    _beaconSize = sizeof(BCNPayload);
-
     GetSettings()->Session.BeaconFrequency = AU915_BEACON_FREQ_BASE;
     GetSettings()->Session.BeaconFreqHop = true;
     GetSettings()->Session.PingSlotFrequency = AU915_BEACON_FREQ_BASE;
@@ -284,6 +282,63 @@ uint8_t ChannelPlan_AU915::SetTxConfig() {
     return LORA_OK;
 }
 
+uint8_t ChannelPlan_AU915::SetRxConfig(uint8_t window,
+                                       bool continuous,
+                                       uint16_t wnd_growth,
+                                       uint16_t pad_ms) {
+
+    RxWindow rxw = GetRxWindow(window);
+    GetRadio()->SetChannel(rxw.Frequency);
+
+    Datarate rxDr = GetDatarate(rxw.DatarateIndex);
+    uint32_t bw = rxDr.Bandwidth;
+    uint32_t sf = rxDr.SpreadingFactor;
+    uint8_t cr = rxDr.Coderate;
+    uint8_t pl = rxDr.PreambleLength;
+    uint16_t sto = rxDr.SymbolTimeout(pad_ms) * wnd_growth;
+    uint32_t afc = 0;
+    bool fixLen = false;
+    uint8_t payloadLen = 0U;
+    bool crc = false; // downlink does not use CRC according to LORAWAN
+
+    if (GetSettings()->Network.DisableCRC == true)
+        crc = false;
+
+    Datarate txDr = GetDatarate(GetSettings()->Session.TxDatarate);
+    bool iq = txDr.RxIQ;
+
+    if (P2PEnabled()) {
+        iq = txDr.TxIQ;
+    }
+
+    // Beacon modifications - no I/Q inversion, fixed length rx, preamble
+    if (window == RX_BEACON) {
+        iq = txDr.TxIQ;
+        fixLen = true;
+        payloadLen = sizeof(BCNPayload);
+        pl = BEACON_PREAMBLE_LENGTH;
+    }
+
+    SxRadio::RadioModems_t modem = SxRadio::MODEM_LORA;
+
+    if (sf == SF_FSK) {
+        modem = SxRadio::MODEM_FSK;
+        sf = 50e3;
+        cr = 0;
+        bw = 50e3;
+        afc = 83333;
+        iq = false;
+        crc = true;  // FSK must use CRC
+    }
+
+    // Disable printf's to actually receive packets, printing to debug may mess up the timing
+    // logTrace("Configure radio for RX%d on freq: %lu", window, rxw.Frequency);
+    // logTrace("RX SF: %u BW: %u CR: %u PL: %u STO: %u CRC: %d IQ: %d", sf, bw, cr, pl, sto, crc, iq);
+
+    GetRadio()->SetRxConfig(modem, bw, sf, cr, afc, pl, sto, fixLen, payloadLen, crc, false, 0, iq, continuous, pad_ms * wnd_growth);
+
+    return LORA_OK;
+}
 
 uint8_t ChannelPlan_AU915::AddChannel(int8_t index, Channel channel) {
     logTrace("Add Channel %d : %lu : %02x %d", index, channel.Frequency, channel.DrRange.Value, _channels.size());
@@ -376,7 +431,7 @@ uint8_t ChannelPlan_AU915::GetMaxPayloadSize() {
     }
 }
 
-RxWindow ChannelPlan_AU915::GetRxWindow(uint8_t window, int8_t id) {
+RxWindow ChannelPlan_AU915::GetRxWindow(uint8_t window) {
     RxWindow rxw;
     int index = 0;
 
@@ -415,13 +470,8 @@ RxWindow ChannelPlan_AU915::GetRxWindow(uint8_t window, int8_t id) {
             break;
 
         case RX_SLOT:
-            if (id > 0 && id < 8) {
-                rxw.Frequency = GetSettings()->Multicast[id].Frequency;
-                index = GetSettings()->Multicast[id].DatarateIndex;
-            } else {
-                rxw.Frequency = GetSettings()->Session.PingSlotFrequency;
-                index = GetSettings()->Session.PingSlotDatarateIndex;
-            }
+            rxw.Frequency = GetSettings()->Session.PingSlotFrequency;
+            index = GetSettings()->Session.PingSlotDatarateIndex;
             break;
 
         // RX2, RXC, RX_TEST, etc..
@@ -596,13 +646,13 @@ uint8_t ChannelPlan_AU915::HandleAdrCommand(const uint8_t* payload, uint8_t inde
         nbRep = 1;
     }
 
-    if (datarate != 0xF && datarate > _maxDatarate) {
+    if (datarate > _maxDatarate) {
         status &= 0xFD; // Datarate KO
     }
     //
     // Remark MaxTxPower = 0 and MinTxPower = 10
     //
-    if (power != 0xF && power > 10) {
+    if (power > 10) {
         status &= 0xFB; // TxPower KO
     }
 
@@ -662,10 +712,8 @@ uint8_t ChannelPlan_AU915::HandleAdrCommand(const uint8_t* payload, uint8_t inde
 
     if (GetSettings()->Network.ADREnabled) {
         if (status == 0x07) {
-            if (datarate != 0xF)
-                GetSettings()->Session.TxDatarate = datarate;
-            if (power != 0xF)
-                GetSettings()->Session.TxPower = TX_POWERS[power];
+            GetSettings()->Session.TxDatarate = datarate;
+            GetSettings()->Session.TxPower = TX_POWERS[power];
             GetSettings()->Session.Redundancy = nbRep;
         }
     } else {
@@ -853,6 +901,8 @@ uint8_t ChannelPlan_AU915::GetNextChannel()
     logTrace("Number of available channels: %d", nbEnabledChannels);
 
     uint32_t freq = 0;
+    uint8_t sf = GetTxDatarate().SpreadingFactor;
+    uint8_t bw = GetTxDatarate().Bandwidth;
     int16_t thres = DEFAULT_FREE_CHAN_RSSI_THRESHOLD;
 
     if (nbEnabledChannels == 0) {
@@ -891,34 +941,45 @@ uint8_t ChannelPlan_AU915::GetNextChannel()
 
 uint8_t lora::ChannelPlan_AU915::GetJoinDatarate() {
     uint8_t dr = GetSettings()->Session.TxDatarate;
-    static uint8_t fsb = 1;
-    static uint8_t dr4_fsb = 1;
-    static bool altdr = false;
 
     if (GetSettings()->Test.DisableRandomJoinDatarate == lora::OFF) {
+        static bool altDatarate = false;
 
         if (GetSettings()->Network.FrequencySubBand == 0) {
+            static uint16_t used_bands_125k = 0;
+            static uint16_t used_bands_500k = 0;
+            uint8_t frequency_sub_band = 0;
 
-            if (fsb < 9) {
-                SetFrequencySubBand(fsb);
-                logDebug("JoinDatarate setting frequency sub band to %d",fsb);
-                fsb++;
-                dr = lora::DR_0;
+            if (altDatarate) {
+                // 500k channel
+                if (CountBits(used_bands_500k) == 8) {
+                    used_bands_500k = 0;
+                }
+                while ((frequency_sub_band = rand_r(1, 8)) && (used_bands_500k & (1 << (frequency_sub_band - 1))) != 0)
+                    ;
+                used_bands_500k |= (1 << (frequency_sub_band - 1));
             } else {
-                dr = lora::DR_4;
-                fsb = 1;
-                dr4_fsb++;
-                if(dr4_fsb > 8)
-                    dr4_fsb = 1;
-                SetFrequencySubBand(dr4_fsb);
+                // 125k channel
+                if (CountBits(used_bands_125k) == 8) {
+                    used_bands_125k = 0;
+                }
+                while ((frequency_sub_band = rand_r(1, 8)) && (used_bands_125k & (1 << (frequency_sub_band - 1))) != 0)
+                    ;
+                used_bands_125k |= (1 << (frequency_sub_band - 1));
             }
-        } else if (altdr && CountBits(_channelMask[4] > 0)) {
-            dr = lora::DR_4;
-        } else {
-            dr = lora::DR_0;
+
+            logWarning("JoinDatarate setting frequency sub band to %d 125k: %04x 500k: %04x", frequency_sub_band, used_bands_125k, used_bands_500k);
+            SetFrequencySubBand(frequency_sub_band);
         }
-        altdr = !altdr;
+
+        if (altDatarate && CountBits(_channelMask[4] > 0)) {
+            dr = lora::DR_6;
+        } else {
+            dr = lora::DR_2;
+        }
+        altDatarate = !altDatarate;
     }
+
     return dr;
 }
 
@@ -1048,20 +1109,20 @@ uint8_t ChannelPlan_AU915::HandleMacCommand(uint8_t* payload, uint8_t& index) {
     return LORA_OK;
 }
 
-uint8_t ChannelPlan_AU915::DecodeBeacon(const uint8_t* payload, size_t size, BeaconData_t& data) {
+bool ChannelPlan_AU915::DecodeBeacon(const uint8_t* payload, size_t size, BeaconData_t& data) {
     uint16_t crc1, crc1_rx, crc2, crc2_rx;
     const BCNPayload* beacon = (const BCNPayload*)payload;
 
     // First check the size of the packet
     if (size != sizeof(BCNPayload))
-        return LORA_BEACON_SIZE;
+        return false;
 
     // Next we verify CRC1 is correct
     crc1 = CRC16(beacon->RFU1, sizeof(beacon->RFU1) + sizeof(beacon->Time));
     memcpy((uint8_t*)&crc1_rx, beacon->CRC1, sizeof(uint16_t));
 
     if (crc1 != crc1_rx)
-        return LORA_BEACON_CRC;
+        return false;
 
     // Now that we have confirmed this packet is a beacon, parse and complete the output struct
     memcpy(&data.Time, beacon->Time, sizeof(beacon->Time));
@@ -1080,7 +1141,7 @@ uint8_t ChannelPlan_AU915::DecodeBeacon(const uint8_t* payload, size_t size, Bea
         memcpy(&data.Longitude, &beacon->GwSpecific[4], 3);
     }
 
-    return LORA_OK;
+    return true;
 }
 
 void ChannelPlan_AU915::FrequencyHop(uint32_t time, uint32_t period, uint32_t devAddr) {
@@ -1098,13 +1159,4 @@ void ChannelPlan_AU915::FrequencyHop(uint32_t time, uint32_t period, uint32_t de
         freq = AU915_BEACON_FREQ_BASE + (channel * AU915_BEACON_FREQ_STEP);
         GetSettings()->Session.PingSlotFrequency = freq;
     }
-
-    for (int i = 0; i < lora::MAX_MULTICAST_SESSIONS; ++i) {
-        if (GetSettings()->Multicast[i].Address != 0) {
-            channel = (time / period + GetSettings()->Multicast[i].Address) % AU915_BEACON_CHANNELS;
-            freq = AU915_BEACON_FREQ_BASE + (channel * AU915_BEACON_FREQ_STEP);
-            GetSettings()->Multicast[i].Frequency = freq;
-        }
-    }
-
 }

@@ -16,6 +16,7 @@ Maintainer: Miguel Luis and Gregory Cristian
 #define __SXRADIO_H__
 
 #include <stdint.h>
+#include "rtos.h"
 #include "SxRadioEvents.h"
 
 /*!

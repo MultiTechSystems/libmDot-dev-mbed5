@@ -62,7 +62,7 @@ void ChannelPlan_AS923_Japan::Init() {
     _maxDatarateOffset = 5;
 
     GetSettings()->Session.UplinkDwelltime = 1;
-    GetSettings()->Session.Max_EIRP  = 13;
+    GetSettings()->Session.Max_EIRP  = 13; 
 
     DefaultLBT();
 }

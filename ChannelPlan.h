@@ -193,18 +193,12 @@ namespace lora {
             virtual uint8_t GetMaxPayloadSize();
 
             /**
-             * Get max payload size for a given datarate
-             * @return size in bytes
-             */
-            virtual uint8_t GetMaxPayloadSize(uint8_t dr);
-
-            /**
              * Get rx window settings for requested window
              * RX_1, RX_2, RX_BEACON, RX_SLOT
              * @param window
              * @return RxWindow
              */
-            virtual RxWindow GetRxWindow(uint8_t window, int8_t id = 0) = 0;
+            virtual RxWindow GetRxWindow(uint8_t window) = 0;
 
             /**
              * Get current channel to use for transmitting
@@ -277,8 +271,7 @@ namespace lora {
             virtual uint8_t SetRxConfig(uint8_t window,
                                         bool continuous,
                                         uint16_t wnd_growth = 1,
-                                        uint16_t pad_ms = 0,
-                                        int8_t id = 0);
+                                        uint16_t pad_ms = 0) = 0;
 
             /**
              * Set frequency sub band if supported by plan
@@ -292,6 +285,11 @@ namespace lora {
              * @return sub band 0-8 or 0 if not supported
              */
             virtual uint8_t GetFrequencySubBand();
+
+            /**
+             * Reset the ack counter used to lower datarate if ACK's are missed
+             */
+            virtual void ResetAckCounter();
 
             /**
              * Callback for radio to request channel change when frequency hopping
@@ -580,7 +578,7 @@ namespace lora {
              * @param [out] data extracted from the beacon if this packet was indeed a beacon
              * @return true if this packet is beacon, false if not
              */
-            virtual uint8_t DecodeBeacon(const uint8_t* payload,
+            virtual bool DecodeBeacon(const uint8_t* payload,
                                       size_t size,
                                       BeaconData_t& data) = 0;
 
@@ -602,12 +600,10 @@ namespace lora {
              * Search enabled channels for lowest available datarate
              */
             virtual uint8_t GetMinEnabledDatarate();
+        protected:
 
             SxRadio* GetRadio();                //!< Get pointer to the SxRadio object or assert if it is null
             Settings* GetSettings();            //!< Get pointer to the settings object or assert if it is null
-
-        protected:
-
             /**
              * 16 bit ITU-T CRC implementation
              */
@@ -666,8 +662,6 @@ namespace lora {
             static const uint8_t* RADIO_POWERS;                    //!< List of available tx powers
             static const uint8_t* MAX_PAYLOAD_SIZE;             //!< List of max payload sizes for each datarate
             static const uint8_t* MAX_PAYLOAD_SIZE_REPEATER;    //!< List of repeater compatible max payload sizes for each datarate
-
-            uint8_t _beaconSize;
 
             uint8_t _plan;
             std::string _planName;

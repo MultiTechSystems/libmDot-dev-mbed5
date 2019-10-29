@@ -24,11 +24,9 @@
 #include "WriteFile.h"
 
 #define FRAG_SESSION_ONGOING    0xffffffff
-
 #ifndef MAX_PARITY
 #define MAX_PARITY 300
 #endif
-
 class FragmentationMath
 {
   public:
@@ -36,8 +34,6 @@ class FragmentationMath
     ~FragmentationMath();
     bool Init();
     int getLostFrameCount();
-    int getTotalMissingFrameCount();
-    int getTotalRcvdFrameCount();
     void reset(uint16_t fcount);
     void setFrameFound(uint16_t frameCounter);
     bool processParityFrag(uint16_t frameCounter, uint8_t *pFrag);
@@ -62,9 +58,8 @@ class FragmentationMath
     uint8_t _frame_size;
     uint16_t _frame_count;
     uint16_t _max_parity;
-    int16_t numFramesMissing;
+    uint16_t numFramesMissing;
     uint16_t lastReceiveFrameCnt;
-    int filled;
 
     uint8_t *matrix;
     uint8_t *matrixRow;

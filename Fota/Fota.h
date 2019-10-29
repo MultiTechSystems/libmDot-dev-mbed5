@@ -37,8 +37,6 @@ class Fota {
         bool enable();
         void fixEventQueue();
         int32_t timeToStart();
-        bool getClockSynced();
-        int32_t setClockOffset(uint32_t gps_time);
 
     private:
         static void start();
@@ -48,7 +46,6 @@ class Fota {
         uint8_t p[242];
         static Fota* _instance;
         mDot* _dot;
-        bool _clk_synced = false;
 #ifdef FOTA
         FragmentationSession* _frag_session;
 #endif

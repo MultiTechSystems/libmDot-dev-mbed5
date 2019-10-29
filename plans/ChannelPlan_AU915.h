@@ -109,7 +109,7 @@ namespace lora {
              * @param window
              * @return RxWindow
              */
-            virtual RxWindow GetRxWindow(uint8_t window, int8_t id = -1);
+            virtual RxWindow GetRxWindow(uint8_t window);
 
             /**
              * Get datarate to use on the join request
@@ -150,6 +150,19 @@ namespace lora {
              * @return LORA_OK
              */
             virtual uint8_t SetTxConfig();
+
+            /**
+             * Set the SxRadio rx config provided window
+             * @param window to be opened
+             * @param continuous keep window open
+             * @param wnd_growth factor to increase the rx window by
+             * @param pad_ms time in milliseconds to add to computed window size
+             * @return LORA_OK
+             */
+            virtual uint8_t SetRxConfig(uint8_t window,
+                                        bool continuous,
+                                        uint16_t wnd_growth,
+                                        uint16_t pad_ms);
 
             /**
              * Set frequency sub band if supported by plan
@@ -275,12 +288,6 @@ namespace lora {
              */
             virtual uint8_t GetMaxPayloadSize();
 
-            /**
-             * Get max payload size for given datarate
-             * @return size in bytes
-             */
-            virtual uint8_t GetMaxPayloadSize(uint8_t dr) { return ChannelPlan::GetMaxPayloadSize(dr); }
-
             virtual uint8_t GetMinDatarate();
 
             virtual uint8_t GetMaxDatarate();
@@ -292,7 +299,7 @@ namespace lora {
              * @param [out] data extracted from the beacon if this packet was indeed a beacon
              * @return true if this packet is beacon, false if not
              */
-            virtual uint8_t DecodeBeacon(const uint8_t* payload,
+            virtual bool DecodeBeacon(const uint8_t* payload,
                                       size_t size,
                                       BeaconData_t& data);
 

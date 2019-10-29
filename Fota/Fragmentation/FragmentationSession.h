@@ -35,16 +35,6 @@ class FragmentationSession {
         ~FragmentationSession();
         void processCmd(uint8_t* payload, uint8_t size);
         void reset();
-        bool isComplete();
-
-        enum FragCmd {
-            PACKAGE_VERSION_FRAG,
-            FRAG_STATUS,
-            FRAG_SESSION_SETUP,
-            FRAG_SESSION_DELETE,
-            DATA_FRAGMENT = 0x08,
-            CHECKSUM = 0x80
-        };
 
     private:
 
@@ -78,22 +68,29 @@ class FragmentationSession {
             FRAG_COMPLETE
         };
 
+        enum FragCmd {
+            PACKAGE_VERSION_FRAG,
+            FRAG_STATUS,
+            FRAG_SESSION_SETUP,
+            FRAG_SESSION_DELETE,
+            DATA_FRAGMENT = 0x08,
+            CHECKSUM = 0x80
+        };
+
         void reset(uint16_t num);
-        void upgradeFile(uint8_t sessionIndex);
-        bool processFrame(uint8_t fragIndex, uint16_t index, uint8_t buffer[], size_t size);
-        uint32_t getDescriptor() { return _descriptor; }
+        void upgradeFile(uint8_t fragIndex);
+        bool process_frame(uint8_t fragIndex,uint16_t index, uint8_t buffer[], size_t size);
 
         mDot* _dot;
         WriteFile* _fh;
-        fragGroup _sessions[MULTICAST_SESSIONS];
+        fragGroup fg[MULTICAST_SESSIONS];
 
         uint8_t ans;
         bool* _filled;
         uint32_t* _delay;
-        uint8_t _session_index;
-        uint32_t _descriptor;
+        uint8_t fragIndex;
         std::vector<uint8_t>* _ret;
-        bool _complete;
+        std::string _org_class;
 };
 #endif
 #endif // _FRAGMENTATION_SESSION_H

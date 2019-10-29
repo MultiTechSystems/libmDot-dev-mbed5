@@ -29,21 +29,21 @@ ChannelPlan_IN865::ChannelPlan_IN865()
 :
     ChannelPlan(NULL, NULL)
 {
-    _beaconSize = sizeof(BCNPayload);
+
 }
 
 ChannelPlan_IN865::ChannelPlan_IN865(Settings* settings)
 :
     ChannelPlan(NULL, settings)
 {
-    _beaconSize = sizeof(BCNPayload);
+
 }
 
 ChannelPlan_IN865::ChannelPlan_IN865(SxRadio* radio, Settings* settings)
 :
     ChannelPlan(radio, settings)
 {
-    _beaconSize = sizeof(BCNPayload);
+
 }
 
 ChannelPlan_IN865::~ChannelPlan_IN865() {
@@ -208,7 +208,7 @@ uint8_t ChannelPlan_IN865::HandleJoinAccept(const uint8_t* buffer, uint8_t size)
 
             ch.Frequency = ((buffer[i]) | (buffer[i + 1] << 8) | (buffer[i + 2] << 16)) * 100u;
 
-            if (ch.Frequency > 0 && ch.Frequency >= _minFrequency && ch.Frequency <= _maxFrequency) {
+            if (ch.Frequency > 0) {
                 ch.Index = index;
                 ch.DrRange.Fields.Min = static_cast<int8_t>(DR_0);
                 ch.DrRange.Fields.Max = static_cast<int8_t>(DR_5);
@@ -279,6 +279,68 @@ uint8_t ChannelPlan_IN865::SetTxConfig() {
 }
 
 
+uint8_t ChannelPlan_IN865::SetRxConfig(uint8_t window,
+                                       bool continuous,
+                                       uint16_t wnd_growth,
+                                       uint16_t pad_ms) {
+
+    RxWindow rxw = GetRxWindow(window);
+
+    if (_dlChannels[_txChannel].Frequency != 0  && window == 1)
+        GetRadio()->SetChannel(_dlChannels[_txChannel].Frequency);
+    else
+        GetRadio()->SetChannel(rxw.Frequency);
+
+    Datarate rxDr = GetDatarate(rxw.DatarateIndex);
+    uint32_t bw = rxDr.Bandwidth;
+    uint32_t sf = rxDr.SpreadingFactor;
+    uint8_t cr = rxDr.Coderate;
+    uint8_t pl = rxDr.PreambleLength;
+    uint16_t sto = rxDr.SymbolTimeout(pad_ms) * wnd_growth;
+    uint32_t afc = 0;
+    bool fixLen = false;
+    uint8_t payloadLen = 0U;
+    bool crc = false; // downlink does not use CRC according to LORAWAN
+
+    if (GetSettings()->Network.DisableCRC == true)
+        crc = false;
+
+    Datarate txDr = GetDatarate(GetSettings()->Session.TxDatarate);
+    bool iq = txDr.RxIQ;
+
+    if (P2PEnabled()) {
+        iq = txDr.TxIQ;
+    }
+
+    // Beacon modifications - no I/Q inversion, fixed length rx, preamble
+    if (window == RX_BEACON) {
+        iq = txDr.TxIQ;
+        fixLen = true;
+        payloadLen = sizeof(BCNPayload);
+        pl = BEACON_PREAMBLE_LENGTH;
+    }
+
+    SxRadio::RadioModems_t modem = SxRadio::MODEM_LORA;
+
+    if (sf == SF_FSK) {
+        modem = SxRadio::MODEM_FSK;
+        sf = 50e3;
+        cr = 0;
+        bw = 50e3;
+        afc = 83333;
+        iq = false;
+        crc = true;  // FSK must use CRC
+    }
+
+    // Disable printf's to actually receive packets, printing to debug may mess up the timing
+    // logTrace("Configure radio for RX%d on freq: %lu", window, rxw.Frequency);
+    // logTrace("RX SF: %u BW: %u CR: %u PL: %u STO: %u CRC: %d IQ: %d", sf, bw, cr, pl, sto, crc, iq);
+
+    GetRadio()->SetRxConfig(modem, bw, sf, cr, afc, pl, sto, fixLen, payloadLen, crc, false, 0, iq, continuous, pad_ms * wnd_growth);
+
+    return LORA_OK;
+}
+
 Channel ChannelPlan_IN865::GetChannel(int8_t index) {
     Channel chan;
     memset(&chan, 0, sizeof(Channel));
@@ -312,7 +374,7 @@ void ChannelPlan_IN865::LogRxWindow(uint8_t wnd) {
     logTrace("RX DR: %u SF: %u BW: %u CR: %u PL: %u STO: %u CRC: %d IQ: %d", rxDr.Index, sf, bw, cr, pl, sto, crc, iq);
 }
 
-RxWindow ChannelPlan_IN865::GetRxWindow(uint8_t window, int8_t id) {
+RxWindow ChannelPlan_IN865::GetRxWindow(uint8_t window) {
     RxWindow rxw;
     int index = 0;
 
@@ -342,13 +404,8 @@ RxWindow ChannelPlan_IN865::GetRxWindow(uint8_t window, int8_t id) {
             break;
 
         case RX_SLOT:
-            if (id > 0 && id < 8) {
-                rxw.Frequency = GetSettings()->Multicast[id].Frequency;
-                index = GetSettings()->Multicast[id].DatarateIndex;
-            } else {
-                rxw.Frequency = GetSettings()->Session.PingSlotFrequency;
-                index = GetSettings()->Session.PingSlotDatarateIndex;
-            }
+            rxw.Frequency = GetSettings()->Session.PingSlotFrequency;
+            index = GetSettings()->Session.PingSlotDatarateIndex;
             break;
 
         // RX2, RXC, RX_TEST, etc..
@@ -543,14 +600,14 @@ uint8_t ChannelPlan_IN865::HandleAdrCommand(const uint8_t* payload, uint8_t inde
         nbRep = 1;
     }
 
-    if (datarate != 0xF && (datarate > _maxDatarate || datarate == DR_6)) {
+    if (datarate > _maxDatarate || datarate == DR_6) {
         status &= 0xFD; // Datarate KO
     }
 
     //
     // Remark MaxTxPower = 0 and MinTxPower = 10
     //
-    if (power != 0xF && power > 10) {
+    if (power > 10) {
         status &= 0xFB; // TxPower KO
     }
 
@@ -574,14 +631,14 @@ uint8_t ChannelPlan_IN865::HandleAdrCommand(const uint8_t* payload, uint8_t inde
 
     if (GetSettings()->Network.ADREnabled) {
         if (status == 0x07) {
-            if (datarate != 0xF)
-                GetSettings()->Session.TxDatarate = datarate;
-            if (power != 0xF)
-                GetSettings()->Session.TxPower = TX_POWERS[power];
+            GetSettings()->Session.TxDatarate = datarate;
+            GetSettings()->Session.TxPower = TX_POWERS[power];
             GetSettings()->Session.Redundancy = nbRep;
         }
     } else {
         logDebug("ADR is disabled, DR and Power not changed.");
+        status &= 0xFB; // TxPower KO
+        status &= 0xFD; // Datarate KO
     }
 
     logDebug("ADR DR: %u PWR: %u Ctrl: %02x Mask: %04x NbRep: %u Stat: %02x", datarate, power, ctrl, mask, nbRep, status);
@@ -615,6 +672,26 @@ uint8_t ChannelPlan_IN865::ValidateAdrConfiguration() {
 
     return status;
 }
+
+uint8_t ChannelPlan_IN865::HandleAckTimeout() {
+
+    if (!GetSettings()->Network.ADREnabled) {
+        return LORA_ADR_OFF;
+    }
+
+    if ((++(GetSettings()->Session.AckCounter) % 2) == 0) {
+        if (GetSettings()->Session.TxPower < GetSettings()->Network.TxPowerMax) {
+            logTrace("ADR Setting power to maximum");
+            GetSettings()->Session.TxPower = GetSettings()->Network.TxPowerMax;
+        } else if (GetSettings()->Session.TxDatarate > 0) {
+            logTrace("ADR Lowering datarate");
+            DecrementDatarate();
+        }
+    }
+
+    return LORA_OK;
+}
+
 
 uint32_t ChannelPlan_IN865::GetTimeOffAir()
 {
@@ -804,6 +881,8 @@ uint8_t ChannelPlan_IN865::GetNextChannel()
     logTrace("Number of available channels: %d", nbEnabledChannels);
 
     uint32_t freq = 0;
+    uint8_t sf = GetTxDatarate().SpreadingFactor;
+    uint8_t bw = GetTxDatarate().Bandwidth;
     int16_t thres = DEFAULT_FREE_CHAN_RSSI_THRESHOLD;
 
     if (nbEnabledChannels == 0) {
@@ -978,20 +1057,20 @@ void ChannelPlan_IN865::DecrementDatarate() {
     GetSettings()->Session.TxDatarate = dr;
 }
 
-uint8_t ChannelPlan_IN865::DecodeBeacon(const uint8_t* payload, size_t size, BeaconData_t& data) {
+bool ChannelPlan_IN865::DecodeBeacon(const uint8_t* payload, size_t size, BeaconData_t& data) {
     uint16_t crc1, crc1_rx, crc2, crc2_rx;
     const BCNPayload* beacon = (const BCNPayload*)payload;
 
     // First check the size of the packet
     if (size != sizeof(BCNPayload))
-        return LORA_BEACON_SIZE;
+        return false;
 
     // Next we verify CRC1 is correct
     crc1 = CRC16(beacon->RFU1, sizeof(beacon->RFU1) + sizeof(beacon->Time));
     memcpy((uint8_t*)&crc1_rx, beacon->CRC1, sizeof(uint16_t));
 
     if (crc1 != crc1_rx)
-        return LORA_BEACON_CRC;
+        return false;
 
     // Now that we have confirmed this packet is a beacon, parse and complete the output struct
     memcpy(&data.Time, beacon->Time, sizeof(beacon->Time));
@@ -1010,5 +1089,5 @@ uint8_t ChannelPlan_IN865::DecodeBeacon(const uint8_t* payload, size_t size, Bea
         memcpy(&data.Longitude, &beacon->GwSpecific[4], 3);
     }
 
-    return LORA_OK;
+    return true;
 }

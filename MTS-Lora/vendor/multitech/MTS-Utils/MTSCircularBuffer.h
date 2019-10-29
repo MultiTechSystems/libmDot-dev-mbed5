@@ -82,7 +82,7 @@ public:
     void attach(T *tptr, void( T::*mptr)(void), int threshold, RelationalOperator op) {
         _threshold = threshold;
         _op = op;
-        notify = callback(tptr, mptr);
+        notify.attach(tptr, mptr);
     }
 
     /** This method is used to setup a callback funtion when the buffer reaches
