@@ -168,6 +168,13 @@ namespace lora {
             const char* getId();
 
             /**
+             * MAC version
+             *
+             * @return string containing version information of supported LoRaWAN MAC Version
+             */
+            const char* getMACVersion();
+
+            /**
              * Indicator for network session join status
              * @return true if joined to network
              */

@@ -24,7 +24,12 @@
 //#include <cstring>
 #include <inttypes.h>
 
+
 namespace lora {
+
+#ifndef MAC_VERSION
+    const std::string MAC_VERSION = "1.0.4";
+#endif
 
     /**
      * Frequency bandwidth of a Datarate, higher bandwidth gives higher datarate
@@ -106,12 +111,13 @@ namespace lora {
     const uint16_t BEACON_PREAMBLE_LENGTH = 10U;                //!< Beacon preamble length
     const uint16_t DEFAULT_BEACON_PERIOD = 128U;                //!< Default period of the beacon (in seconds)
     const uint16_t PING_SLOT_LENGTH = 30U;                      //!< Duration of each class B ping slot (in milliseconds)
-    const uint16_t BEACON_RESERVED_TIME = 2120U;                //!< Time reserved for beacon broadcast (in milliseconds)
+    const uint32_t BEACON_RESERVED_TIME = 2120U;                //!< Time reserved for beacon broadcast (in milliseconds)
     const uint16_t BEACON_GUARD_TIME = 3000U;                   //!< Guard time before beacon transmission where no ping slots can be scheduled (in milliseconds)
     const uint32_t MAX_BEACONLESS_OP_TIME = 7200U;              //!< Maximum time to operate in class B since last beacon received (in seconds)
     const uint16_t MAX_CLASS_B_WINDOW_GROWTH = 3U;              //!< Maximum window growth factor for beacons and ping slots in beacon-less operation
     const uint16_t DEFAULT_PING_NB = 1U;                        //!< Default number of ping slots per beacon interval
     const uint16_t CLS_B_PAD = 15U;                             //!< Pad added to the beginning of ping slot rx windows (in milliseconds)
+    const uint16_t BEACON_PAD = 100U;                           //!< Pad beacon window is expanded (in milliseconds)
 
     const int16_t DEFAULT_FREE_CHAN_RSSI_THRESHOLD = -90;       //!< Threshold for channel activity detection (CAD) dBm
 
@@ -187,7 +193,9 @@ namespace lora {
         LORA_AGGREGATED_DUTY_CYCLE = 16,
         LORA_MAC_COMMAND_ERROR = 17,
         LORA_MAX_PAYLOAD_EXCEEDED = 18,
-        LORA_LBT_CHANNEL_BUSY = 19
+        LORA_LBT_CHANNEL_BUSY = 19,
+        LORA_BEACON_SIZE = 20,
+        LORA_BEACON_CRC = 21
     };
 
     /**
@@ -282,7 +290,7 @@ namespace lora {
             uint8_t Crc;
             uint8_t TxIQ;
             uint8_t RxIQ;
-            uint8_t SymbolTimeout(uint16_t pad_ms = 0);
+            uint16_t SymbolTimeout(uint16_t pad_ms = 0);
             float Timeout();
             Datarate();
     } Datarate;
@@ -342,13 +350,15 @@ namespace lora {
             uint8_t Mode;               //!< PUBLIC, PRIVATE or PEER_TO_PEER network mode
             uint8_t Class;              //!< Operating class of device
             uint8_t EUI[8];             //!< Network ID or AppEUI
+            uint16_t JoinNonce;         //!< Incrementing JoinNonce Counter
+            uint32_t AppNonce;          //!< Incrementing AppNonce Counter
             uint8_t Key[16];            //!< Network Key or AppKey
             uint8_t GenAppKey[16];      //!< Generic App Key, will be AppKey for LW 1.1.x
             uint8_t McKEKey[16];        //!< Multicast Key Encryption Key
             uint8_t JoinDelay;          //!< Number of seconds to wait before 1st RX Window
             uint8_t RxDelay;            //!< Number of seconds to wait before 1st RX Window
             uint8_t FrequencySubBand;   //!< FrequencySubBand used for US915 hybrid operation 0:72 channels, 1:1-8 channels ...
-            uint8_t AckAttempts;        //!< Number of attempts to send packet and receive an ACK from server
+            uint8_t AckEnabled;         //!< Enable confirmed messages to be sent with Retries
             uint8_t Retries;            //!< Number of times to resend a packet without receiving an ACK, redundancy
             uint8_t ADREnabled;         //!< Enable adaptive datarate
             uint8_t AdrAckLimit;       //!< Number of uplinks without a downlink to allow before setting ADRACKReq
@@ -402,7 +412,6 @@ namespace lora {
             uint32_t JoinFirstAttempt;          //!< RTC time of first failed join attempt
             uint32_t AggregatedTimeOffEnd;      //!< Time off air expiration for aggregate duty cycle
             uint16_t AggregateDutyCycle;        //!< Used for enforcing time-on-air
-            uint8_t AckCounter;                 //!< Current number of packets sent without ACK from server
             uint8_t AdrCounter;                 //!< Current number of packets received without downlink from server
             uint8_t RxDelay;                    //!< Number of seconds to wait before 1st RX Window
             uint8_t CommandBuffer[COMMANDS_BUFFER_SIZE]; //!< Buffer to hold Mac Commands and parameters to be sent in next packet
@@ -420,11 +429,22 @@ namespace lora {
     /**
      * Multicast session info
      */
-    typedef struct {
+    typedef struct MulticastSession {
             uint32_t Address;               //!< Network address
             uint8_t NetworkSessionKey[16];  //!< Network session key
             uint8_t DataSessionKey[16];     //!< Data session key
             uint32_t DownlinkCounter;       //!< Downlink counter of last packet received from server
+            int8_t Periodicity;             //!< Number of downlink windows to open per beacon period
+            uint32_t Frequency;             //!< Frequency used for downlink windows
+            uint8_t DatarateIndex;          //!< Datarate used for downlink windows
+            bool DataPending;               //!< Indicates network has data pending for this address
+            uint16_t PingPeriod;
+            int32_t NextPingSlot;
+            MulticastSession() :
+                Periodicity(-1)
+            {
+
+            }
     } MulticastSession;
 
     /**
@@ -459,6 +479,7 @@ namespace lora {
             uint8_t DisableRx2;
             uint8_t FixedUplinkCounter;
             uint8_t DisableRandomJoinDatarate;
+            uint8_t DisableAppNonceValidation;
     } Testing;
 
     /**
@@ -535,6 +556,13 @@ namespace lora {
                     uint8_t Adr :1;
             } Bits;
     } DownlinkControl;
+
+    typedef struct PingSlot {
+        uint32_t MSec;
+        int8_t Id;
+        PingSlot() : MSec(0), Id(-1) {}
+        PingSlot(uint32_t msec, int8_t id) : MSec(msec), Id(id) {}
+    } PingSlot;
 
     /**
      * Frame type of packet

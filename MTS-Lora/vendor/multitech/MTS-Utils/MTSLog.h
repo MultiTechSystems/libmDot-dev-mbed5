@@ -38,6 +38,13 @@ inline const char* className(const std::string& prettyFunction)
     mts::MTSLog::printMessage(mts::MTSLog::DEBUG_LEVEL, "%s:%s:%d| [%s] " format "\r\n", __CLASSNAME__, __func__, __LINE__, mts::MTSLog::DEBUG_LABEL, ##__VA_ARGS__)
 #define logTrace(format, ...) \
     mts::MTSLog::printMessage(mts::MTSLog::TRACE_LEVEL, "%s:%s:%d| [%s] " format "\r\n", __CLASSNAME__, __func__, __LINE__, mts::MTSLog::TRACE_LABEL, ##__VA_ARGS__)
+#elif defined(MTS_DEBUG_OFF)
+#define logFatal(...)
+#define logError(...)
+#define logWarning(...)
+#define logInfo(...)
+#define logDebug(...)
+#define logTrace(...)
 #else
 #define logFatal(format, ...) \
     __LOG__(mts::MTSLog::FATAL_LEVEL, format, ##__VA_ARGS__)

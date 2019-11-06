@@ -61,21 +61,6 @@ class mDot {
         void waitForPacket();
         void waitForLinkCheck();
 
-
-        MBED_DEPRECATED("Will be removed in dotlib 3.3.0")
-        void setActivityLedState(const uint8_t& state);
-
-        MBED_DEPRECATED("Will be removed in dotlib 3.3.0")
-        uint8_t getActivityLedState();
-
-        MBED_DEPRECATED("Will be removed in dotlib 3.3.0")
-        void blinkActivityLed(void) {
-            if (_activity_led) {
-                int val = _activity_led->read();
-                _activity_led->write(!val);
-            }
-        }
-
         mDot(const mDot&);
         mDot& operator=(const mDot&);
 
@@ -97,12 +82,7 @@ class mDot {
 
         std::string _last_error;
         static const uint32_t _baud_rates[];
-        uint8_t _activity_led_state; //deprecated will be removed
-        Ticker _tick;
-        DigitalOut* _activity_led; //deprecated will be removed
-        bool _activity_led_enable; //deprecated will be removed
-        PinName _activity_led_pin;  //deprecated will be removed
-        bool _activity_led_external; //deprecated will be removed
+
         uint8_t _linkFailCount;
         uint8_t _class;
         InterruptIn* _wakeup;
@@ -162,7 +142,8 @@ class mDot {
         enum RX_Output {
             HEXADECIMAL,
             BINARY,
-            EXTENDED
+            EXTENDED,
+            EXTENDED_HEX
         };
 
         enum DataRates {
@@ -315,6 +296,14 @@ class mDot {
          */
         std::string getMtsLoraId();
 
+
+        /**
+         * MAC version
+         *
+         * @return string containing version information of supported LoRaWAN MAC Version
+         */
+        const char* getMACVersion();
+
         /**
          * Perform a soft reset of the system
          */
@@ -367,21 +356,6 @@ class mDot {
         uint8_t setChannelPlan(lora::ChannelPlan* plan);
 
         lora::Settings* getSettings();
-
-        MBED_DEPRECATED("Will be removed in dotlib 3.3.0")
-        void setActivityLedEnable(const bool& enable);
-
-        MBED_DEPRECATED("Will be removed in dotlib 3.3.0")
-        bool getActivityLedEnable();
-
-        MBED_DEPRECATED("Will be removed in dotlib 3.3.0")
-        void setActivityLedPin(const PinName& pin);
-
-        MBED_DEPRECATED("Will be removed in dotlib 3.3.0")
-        void setActivityLedPin(DigitalOut* pin);
-
-        MBED_DEPRECATED("Will be removed in dotlib 3.3.0")
-        PinName getActivityLedPin();
 
         /**
          * Returns boolean indicative of start-up from standby mode
@@ -694,6 +668,20 @@ class mDot {
         int32_t setNetworkKey(const std::vector<uint8_t>& id);
 
         /**
+         * Get generic app key
+         * @returns a vector containing key (size 16)
+         */
+        std::vector<uint8_t> getGenAppKey();
+
+        /**
+         * Set generic app key
+         * for use with Multicast key exchange
+         * @param id a vector of 16 bytes
+         * @returns MDOT_OK if success
+         */
+        int32_t setGenAppKey(const std::vector<uint8_t>& id);
+
+        /**
          * Get network key
          * @returns a vector containing network key (size 16)
          */
@@ -728,17 +716,71 @@ class mDot {
         const uint8_t* getAppKey();
 
         /**
+         * Set join nonce counter incremented with each Join Request
+         * @returns MDOT_OK if success
+         */
+        int32_t setJoinNonce(const uint16_t& nonce);
+
+        /**
+         * Get join nonce counter incremented with each Join Request
+         * @returns join nonce
+         */
+        uint16_t getJoinNonce();
+
+        /**
+         * Set app nonce counter incremented with each Join Accept
+         * @returns MDOT_OK if success
+         */
+        int32_t setAppNonce(const uint32_t& nonce);
+
+        /**
+         * Get app nonce counter incremented with each Join Accept
+         * @returns app nonce
+         */
+        uint32_t getAppNonce();
+
+        /**
+         * Enable/disable Join Nonce validation for App Nonce in Join Accept
+         * Default is enabled
+         */
+        int32_t setJoinNonceValidation(bool enable);
+        bool getJoinNonceValidation();
+
+        /**
          * Add a multicast session address and keys
          * Downlink counter is set to 0
-         * Up to 3 MULTICAST_SESSIONS can be set
+         * Up to 8 MULTICAST_SESSIONS can be set
          */
-        int32_t setMulticastSession(uint8_t index, uint32_t addr, const uint8_t* nsk, const uint8_t* dsk);
+        int32_t setMulticastSession(uint8_t index, uint32_t addr, const uint8_t* nsk, const uint8_t* ask);
+
+        /**
+         * Set multicast session info
+         * Up to 8 MULTICAST_SESSIONS
+         */
+        int32_t setMulticastAddress(uint8_t index, uint32_t addr);
+        int32_t setMulticastNetworkSessionKey(uint8_t index, const uint8_t* nsk);
+        int32_t setMulticastApplicationSessionKey(uint8_t index, const uint8_t* ask);
 
         /**
          * Set a multicast session counter
-         * Up to 3 MULTICAST_SESSIONS can be set
+         * Up to 8 MULTICAST_SESSIONS
          */
         int32_t setMulticastDownlinkCounter(uint8_t index, uint32_t count);
+        int32_t setMulticastPeriodicity(uint8_t index, int8_t period);
+        int32_t setMulticastFrequency(uint8_t index, uint32_t freq);
+        int32_t setMulticastDatarate(uint8_t index, uint8_t dr);
+
+        /**
+         * Get multicast session info
+         * Up to 8 MULTICAST_SESSIONS
+         */
+        uint32_t getMulticastAddress(uint8_t index);
+        int32_t getMulticastNetworkSessionKey(uint8_t index, uint8_t* nsk);
+        int32_t getMulticastApplicationSessionKey(uint8_t index, uint8_t* ask);
+        uint32_t getMulticastDownlinkCounter(uint8_t index);
+        int8_t getMulticastPeriodicity(uint8_t index);
+        uint32_t getMulticastFrequency(uint8_t index);
+        uint8_t getMulticastDatarate(uint8_t index);
 
         /**
          * Attempt to join network
@@ -1464,6 +1506,11 @@ class mDot {
          */
         uint64_t getGPSTime();
 
+        /**
+         * Add a device time request to the MacCommand buffer
+         */
+        void addDeviceTimeRequest();
+
 #if defined(TARGET_MTS_MDOT_F411RE)
         ///////////////////////////////////////////////////////////////////
         // Filesystem (Non Volatile Memory) Operation Functions for mDot //
@@ -1545,6 +1592,8 @@ class mDot {
         // Return total size of all files saved in FLASH
         // Does not include SPIFFS overhead
         uint32_t getUsedSpace();
+
+        bool repairFlashFileSystem();
 #else
         ///////////////////////////////////////////////////////////////
         // EEPROM (Non Volatile Memory) Operation Functions for xDot //
@@ -1702,6 +1751,9 @@ class mDot {
         int32_t setDeviceId(const std::vector<uint8_t>& id);
         int32_t setProtectedAppEUI(const std::vector<uint8_t>& appEUI);
         int32_t setProtectedAppKey(const std::vector<uint8_t>& appKey);
+        std::vector<uint8_t> getProtectedAppEUI();
+        std::vector<uint8_t> getProtectedAppKey();
+        int32_t setProtectedGenAppKey(const std::vector<uint8_t>& appKey);
         int32_t setDefaultFrequencyBand(const uint8_t& band);
         bool saveProtectedConfig();
         // resets the radio/mac/link
@@ -1734,7 +1786,7 @@ class mDot {
 
         mdot_stats _stats;
 
-        FunctionPointer _wakeup_callback;
+        Callback<void()> _wakeup_callback;
 
         bool _standbyFlag;
         bool _testMode;

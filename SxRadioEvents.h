@@ -33,6 +33,7 @@ public:
      * \brief  Tx Timeout callback prototype.
      */
     virtual void TxTimeout( void ) {}
+
     /*!
      * \brief Rx Done callback prototype.
      *
@@ -44,6 +45,17 @@ public:
      *                     LoRa: SNR value is two's complement in 1/4 dB
      */
     virtual void RxDone( uint8_t *payload, uint16_t size, int16_t rssi, int16_t snr ) {}
+
+    /*!
+     * \brief Called if Beacon Window cannot be opened or is missed
+     *
+     * \param [IN] beaconTime  Updated time of beacon for the period
+     * \param [IN] no_rx       True if called from rx done
+     */
+    virtual void OnBeaconless( uint32_t beaconTime, bool no_rx = false ) {}
+
+
+
     /*!
      * \brief  Rx Timeout callback prototype.
      */
