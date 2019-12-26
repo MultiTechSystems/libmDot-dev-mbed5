@@ -350,7 +350,7 @@ namespace lora {
             uint8_t Mode;               //!< PUBLIC, PRIVATE or PEER_TO_PEER network mode
             uint8_t Class;              //!< Operating class of device
             uint8_t EUI[8];             //!< Network ID or AppEUI
-            uint16_t JoinNonce;         //!< Incrementing JoinNonce Counter
+            uint16_t DevNonce;         //!< Incrementing DevNonce Counter
             uint32_t AppNonce;          //!< Incrementing AppNonce Counter
             uint8_t Key[16];            //!< Network Key or AppKey
             uint8_t GenAppKey[16];      //!< Generic App Key, will be AppKey for LW 1.1.x
