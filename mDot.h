@@ -716,16 +716,16 @@ class mDot {
         const uint8_t* getAppKey();
 
         /**
-         * Set join nonce counter incremented with each Join Request
+         * Set device nonce counter incremented with each Join Request
          * @returns MDOT_OK if success
          */
-        int32_t setJoinNonce(const uint16_t& nonce);
+        int32_t setDevNonce(const uint16_t& nonce);
 
         /**
-         * Get join nonce counter incremented with each Join Request
+         * Get device nonce counter incremented with each Join Request
          * @returns join nonce
          */
-        uint16_t getJoinNonce();
+        uint16_t getDevNonce();
 
         /**
          * Set app nonce counter incremented with each Join Accept
