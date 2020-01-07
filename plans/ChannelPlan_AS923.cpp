@@ -538,7 +538,6 @@ uint8_t ChannelPlan_AS923::HandleAdrCommand(const uint8_t* payload, uint8_t inde
     uint8_t power = 0;
     uint8_t datarate = 0;
     uint16_t mask = 0;
-    uint16_t new_mask = 0;
     uint8_t ctrl = 0;
     uint8_t nbRep = 0;
 
@@ -575,9 +574,13 @@ uint8_t ChannelPlan_AS923::HandleAdrCommand(const uint8_t* payload, uint8_t inde
 
         case 6:
             // enable all currently defined channels
-            // set bits 0 - N of a number by (2<<N)-1
-            new_mask = (1 << _channels.size()) - 1;
-            SetChannelMask(0, new_mask);
+            mask = 0;
+            for (size_t i = 0; i < _channels.size(); i++) {
+                if (_channels[i].Frequency != 0) {
+                    mask |= (1 << i);
+                }
+            }
+            SetChannelMask(0, mask);
             break;
 
         default:
@@ -625,7 +628,7 @@ uint8_t ChannelPlan_AS923::ValidateAdrConfiguration() {
         }
     }
     // mask must not contain any undefined channels
-    for (int i = _numDefaultChans; i < 16; i++) {
+    for (size_t i = _numDefaultChans; i < _channels.size(); i++) {
         if ((_channelMask[0] & (1 << i)) && (_channels[i].Frequency == 0)) {
             logWarning("ADR Channel Mask KO - cannot enable undefined channel");
             status &= 0xFE; // ChannelMask KO
