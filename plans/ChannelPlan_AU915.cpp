@@ -895,30 +895,22 @@ uint8_t lora::ChannelPlan_AU915::GetJoinDatarate() {
     static uint8_t dr4_fsb = 1;
     static bool altdr = false;
 
+    dr = lora::DR_2;
+
     if (GetSettings()->Test.DisableRandomJoinDatarate == lora::OFF) {
 
         if (GetSettings()->Network.FrequencySubBand == 0) {
+            SetFrequencySubBand(fsb);
+            logDebug("JoinDatarate setting frequency sub band to %d",fsb);
 
-            if (fsb < 9) {
-                SetFrequencySubBand(fsb);
-                logDebug("JoinDatarate setting frequency sub band to %d",fsb);
+            if (fsb < 8) {
                 fsb++;
-                dr = lora::DR_0;
             } else {
-                dr = lora::DR_4;
                 fsb = 1;
-                dr4_fsb++;
-                if(dr4_fsb > 8)
-                    dr4_fsb = 1;
-                SetFrequencySubBand(dr4_fsb);
             }
-        } else if (altdr && CountBits(_channelMask[4] > 0)) {
-            dr = lora::DR_4;
-        } else {
-            dr = lora::DR_0;
         }
-        altdr = !altdr;
     }
+
     return dr;
 }
 
