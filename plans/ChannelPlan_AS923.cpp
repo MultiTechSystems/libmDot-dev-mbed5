@@ -866,8 +866,22 @@ uint8_t ChannelPlan_AS923::GetNextChannel()
 
 
 uint8_t lora::ChannelPlan_AS923::GetJoinDatarate() {
-    // Default join datarate is DR2:SF10BW125
-    return lora::DR_2;
+    uint8_t dr = GetSettings()->Session.TxDatarate;
+    static uint8_t cnt = 0;
+
+    if (GetSettings()->Test.DisableRandomJoinDatarate == lora::OFF) {
+        if ((cnt % 12) == 0) {
+            dr = lora::DR_2;
+        } else if ((cnt % 8) == 0) {
+            dr = lora::DR_3;
+        } else if ((cnt % 4) == 0) {
+            dr = lora::DR_4;
+        } else {
+            dr = lora::DR_5;
+        }
+    }
+
+    return dr;
 }
 
 uint8_t ChannelPlan_AS923::CalculateJoinBackoff(uint8_t size) {
@@ -960,22 +974,10 @@ uint8_t ChannelPlan_AS923::CalculateJoinBackoff(uint8_t size) {
 }
 
 uint8_t ChannelPlan_AS923::GetMinDatarate() {
-    uint8_t dr = GetSettings()->Session.TxDatarate;
-    static uint8_t cnt = 0;
-
-    if (GetSettings()->Test.DisableRandomJoinDatarate == lora::OFF) {
-        if ((cnt % 12) == 0) {
-            dr = lora::DR_2;
-        } else if ((cnt % 8) == 0) {
-            dr = lora::DR_3;
-        } else if ((cnt % 4) == 0) {
-            dr = lora::DR_4;
-        } else {
-            dr = lora::DR_5;
-        }
-    }
-
-    return dr;
+    if (GetSettings()->Session.UplinkDwelltime == 1)
+        return lora::DR_2;
+    else
+        return _minDatarate;
 }
 
 
