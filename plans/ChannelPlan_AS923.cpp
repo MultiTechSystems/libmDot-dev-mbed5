@@ -870,7 +870,7 @@ uint8_t lora::ChannelPlan_AS923::GetJoinDatarate() {
     static uint8_t cnt = 0;
 
     if (GetSettings()->Test.DisableRandomJoinDatarate == lora::OFF) {
-        if ((cnt % 12) == 0) {
+        if ((cnt++ % 12) == 0) {
             dr = lora::DR_2;
         } else if ((cnt % 8) == 0) {
             dr = lora::DR_3;
