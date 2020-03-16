@@ -31,7 +31,7 @@ namespace lora {
 
             virtual void JoinAccept(uint8_t *payload, uint16_t size, int16_t rssi, int16_t snr) = 0;
             virtual void JoinFailed(uint8_t *payload, uint16_t size, int16_t rssi, int16_t snr) = 0;
-            virtual void PacketRx(uint8_t port, uint8_t *payload, uint16_t size, int16_t rssi, int16_t snr, lora::DownlinkControl ctrl, uint8_t slot, uint8_t retries=0, uint32_t address=0, bool dupRx=false) = 0;
+            virtual void PacketRx(uint8_t port, uint8_t *payload, uint16_t size, int16_t rssi, int16_t snr, lora::DownlinkControl ctrl, uint8_t slot, uint8_t retries=0, uint32_t address=0, uint32_t fcnt=0, bool dupRx=false) = 0;
             virtual void RxDone(uint8_t *payload, uint16_t size, int16_t rssi, int16_t snr, lora::DownlinkControl ctrl, uint8_t slot) = 0;
 
             virtual void BeaconRx(const BeaconData_t& beacon_data, int16_t rssi, int16_t snr) = 0;

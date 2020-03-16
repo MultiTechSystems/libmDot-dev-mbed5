@@ -55,6 +55,7 @@ class mDot {
         static bool validateBaudRate(const uint32_t& baud);
         static bool validateFrequencySubBand(const uint8_t& band);
         bool validateDataRate(const uint8_t& dr);
+        bool validateRx2DataRate(const uint8_t& dr);
 
         int32_t joinBase(const uint32_t& retries);
         int32_t sendBase(const std::vector<uint8_t>& data, const bool& confirmed = false, const bool& blocking = true, const bool& highBw = false);
@@ -1560,7 +1561,7 @@ class mDot {
         // offset - offset in bytes
         // whence - where offset is based SEEK_SET, SEEK_CUR, SEEK_END
         // returns true if successful
-        bool seekUserFile(mDot::mdot_file& file, size_t offset, int whence);
+        bool seekUserFile(mDot::mdot_file& file, int32_t offset, int whence);
 
         // Read bytes from open file
         // file - mdot file struct

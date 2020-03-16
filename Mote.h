@@ -80,7 +80,7 @@ namespace lora {
              * @param address of the end device
              * @param dupRx set if this packet has already been received
              */
-            virtual void PacketRx(uint8_t port, uint8_t *payload, uint16_t size, int16_t rssi, int16_t snr, lora::DownlinkControl ctrl, uint8_t slot, uint8_t retries = 0, uint32_t address = 0, bool dupRx=false);
+            virtual void PacketRx(uint8_t port, uint8_t *payload, uint16_t size, int16_t rssi, int16_t snr, lora::DownlinkControl ctrl, uint8_t slot, uint8_t retries = 0, uint32_t address = 0, uint32_t fcnt = 0, bool dupRx=false);
 
             /**
              * Fired when radio has received a packet, packet is not validated
