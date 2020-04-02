@@ -229,11 +229,6 @@ class mDotEvent: public lora::MacEvents {
 
             DuplicateRx = dupRx;
 
-            if (mts::MTSLog::getLogLevel() == mts::MTSLog::TRACE_LEVEL) {
-                std::string packet = mts::Text::bin2hexString(RxPayload, size);
-                logTrace("Payload: %s", packet.c_str());
-            }
-
             _flags.Bits.Tx = 0;
             _flags.Bits.Rx = 1;
             _flags.Bits.RxData = size > 0;
