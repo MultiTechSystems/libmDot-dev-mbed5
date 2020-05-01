@@ -62,6 +62,8 @@ namespace lora {
                 KR920 = DYNAMIC | 0x03,
                 AS923_JAPAN = DYNAMIC | 0x04,
                 RU864 = DYNAMIC | 0x05,
+                AS923_2 = DYNAMIC | 0x06,
+                AS923_3 = DYNAMIC | 0x07,
 
                 NONE = 0xFF,
             };

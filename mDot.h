@@ -1792,7 +1792,6 @@ class mDot {
         bool _standbyFlag;
         bool _testMode;
         uint8_t _savedPort;
-        void handleTestModePacket();
         lora::ChannelPlan* _plan;
 };
 

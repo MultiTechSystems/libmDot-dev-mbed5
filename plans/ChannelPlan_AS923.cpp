@@ -16,6 +16,7 @@
 ***********************************************************************/
 
 #include "ChannelPlan_AS923.h"
+#include "ChannelPlans.h"
 #include "limits.h"
 
 using namespace lora;
@@ -66,8 +67,20 @@ void ChannelPlan_AS923::Init() {
 
     Datarate dr;
 
+    #if CHANNEL_PLAN == CP_AS923_2
+    #define AS923_FREQ_OFFSET_HZ -1800000U
+    _plan = AS923_2;
+    _planName = "AS923-2";
+    #elif CHANNEL_PLAN == CP_AS923_3
+    #define AS923_FREQ_OFFSET_HZ -6600000U
+    _plan = AS923_3;
+    _planName = "AS923-3";
+    #else // CHANNEL_PLAN == CP_AS923
+    #define AS923_FREQ_OFFSET_HZ 0U
     _plan = AS923;
     _planName = "AS923";
+    #endif
+
     _maxTxPower = 36;
     _minTxPower = 0;
 
@@ -91,12 +104,12 @@ void ChannelPlan_AS923::Init() {
     _numChans500k = 0;
     _numDefaultChans = AS923_DEFAULT_NUM_CHANS;
 
-    GetSettings()->Session.Rx2Frequency = 923200000;
+    GetSettings()->Session.Rx2Frequency = AS923_RX2_FREQ + AS923_FREQ_OFFSET_HZ;
     GetSettings()->Session.Rx2DatarateIndex = DR_2;
 
-    GetSettings()->Session.BeaconFrequency = AS923_BEACON_FREQ;
+    GetSettings()->Session.BeaconFrequency = AS923_BEACON_FREQ + AS923_FREQ_OFFSET_HZ;
     GetSettings()->Session.BeaconFreqHop = false;
-    GetSettings()->Session.PingSlotFrequency = AS923_BEACON_FREQ;
+    GetSettings()->Session.PingSlotFrequency = AS923_BEACON_FREQ + AS923_FREQ_OFFSET_HZ;
     GetSettings()->Session.PingSlotDatarateIndex = AS923_BEACON_DR;
     GetSettings()->Session.PingSlotFreqHop = false;
 
@@ -143,7 +156,7 @@ void ChannelPlan_AS923::Init() {
     chan.DrRange.Fields.Min = DR_0;
     chan.DrRange.Fields.Max = DR_5;
     chan.Index = 0;
-    chan.Frequency = 923200000;
+    chan.Frequency = AS923_125K_FREQ_BASE + AS923_FREQ_OFFSET_HZ;
     SetNumberOfChannels(16);
 
     for (uint8_t i = 0; i < AS923_DEFAULT_NUM_CHANS; i++) {

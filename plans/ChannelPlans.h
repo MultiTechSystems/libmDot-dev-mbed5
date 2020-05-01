@@ -33,3 +33,5 @@
 #define CP_IN865 6
 #define CP_AS923_JAPAN 7
 #define CP_RU864 8
+#define CP_AS923_2 9
+#define CP_AS923_3 10
