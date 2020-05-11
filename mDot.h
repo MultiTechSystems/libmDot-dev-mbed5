@@ -1767,7 +1767,7 @@ class mDot {
 
         template<typename T>
         void setWakeupCallback(T *object, void (T::*member)(void)) {
-            _wakeup_callback.attach(object, member);
+            _wakeup_callback = callback(object, member);
         }
 
         lora::ChannelPlan* getChannelPlan(void);
